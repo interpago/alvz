@@ -330,6 +330,7 @@
         <div class="badge" style="background:#4CAF50; color:white;">Multiplatform</div>
         <div class="badge" style="background:#E91E63; color:white;">v1.3.0</div>
         <div class="badge" style="background:#9C27B0; color:white;">Nat&#237;vo</div>
+        <div class="badge" style="background:#00BCD4; color:white;">WASM</div>
         <a href="https://github.com/interpago/alvz" target="_blank" style="text-decoration:none;">
             <div class="badge badge-always" style="background:#24292e; color:white; cursor:pointer;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -397,6 +398,7 @@
             <li><a href="#optimizer">Optimizador</a></li>
             <li><a href="#package-manager">Package Manager (36 paquetes)</a></li>
             <li><a href="#native">Compilación Nativa &amp; Multiplataforma</a></li>
+            <li><a href="#wasm">Compilación WASM</a></li>
             <li><a href="#cli">CLI: test, fmt, nuevo</a></li>
             <li><a href="#lsp">LSP (Editor)</a></li>
             <li><a href="#dap">Depurador DAP</a></li>
@@ -418,7 +420,7 @@
             <div class="admonition-title">¿Por qué Alvz?</div>
             Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
             <br><br>
-            <strong>v0.16.0</strong> — 5 nuevos módulos StdLib, 6 nuevos paquetes (uuid, sort, queue, stack, set, cache), 36 paquetes totales: aleatorio (aleatorios), csv (CSV parsing/escritura), expresiones_regulares (regex), consola (terminal interactiva), json (JSON dedicado). 473 tests. Forward references fix en compile_import.
+            <strong>v0.16.0</strong> — Compilador WASM funcional: `alvz build --wasm` genera .wasm ejecutable con wasmtime. 25 opcodes: aritmética, comparaciones, variables, saltos, print, list, null. StdLib (8 módulos), Package Manager (36 paquetes). 473 tests.
         </div>
     </section>
 
@@ -495,7 +497,7 @@ Alvz v0.16.0</pre>
         <p>Mejora tu experiencia de desarrollo con resaltado semántico, autocompletado real y más de <strong>60 snippets inteligentes</strong> para Alvz.</p>
         
         <div class="admonition">
-            <div class="admonition-title">v1.3.0 — Resaltado semántico + Autocompletado real</div>
+            <div class="admonition-title">v1.4.0 — WASM support + Resaltado semántico + Autocompletado real</div>
             <p><strong>Resaltado semántico:</strong> Variables, funciones, clases, keywords, strings, números, builtins, propiedades y comentarios se colorean según su rol en el código, no solo por sintaxis.</p>
             <p><strong>Autocompletado real:</strong> Sugiere keywords, estructuras completas vía snippets, funciones de la StdLib con parámetros, constantes y módulos stdlib al escribir <code>importar "..."</code>.</p>
             <p><strong>Snippets para Supabase, API REST, CRUD, archivos, JSON, async/paralelo, POO, menús, validación, fecha/hora, regex, listas, errores y más.</strong></p>
@@ -508,7 +510,7 @@ Alvz v0.16.0</pre>
             <li>Ve a la sección de Extensiones (<kbd>Ctrl+Shift+X</kbd>)</li>
             <li>Haz clic en el menú <strong>"..."</strong> (esquina superior derecha)</li>
             <li>Selecciona <strong>"Instalar desde VSIX..."</strong></li>
-            <li>Elige el archivo <code>alvz-language-1.3.0.vsix</code></li>
+            <li>Elige el archivo <code>alvz-language-1.4.0.vsix</code></li>
         </ol>
 
         <h3>Características</h3>
@@ -1795,6 +1797,52 @@ $ ./programa</pre>
         <div class="admonition">
             <div class="admonition-title">Multiplataforma</div>
             El ejecutable generado es un binario nativo sin dependencias externas, ideal para distribución y despliegue en cualquier sistema operativo.
+        </div>
+    </section>
+
+    <section id="wasm">
+        <h2>Compilación WASM</h2>
+        <p>Alvz puede compilar tu código a <strong>WebAssembly (WASM)</strong>, permitiendo ejecutar programas Alvz en cualquier runtime WASM como <strong>wasmtime</strong>, <strong>wasmer</strong> o en el navegador web.</p>
+
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz build --wasm programa.alvz
+$ wasmtime programa.wasm</pre>
+        </div>
+
+        <h3>Opcodes Soportados (25/82)</h3>
+        <table>
+            <thead><tr><th>Categoría</th><th>Opcodes</th></tr></thead>
+            <tbody>
+                <tr><td>Aritmética</td><td><code>+ - * /</code></td></tr>
+                <tr><td>Comparaciones</td><td><code>== != &lt; &gt; &lt;= &gt;=</code></td></tr>
+                <tr><td>Variables</td><td>load, store, load_global, store_global</td></tr>
+                <tr><td>Control</td><td>jump, jump_if_false, halt</td></tr>
+                <tr><td>IO</td><td>print (numérico, booleano)</td></tr>
+                <tr><td>Valores</td><td>constante, null, list, length, pop, negación</td></tr>
+            </tbody>
+        </table>
+
+        <div class="admonition">
+            <div class="admonition-title">Arquitectura</div>
+            El compilador WASM implementa una máquina virtual de bytecode dentro del módulo WASM, con una pila de valores en memoria lineal (tag i32 + data f64 = 16 bytes por entrada). El bytecode y las constantes se almacenan como data segments en la memoria WASM.
+        </div>
+
+        <div class="code-container">
+            <div class="code-header"><span>programa.alvz</span></div>
+            <pre><span class="keyword">funcion</span> suma(a: <span class="keyword">numero</span>, b: <span class="keyword">numero</span>): <span class="keyword">numero</span> {
+    <span class="keyword">retornar</span> a + b
+}
+<span class="keyword">variable</span> x = suma(<span class="number">10</span>, <span class="number">20</span>)
+<span class="keyword">imprimir</span>(x)</pre>
+        </div>
+
+        <div class="code-container">
+            <div class="code-header"><span>Compilar y ejecutar</span></div>
+            <pre>$ alvz build --wasm programa.alvz
+<span class="comment"># Genera programa.wasm</span>
+$ wasmtime programa.wasm
+<span class="comment"># 30</span></pre>
         </div>
     </section>
 

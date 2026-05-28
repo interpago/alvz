@@ -16,6 +16,7 @@
 
 ## Progress
 ### Done
+- **Compilador WASM funcional**: `wasm_compiler.py` + `wasm_encoder.py`. Traduce bytecode Alvz a WASM binario, ejecutable con wasmtime. Soporta constantes, aritmética (suma, resta, mul, div), comparaciones (==, !=, <, >, <=, >=), negación, print (num/bool), load/store de variables, saltos (incondicional y condicional), null, list, length, pop. 25 opcodes implementados. `alvz build --wasm`. 473 tests pasando.
 - **Tipado estático**: `type_checker.py`. Verifica anotaciones, parámetros, retorno, llamadas. `--check-types` / `-T`. 21 tests.
 - **Async/await**: tokens `ASYNC`, `AGUARDAR`; opcodes `OP_ASYNC_CALL` (76), `OP_AWAIT` (77); event loop con `ThreadPoolExecutor` (concurrencia real).
 - **Optimizador de bytecode**: `optimizer.py` con plegado de constantes, código muerto, reasignación de saltos. `--optimize` / `-O`.
@@ -46,7 +47,7 @@
 - N/A
 
 ### Blocked
-- LLVM/WASM: No hay bindings ni toolchain integrados. El approach correcto requeriría llvmlite (Python→LLVM IR) o traducir bytecode a WASM vía emscripten/wasi-sdk. Es un proyecto grande (>500 líneas de backend) que no se ha iniciado.
+- N/A
 
 ## Key Decisions
 - Event loop real vía `ThreadPoolExecutor` + futuros: concurrencia real para `esperar()` en paralelo.
@@ -56,7 +57,9 @@
 - StdLib ampliada usa funciones del VM via opcodes, no implementación Python directa.
 
 ## Next Steps
-- Nada urgente. Mantenimiento, más paquetes, y si hay interés: compilador WASM real.
+- Completar opcodes que faltan (AND, OR, INPUT, RANDOM, CALL, RETURN, LIST_APPEND, GET/SET_INDEX, DICT).
+- Soportar funciones Alvz (compilar cada función a función WASM separada con `call`).
+- Soportar strings (tabla de strings + host functions `print_str(ptr, len)`).
 
 ## Critical Context
 - `run(output_buffer=None)` en VM: si se pasa buffer, lo usa sin resetear.
@@ -64,6 +67,9 @@
 - `_import_file()` busca en: ruta literal, +.alvz, stdlib/, stdlib/ +.alvz, `~/.alvz/packages/<name>/<name>.alvz`.
 - Comandos CLI: `alvz test`, `alvz fmt`, `alvz nuevo`, `alvz install`, `alvz build`, `alvz debug`, `alvz bench`, `alvz fix`.
 - `alvz.spec` con `datas=[('alvz/stdlib/*.alvz', 'alvz/stdlib')]`.
+- WASM: `wasm_memory64=False` en Config para wasmtime; funciones host sin `caller` (wasmtime v45 `access_caller=False`).
+- Opcodes WASM correctos: f64.store=0x39, f64.neg=0x9F, i32.trunc_f64_s=0xAA, f64.convert_i32_s=0xB7.
+- Bytecode Alvz se almacena como bytes individuales en WASM; se lee con `i32.load8_u`.
 
 ## Relevant Files
 - `alvz/core/vm.py`: Coroutine, EventLoop, opcodes HTTP/SQLite, run(output_buffer=None), _import_file(), source_lines.
@@ -77,6 +83,8 @@
 - `alvz/core/parser.py`: _compile_anonymous_function(), _compile_chained_access(), factor() con FUNCION.
 - `alvz/lsp/analyzer.py`, `server.py`, `dap.py`, `protocol.py`: LSP + DAP real.
 - `alvz/repl.py`: main() con todos los subcomandos. REPL con colores, historial, autocompletado.
+- `alvz/core/wasm_compiler.py`: compila bytecode Alvz a WASM (25 opcodes).
+- `alvz/core/wasm_encoder.py`: encoder binario WASM genérico.
 - `alvz/stdlib/`: 8 módulos (matematicas, cadenas, colecciones, http, fecha, testing, sistema, sqlite).
 - `alvz-extension/`: VS Code extension v1.3.0 con semántico + autocompletado.
 - `registry/`: index.json + 30 paquetes en packages/.

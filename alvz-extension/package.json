@@ -3,7 +3,7 @@
     "publisher": "alvz-project",
     "displayName": "Alvz Language Support",
     "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "engines": { "vscode": "^1.75.0" },
     "categories": ["Programming Languages"],
     "activationEvents": [
