@@ -1,0 +1,56 @@
+funcion base_abrir(ruta) {
+    retornar sqlite_abrir(ruta)
+}
+
+funcion base_ejecutar(conexion, sql) {
+    retornar sqlite_ejecutar(conexion, sql)
+}
+
+funcion base_consultar(conexion, sql) {
+    retornar sqlite_consultar(conexion, sql)
+}
+
+funcion base_crear_tabla(conexion, nombre, columnas) {
+    variable sql = "CREATE TABLE IF NOT EXISTS " + nombre + " ("
+    variable i = 0
+    variable n = longitud(columnas)
+    mientras i < n {
+        si i > 0 {
+            sql = sql + ", "
+        }
+        sql = sql + columnas[i]
+        i = i + 1
+    }
+    sql = sql + ")"
+    retornar sqlite_ejecutar(conexion, sql)
+}
+
+funcion base_insertar(conexion, tabla, datos) {
+    variable columnas = ""
+    variable valores = ""
+    variable primero = verdadero
+    cada clave en datos {
+        si primero == falso {
+            columnas = columnas + ", "
+            valores = valores + ", "
+        }
+        columnas = columnas + clave
+        variable v = json_codificar(datos[clave])
+        valores = valores + v
+        primero = falso
+    }
+    variable sql = "INSERT INTO " + tabla + " (" + columnas + ") VALUES (" + valores + ")"
+    retornar sqlite_ejecutar(conexion, sql)
+}
+
+funcion base_seleccionar(conexion, tabla, condiciones) {
+    variable sql = "SELECT * FROM " + tabla
+    si condiciones != "" {
+        sql = sql + " WHERE " + condiciones
+    }
+    retornar sqlite_consultar(conexion, sql)
+}
+
+funcion base_cerrar(conexion) {
+    retornar sqlite_ejecutar(conexion, "")
+}

@@ -1,0 +1,18 @@
+imprimir("--- Comparación de Bucles ---")
+
+variable frutas = ["Manzana", "Pera", "Uva"]
+
+imprimir("1. Usando el método difícil (con índice i):")
+para i de 0 a (longitud(frutas) - 1) {
+    imprimir("Fruta " + i + ": " + frutas[i])
+}
+
+imprimir("")
+
+imprimir("2. Usando el método FÁCIL (para cada):")
+para cada f en frutas {
+    imprimir("Fruta: " + f)
+}
+
+imprimir("")
+imprimir("¿Ves la diferencia? ¡El código es mucho más limpio!")

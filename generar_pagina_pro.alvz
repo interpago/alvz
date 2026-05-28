@@ -1,0 +1,80 @@
+limpiar()
+imprimir("--- GENERADOR DE LA WEB OFICIAL DE ALVZ ---")
+imprimir("Preparando diseño espectacular...")
+esperar(1)
+
+variable nombre_archivo = "index.html"
+
+# 1. Definimos el diseño (CSS moderno y oscuro)
+variable css = "<style>"
+css = css + "  :root { --primario: #3ecf8e; --oscuro: #121212; --tarjeta: #1e1e1e; --texto: #e0e0e0; }"
+css = css + "  body { background-color: var(--oscuro); color: var(--texto); font-family: 'Inter', sans-serif; margin: 0; padding: 0; line-height: 1.6; }"
+css = css + "  .navbar { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); padding: 1rem 2rem; position: fixed; width: 100%; top: 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }"
+css = css + "  .logo { font-size: 1.5rem; font-weight: bold; color: var(--primario); }"
+css = css + "  .hero { padding: 120px 20px 60px; text-align: center; background: radial-gradient(circle at top, #1a3a2a 0%, #121212 100%); }"
+css = css + "  .hero h1 { font-size: 4rem; margin-bottom: 10px; color: white; }"
+css = css + "  .hero p { font-size: 1.5rem; color: #aaa; max-width: 800px; margin: 0 auto 30px; }"
+css = css + "  .btn { background: var(--primario); color: var(--oscuro); padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: 0.3s; }"
+css = css + "  .btn:hover { transform: scale(1.05); filter: brightness(1.1); }"
+css = css + "  .contenedor { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }"
+css = css + "  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }"
+css = css + "  .tarjeta { background: var(--tarjeta); padding: 25px; border-radius: 15px; border: 1px solid #333; transition: 0.3s; }"
+css = css + "  .tarjeta:hover { border-color: var(--primario); transform: translateY(-5px); }"
+css = css + "  .tarjeta h3 { color: var(--primario); margin-top: 0; }"
+css = css + "  pre { background: #000; padding: 20px; border-radius: 10px; text-align: left; overflow-x: auto; border: 1px solid #333; color: #3ecf8e; }"
+css = css + "  footer { text-align: center; padding: 40px; color: #666; border-top: 1px solid #333; }"
+css = css + "</style>"
+
+# 2. Construimos el cuerpo de la página
+variable html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Alvz | El lenguaje del futuro</title>" + css + "</head><body>"
+
+# Navbar
+html = html + "<nav class='navbar'><div class='logo'>ALVZ v0.9</div><div><a href='#' class='btn'>Descargar</a></div></nav>"
+
+# Hero Section
+html = html + "<header class='hero'>"
+html = html + "  <h1>Aprende a programar en español</h1>"
+html = html + "  <p>Alvz es el lenguaje diseñado para que domines la lógica de programación antes de dar el salto a Python.</p>"
+html = html + "  <a href='#ejemplos' class='btn'>Ver ejemplos</a>"
+html = html + "</header>"
+
+# Características
+html = html + "<div class='contenedor'>"
+html = html + "  <h2 style='text-align:center; font-size: 2.5rem; margin-bottom: 40px;'>¿Por qué Alvz?</h2>"
+html = html + "  <div class='grid'>"
+html = html + "    <div class='tarjeta'><h3>Natural</h3><p>Escribe código tal como hablas. Sin reglas complicadas ni palabras en inglés que te confundan al empezar.</p></div>"
+html = html + "    <div class='tarjeta'><h3>Potente</h3><p>Desde bucles avanzados hasta conexión con la nube (Supabase). Alvz crece contigo.</p></div>"
+html = html + "    <div class='tarjeta'><h3>Visual</h3><p>Crea páginas web reales y aplicaciones interactivas con comandos simples.</p></div>"
+html = html + "  </div>"
+html = html + "</div>"
+
+# Sección de código
+html = html + "<div class='contenedor' id='ejemplos'>"
+html = html + "  <h2 style='text-align:center;'>Mira lo fácil que es</h2>"
+html = html + "  <pre>"
+html = html + "variable frutas = ['Manzana', 'Pera', 'Uva']"
+html = html + "\n"
+html = html + "para cada f en frutas {"
+html = html + "\n"
+html = html + "    imprimir('Me gusta la ' + f)"
+html = html + "\n"
+html = html + "}"
+html = html + "\n"
+html = html + "esperar(1)"
+html = html + "\n"
+html = html + "imprimir('¡Qué rico!')"
+html = html + "  </pre>"
+html = html + "</div>"
+
+# Footer
+html = html + "<footer><p>Creado con ❤️ por un Maestro Alvz | 2026</p></footer>"
+
+html = html + "</body></html>"
+
+# 3. Guardamos el archivo real
+imprimir("Generando index.html...")
+escribir_archivo(nombre_archivo, html)
+esperar(1.5)
+
+imprimir("¡ESPECTACULAR! Tu página oficial ha sido creada.")
+imprimir("Busca 'index.html' en tu carpeta y ábrelo para ver la magia.")

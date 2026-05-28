@@ -1,0 +1,5 @@
+variable nombre = "alvz"
+variable edad = 35
+
+imprimir("Hola mi nombre es " + nombre + " y tengo " + edad + " años.")
+

@@ -1,0 +1,56 @@
+importar "matematicas"
+
+funcion invertir(texto) {
+    variable resultado = ""
+    variable i = longitud(texto) - 1
+    mientras i >= 0 {
+        resultado = resultado + texto[i]
+        i = i - 1
+    }
+    retornar resultado
+}
+
+funcion capitalizar(texto) {
+    si longitud(texto) == 0 {
+        retornar texto
+    }
+    retornar mayusculas(texto[0]) + minusculas(texto[1..])
+}
+
+funcion truncar(texto, max_len) {
+    si longitud(texto) <= max_len {
+        retornar texto
+    }
+    retornar texto[0..max_len-3] + "..."
+}
+
+funcion contar_vocales(texto) {
+    variable total = 0
+    variable vocales = "aeiouAEIOU"
+    cada c en texto {
+        cada v en vocales {
+            si c == v {
+                total = total + 1
+                romper
+            }
+        }
+    }
+    retornar total
+}
+
+funcion es_palindromo(texto) {
+    variable limpio = minusculas(texto)
+    retornar limpio == invertir(limpio)
+}
+
+funcion a_snake_case(texto) {
+    variable resultado = ""
+    cada c en texto {
+        si c == " " o c == "-" {
+            resultado = resultado + "_"
+        } sino {
+            resultado = resultado + minusculas(c)
+        }
+    }
+    retornar resultado
+}

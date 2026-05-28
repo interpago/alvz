@@ -1,0 +1,76 @@
+importar "sistema"
+
+funcion csv_parsear(texto, separador) {
+    si separador == nulo {
+        separador = ","
+    }
+    variable lineas = dividir(texto, "\n")
+    si longitud(lineas) == 0 {
+        retornar []
+    }
+    variable encabezados = dividir(lineas[0], separador)
+    variable resultado = []
+    variable i = 1
+    mientras i < longitud(lineas) {
+        si longitud(lineas[i]) > 0 {
+            variable valores = dividir(lineas[i], separador)
+            variable fila = {}
+            variable j = 0
+            mientras j < longitud(encabezados) {
+                fila[encabezados[j]] = valores[j] si j < longitud(valores) sino ""
+                j = j + 1
+            }
+            agregar(resultado, fila)
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion csv_desde_archivo(ruta, separador) {
+    variable contenido = archivo_leer(ruta)
+    retornar csv_parsear(contenido, separador)
+}
+
+funcion csv_generar(lista, columnas, separador) {
+    si separador == nulo {
+        separador = ","
+    }
+    variable resultado = unir(columnas, separador) + "\n"
+    cada fila en lista {
+        variable valores = []
+        cada columna en columnas {
+            variable val = fila[columna] si fila[columna] != nulo sino ""
+            agregar(valores, val)
+        }
+        resultado = resultado + unir(valores, separador) + "\n"
+    }
+    retornar resultado
+}
+
+funcion csv_guardar(ruta, lista, columnas, separador) {
+    variable contenido = csv_generar(lista, columnas, separador)
+    archivo_escribir(ruta, contenido)
+}
+
+funcion tabla_filtrar(lista, campo, valor) {
+    variable resultado = []
+    cada fila en lista {
+        si fila[campo] == valor {
+            agregar(resultado, fila)
+        }
+    }
+    retornar resultado
+}
+
+funcion tabla_seleccionar(lista, campos) {
+    variable resultado = []
+    cada fila en lista {
+        variable nueva = {}
+        cada campo en campos {
+            nueva[campo] = fila[campo]
+        }
+        agregar(resultado, nueva)
+    }
+    retornar resultado
+}

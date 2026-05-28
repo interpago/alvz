@@ -1,0 +1,412 @@
+# ============================================================
+# Gestor de Tareas Profesional - Alvz Language v0.13.0
+# ============================================================
+# Caracteristicas:
+#   - POO (clases, herencia, polimorfismo)
+#   - Archivos (JSON para persistencia)
+#   - Interfaz de consola interactiva
+#   - Fechas, filtros, estadisticas
+#   - Tipado estatico completo
+#   - Manejo de errores
+# ============================================================
+
+# -------------------------------------------------------
+# Clase base: Tarea
+# -------------------------------------------------------
+clase Tarea {
+    funcion inicializar(titulo: texto, descripcion: texto, prioridad: texto) {
+        self.titulo = titulo
+        self.descripcion = descripcion
+        self.prioridad = prioridad          # "alta", "media", "baja"
+        self.completada = falso
+        self.fecha_creacion = fecha_actual("YYYY-MM-DD HH:mm:ss")
+    }
+
+    funcion marcar_completada() {
+        self.completada = verdadero
+    }
+
+    funcion marcar_pendiente() {
+        self.completada = falso
+    }
+
+    funcion a_diccionario(): diccionario {
+        variable d = {
+            "titulo": self.titulo,
+            "descripcion": self.descripcion,
+            "prioridad": self.prioridad,
+            "completada": self.completada,
+            "fecha_creacion": self.fecha_creacion,
+            "fecha_vencimiento": nulo
+        }
+        retornar d
+    }
+
+    funcion desde_diccionario(datos: diccionario) {
+        self.titulo = datos["titulo"]
+        self.descripcion = datos["descripcion"]
+        self.prioridad = datos["prioridad"]
+        self.completada = datos["completada"]
+        self.fecha_creacion = datos["fecha_creacion"]
+    }
+
+    funcion mostrar(): texto {
+        variable estado = "[ ]"
+        si self.completada {
+            estado = "[X]"
+        }
+
+        variable icono = "  "
+        si self.prioridad == "alta" {
+            icono = "!!"
+        } sino si self.prioridad == "media" {
+            icono = "! "
+        }
+
+        variable linea = estado + " " + icono + " " + self.titulo
+        si longitud(self.descripcion) > 0 {
+            linea = linea + "\n     " + self.descripcion
+        }
+        linea = linea + "\n     [" + self.prioridad + "] " + self.fecha_creacion
+        retornar linea
+    }
+}
+
+# -------------------------------------------------------
+# Clase hija: TareaConVencimiento (hereda de Tarea)
+# -------------------------------------------------------
+clase TareaConVencimiento de Tarea {
+    funcion inicializar(titulo: texto, descripcion: texto, prioridad: texto, fecha_venc: texto) {
+        super.inicializar(titulo, descripcion, prioridad)
+        self.fecha_vencimiento = fecha_venc
+    }
+
+    funcion a_diccionario(): diccionario {
+        variable d = super.a_diccionario()
+        d["fecha_vencimiento"] = self.fecha_vencimiento
+        retornar d
+    }
+
+    funcion desde_diccionario(datos: diccionario) {
+        super.desde_diccionario(datos)
+        self.fecha_vencimiento = datos["fecha_vencimiento"]
+    }
+
+    funcion mostrar(): texto {
+        variable salida = super.mostrar()
+        salida = salida + "\n     Vence: " + self.fecha_vencimiento
+        retornar salida
+    }
+
+    funcion esta_vencida(): booleano {
+        variable hoy = fecha_actual("YYYY-MM-DD")
+        retornar hoy > self.fecha_vencimiento y self.completada == falso
+    }
+}
+
+# -------------------------------------------------------
+# Clase: GestorTareas
+# -------------------------------------------------------
+clase GestorTareas {
+    funcion inicializar() {
+        self.tareas = []            # lista de objetos Tarea
+        self.archivo_datos = "tareas.json"
+    }
+
+    funcion insertar(tarea: Tarea) {
+        self.tareas = self.tareas + [tarea]
+        self.guardar()
+        imprimir("[OK] Tarea agregada: " + tarea.titulo)
+    }
+
+    funcion eliminar(indice: numero): booleano {
+        si indice < 0 o indice >= longitud(self.tareas) {
+            imprimir("[ERROR] Indice invalido")
+            retornar falso
+        }
+        variable tarea = self.tareas[indice]
+        # Remover por indice usando slice
+        si indice == 0 {
+            self.tareas = self.tareas[1:]
+        } sino si indice == longitud(self.tareas) - 1 {
+            self.tareas = self.tareas[:indice]
+        } sino {
+            self.tareas = self.tareas[:indice] + self.tareas[indice + 1:]
+        }
+        self.guardar()
+        imprimir("[OK] Tarea eliminada: " + tarea.titulo)
+        retornar verdadero
+    }
+
+    funcion completar(indice: numero): booleano {
+        si indice < 0 o indice >= longitud(self.tareas) {
+            imprimir("[ERROR] Indice invalido")
+            retornar falso
+        }
+        self.tareas[indice].marcar_completada()
+        self.guardar()
+        imprimir("[OK] Tarea completada: " + self.tareas[indice].titulo)
+        retornar verdadero
+    }
+
+    funcion listar_todas() {
+        si longitud(self.tareas) == 0 {
+            imprimir("No hay tareas registradas.")
+            retornar
+        }
+        imprimir("")
+        imprimir("========================================")
+        imprimir("  LISTADO DE TAREAS (" + longitud(self.tareas) + " total)")
+        imprimir("========================================")
+        para i de 0 a longitud(self.tareas) - 1 {
+            imprimir("")
+            imprimir("  #" + (i + 1) + " " + self.tareas[i].mostrar())
+        }
+        imprimir("")
+        imprimir("========================================")
+    }
+
+    funcion listar_pendientes() {
+        imprimir("")
+        imprimir("--- TAREAS PENDIENTES ---")
+        variable contador = 0
+        para i de 0 a longitud(self.tareas) - 1 {
+            si self.tareas[i].completada == falso {
+                imprimir("  #" + (i + 1) + " " + self.tareas[i].mostrar())
+                contador = contador + 1
+            }
+        }
+        si contador == 0 {
+            imprimir("  [No hay tareas pendientes]")
+        }
+    }
+
+    funcion estadisticas() {
+        variable total = longitud(self.tareas)
+        variable completadas = 0
+        variable alta = 0
+        variable media = 0
+        variable baja = 0
+
+        para i de 0 a total - 1 {
+            variable t = self.tareas[i]
+            si t.completada {
+                completadas = completadas + 1
+            }
+            si t.prioridad == "alta" {
+                alta = alta + 1
+            } sino si t.prioridad == "media" {
+                media = media + 1
+            } sino {
+                baja = baja + 1
+            }
+        }
+
+        variable pendientes = total - completadas
+        variable pct = 0
+        si total > 0 {
+            pct = redondear((completadas * 100) / total)
+        }
+
+        imprimir("")
+        imprimir("--- ESTADISTICAS ---")
+        imprimir("  Total:   " + total)
+        imprimir("  Completadas: " + completadas + " (" + pct + "%)")
+        imprimir("  Pendientes: " + pendientes)
+        imprimir("  Prioridad alta: " + alta + " | media: " + media + " | baja: " + baja)
+    }
+
+    funcion buscar(termino: texto) {
+        imprimir("")
+        imprimir("--- BUSQUEDA: " + termino + " ---")
+        variable encontrados = 0
+        para i de 0 a longitud(self.tareas) - 1 {
+            variable t = self.tareas[i]
+            variable texto_busqueda = t.titulo + " " + t.descripcion
+            si longitud(reemplazar(texto_busqueda, termino, "")) < longitud(texto_busqueda) {
+                imprimir("  #" + (i + 1) + " " + t.mostrar())
+                encontrados = encontrados + 1
+            }
+        }
+        imprimir("  [" + encontrados + " resultados]")
+    }
+
+    funcion guardar() {
+        variable datos = []
+        para i de 0 a longitud(self.tareas) - 1 {
+            datos = datos + [self.tareas[i].a_diccionario()]
+        }
+        variable json = json_codificar(datos)
+        escribir_archivo(self.archivo_datos, json)
+    }
+
+    funcion cargar(): booleano {
+        intentar {
+            variable contenido = leer_archivo(self.archivo_datos)
+            variable datos = json_decodificar(contenido)
+            self.tareas = []
+            para i de 0 a longitud(datos) - 1 {
+                variable item = datos[i]
+                variable tarea = nulo
+                si item["fecha_vencimiento"] != nulo {
+                    tarea = nuevo TareaConVencimiento("", "", "", "")
+                    tarea.desde_diccionario(item)
+                } sino {
+                    tarea = nuevo Tarea("", "", "")
+                    tarea.desde_diccionario(item)
+                }
+                self.tareas = self.tareas + [tarea]
+            }
+            imprimir("[OK] " + longitud(self.tareas) + " tareas cargadas de " + self.archivo_datos)
+            retornar verdadero
+        } capturar {
+            # Archivo no existe o corrupto, empezar vacio
+            imprimir("[INFO] No hay datos previos. Empezando con lista vacia.")
+            retornar falso
+        }
+    }
+}
+
+# -------------------------------------------------------
+# Funcion: menu principal
+# -------------------------------------------------------
+funcion mostrar_menu() {
+    limpiar()
+    imprimir("")
+    imprimir("  ╔══════════════════════════════════╗")
+    imprimir("  ║     GESTOR DE TAREAS v1.0        ║")
+    imprimir("  ║     Alvz Language                ║")
+    imprimir("  ╚══════════════════════════════════╝")
+    imprimir("")
+    imprimir("  1. Listar todas las tareas")
+    imprimir("  2. Listar pendientes")
+    imprimir("  3. Agregar tarea")
+    imprimir("  4. Agregar tarea con vencimiento")
+    imprimir("  5. Completar tarea")
+    imprimir("  6. Eliminar tarea")
+    imprimir("  7. Buscar tareas")
+    imprimir("  8. Estadisticas")
+    imprimir("  9. Salir")
+    imprimir("")
+}
+
+# -------------------------------------------------------
+# Funcion: leer opcion del menu
+# -------------------------------------------------------
+funcion leer_opcion(): numero {
+    imprimir("  Selecciona una opcion [1-9]: ")
+    variable entrada = leer()
+    variable opcion = a_numero(entrada)
+    retornar opcion
+}
+
+# -------------------------------------------------------
+# Funcion: crear tarea desde consola
+# -------------------------------------------------------
+funcion crear_tarea(gestor: GestorTareas) {
+    imprimir("")
+    imprimir("--- NUEVA TAREA ---")
+    imprimir("  Titulo: ")
+    variable titulo = leer()
+
+    si longitud(titulo) == 0 {
+        imprimir("[ERROR] El titulo no puede estar vacio")
+        retornar
+    }
+
+    imprimir("  Descripcion: ")
+    variable descripcion = leer()
+
+    imprimir("  Prioridad (alta/media/baja) [media]: ")
+    variable prioridad = leer()
+    si prioridad != "alta" y prioridad != "baja" {
+        prioridad = "media"
+    }
+
+    variable tarea = nuevo Tarea(titulo, descripcion, prioridad)
+    gestor.insertar(tarea)
+}
+
+funcion crear_tarea_con_vencimiento(gestor: GestorTareas) {
+    imprimir("")
+    imprimir("--- NUEVA TAREA CON VENCIMIENTO ---")
+    imprimir("  Titulo: ")
+    variable titulo = leer()
+
+    si longitud(titulo) == 0 {
+        imprimir("[ERROR] El titulo no puede estar vacio")
+        retornar
+    }
+
+    imprimir("  Descripcion: ")
+    variable descripcion = leer()
+
+    imprimir("  Prioridad (alta/media/baja) [media]: ")
+    variable prioridad = leer()
+    si prioridad != "alta" y prioridad != "baja" {
+        prioridad = "media"
+    }
+
+    imprimir("  Fecha de vencimiento (YYYY-MM-DD): ")
+    variable fecha = leer()
+
+    variable tarea = nuevo TareaConVencimiento(titulo, descripcion, prioridad, fecha)
+    gestor.insertar(tarea)
+}
+
+# -------------------------------------------------------
+# Programa principal
+# -------------------------------------------------------
+funcion main() {
+    variable gestor = nuevo GestorTareas()
+    gestor.cargar()
+
+    variable ejecutando = verdadero
+    mientras ejecutando {
+        mostrar_menu()
+        variable opcion = leer_opcion()
+
+        si opcion == 1 {
+            gestor.listar_todas()
+        } sino si opcion == 2 {
+            gestor.listar_pendientes()
+        } sino si opcion == 3 {
+            crear_tarea(gestor)
+        } sino si opcion == 4 {
+            crear_tarea_con_vencimiento(gestor)
+        } sino si opcion == 5 {
+            gestor.listar_pendientes()
+            imprimir("")
+            imprimir("  Numero de tarea a completar: ")
+            variable idx = a_numero(leer()) - 1
+            gestor.completar(idx)
+        } sino si opcion == 6 {
+            gestor.listar_todas()
+            imprimir("")
+            imprimir("  Numero de tarea a eliminar: ")
+            variable idx = a_numero(leer()) - 1
+            gestor.eliminar(idx)
+        } sino si opcion == 7 {
+            imprimir("  Termino de busqueda: ")
+            variable termino = leer()
+            gestor.buscar(termino)
+        } sino si opcion == 8 {
+            gestor.estadisticas()
+        } sino si opcion == 9 {
+            imprimir("")
+            imprimir("  Gracias por usar el Gestor de Tareas!")
+            ejecutando = falso
+        } sino {
+            imprimir("[ERROR] Opcion invalida. Intenta de nuevo.")
+        }
+
+        si opcion >= 1 y opcion <= 8 {
+            imprimir("")
+            imprimir("  Presiona Enter para continuar...")
+            leer()
+        }
+    }
+}
+
+# Ejecutar
+main()

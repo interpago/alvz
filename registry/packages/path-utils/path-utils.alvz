@@ -1,0 +1,60 @@
+importar "sistema"
+
+funcion path_join(partes) {
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud(partes) {
+        si i > 0 y partes[i] != "" {
+            resultado = resultado + "/"
+        }
+        resultado = resultado + partes[i]
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion path_dirname(ruta) {
+    variable partes = dividir(ruta, "/")
+    si longitud(partes) <= 1 {
+        retornar "."
+    }
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud(partes) - 1 {
+        si i > 0 {
+            resultado = resultado + "/"
+        }
+        resultado = resultado + partes[i]
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion path_basename(ruta) {
+    variable partes = dividir(ruta, "/")
+    retornar partes[longitud(partes) - 1]
+}
+
+funcion path_extension(ruta) {
+    variable nombre = path_basename(ruta)
+    variable partes = dividir(nombre, ".")
+    si longitud(partes) <= 1 {
+        retornar ""
+    }
+    retornar partes[longitud(partes) - 1]
+}
+
+funcion path_sin_extension(ruta) {
+    variable nombre = path_basename(ruta)
+    variable partes = dividir(nombre, ".")
+    si longitud(partes) <= 1 {
+        retornar nombre
+    }
+    variable resultado = partes[0]
+    variable i = 1
+    mientras i < longitud(partes) - 1 {
+        resultado = resultado + "." + partes[i]
+        i = i + 1
+    }
+    retornar resultado
+}

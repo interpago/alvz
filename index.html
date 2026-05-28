@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de Alvz - El lenguaje en español</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <style>
+        :root {
+            --md-primary-color: #05998b;
+            --md-accent-color: #00bcd4;
+            --text-color: #37474f;
+            --bg-color: #ffffff;
+            --sidebar-bg: #f8f9fb;
+            --code-bg: #f5f5f5;
+            --border-color: #e0e0e0;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-color);
+            background: var(--bg-color);
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 64px 1fr;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            grid-column: 1 / span 2;
+            background: var(--md-primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .version { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+        .tech-badges { display: flex; gap: 10px; margin-left: auto; }
+        .badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .badge-supabase { background: #3ecf8e; color: #1c1c1c; }
+        .badge-fastapi { background: #05998b; color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* Sidebar */
+        aside {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        aside h4 { font-size: 0.8rem; text-transform: uppercase; color: #9e9e9e; margin-bottom: 12px; }
+        aside nav ul { list-style: none; padding: 0; margin: 0; }
+        aside nav li { margin-bottom: 8px; }
+        aside nav a { text-decoration: none; color: var(--text-color); font-size: 0.9rem; transition: 0.2s; }
+        aside nav a:hover { color: var(--md-primary-color); }
+        aside nav a.active { color: var(--md-primary-color); font-weight: 600; }
+
+        /* Main Content */
+        main {
+            padding: 40px 80px;
+            overflow-y: auto;
+            max-width: 1000px;
+        }
+
+        h1 { font-size: 2.2rem; margin-top: 0; color: #263238; }
+        h2 { font-size: 1.6rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top: 40px; color: #263238; }
+        h3 { font-size: 1.2rem; margin-top: 30px; }
+
+        p { line-height: 1.7; font-size: 1rem; }
+
+        /* Code Blocks */
+        .code-container {
+            background: var(--code-bg);
+            border-radius: 4px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .code-header {
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            color: #757575;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #24292e;
+            overflow-x: auto;
+        }
+
+        .keyword { color: #d73a49; }
+        .string { color: #032f62; }
+        .comment { color: #6a737d; font-style: italic; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+        th { background: #fcfcfc; text-align: left; padding: 12px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 12px; border-bottom: 1px solid var(--border-color); }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            background: var(--md-primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        /* Admonitions (Alertas estilo FastAPI) */
+        .admonition {
+            padding: 16px;
+            border-left: 4px solid var(--md-primary-color);
+            background: #e6f5f3;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .admonition-title { font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #e0e0e0;
+            border-radius: 4px 4px 0 0;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #757575;
+            transition: 0.2s;
+            border-right: 1px solid var(--border-color);
+        }
+        .tab-btn:hover { background: #f0f0f0; }
+        .tab-btn.active {
+            background: var(--code-bg);
+            color: var(--md-primary-color);
+            border-bottom: 2px solid var(--md-primary-color);
+        }
+        .tab-content .tab-pane { display: none; }
+        .tab-content .tab-pane.active { display: block; }
+        .tab-content .code-container { margin-top: 0; border-radius: 0 0 4px 4px; }
+
+        @media (max-width: 900px) {
+            body { grid-template-columns: 1fr; }
+            aside { display: none; }
+            main { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <span>ALVZ Language</span>
+        <span class="version">v0.10.0</span>
+    </div>
+    <div class="tech-badges">
+        <div class="badge badge-supabase">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.362 9.354H12V.337L2.638 14.646H12v9.017z"/></svg>
+            Soporte Supabase
+        </div>
+        <div class="badge badge-fastapi">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Powered by FastAPI
+        </div>
+        <div class="badge" style="background:#ffd700; color:#1c1c1c;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            POO Completo
+        </div>
+    </div>
+</header>
+
+<aside>
+    <h4>Comenzando</h4>
+    <nav>
+        <ul>
+            <li><a href="#intro" class="active">Introducción</a></li>
+            <li><a href="#curso">Plan de Aprendizaje</a></li>
+            <li><a href="#instalacion">Instalación</a></li>
+            <li><a href="#hola-mundo">Hola Mundo</a></li>
+        </ul>
+    </nav>
+    <h4 style="margin-top: 30px;">Referencia</h4>
+    <nav>
+        <ul>
+            <li><a href="#vscode">Extensión VS Code</a></li>
+            <li><a href="#glosario">Glosario de Palabras</a></li>
+            <li><a href="#variables">Variables</a></li>
+            <li><a href="#funciones">Funciones</a></li>
+            <li><a href="#clases">Clases (POO)</a></li>
+            <li><a href="#super-instanceof">super e instanceof</a></li>
+            <li><a href="#control">Control de Flujo</a></li>
+            <li><a href="#fastapi">FastAPI (Web)</a></li>
+            <li><a href="#python-power">Python Power (Avanzado)</a></li>
+            <li><a href="#supabase">Supabase (Nube)</a></li>
+            <li><a href="#modulos">Módulos</a></li>
+            <li><a href="#repl">Consola Interactiva</a></li>
+            <li><a href="#errores">Gestión de Errores</a></li>
+        </ul>
+    </nav>
+</aside>
+
+<main>
+    <section id="intro">
+        <h1>Introducción</h1>
+        <p>
+            <strong>Alvz</strong> es un lenguaje de programación de alto rendimiento basado en Python, diseñado para ser intuitivo y potente, con palabras clave en español. 
+            Permite crear aplicaciones conectadas a la nube y generar contenido web de forma nativa.
+        </p>
+
+        <div class="admonition">
+            <div class="admonition-title">¿Por qué Alvz?</div>
+            Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
+        </div>
+    </section>
+
+    <section id="curso">
+        <h2>Plan de Aprendizaje Paso a Paso</h2>
+        <p>Domina Alvz desde cero con este camino guiado. Cada lección incluye conceptos clave y un reto práctico.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div style="background: var(--sidebar-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0; color: var(--md-primary-color);">1. Fundamentos</h3>
+                <p style="font-size: 0.85rem;">Hola Mundo, variables y tipos de datos básicos.</p>
+                <a href="#hola-mundo" style="font-size: 0.8rem; font-weight: 600; color: var(--md-primary-color); text-decoration: none;">Empezar →</a>
+            </div>
+            <div style="background: var(--sidebar-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0; color: var(--md-primary-color);">2. Lógica</h3>
+                <p style="font-size: 0.85rem;">Condicionales <code>si/sino</code> y bucles <code>mientras/para</code>.</p>
+                <a href="#control" style="font-size: 0.8rem; font-weight: 600; color: var(--md-primary-color); text-decoration: none;">Ver más →</a>
+            </div>
+            <div style="background: var(--sidebar-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0; color: var(--md-primary-color);">3. Estructuras</h3>
+                <p style="font-size: 0.85rem;">Funciones, listas y el potente bucle <code>cada</code>.</p>
+                <a href="#funciones" style="font-size: 0.8rem; font-weight: 600; color: var(--md-primary-color); text-decoration: none;">Ver más →</a>
+            </div>
+            <div style="background: var(--sidebar-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0; color: var(--md-primary-color);">4. Objetos</h3>
+                <p style="font-size: 0.85rem;">Programación Orientada a Objetos (Clases y Herencia).</p>
+                <a href="#clases" style="font-size: 0.8rem; font-weight: 600; color: var(--md-primary-color); text-decoration: none;">Ver más →</a>
+            </div>
+            <div style="background: var(--sidebar-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0; color: var(--md-primary-color);">5. Nivel Pro</h3>
+                <p style="font-size: 0.85rem;">Desarrollo de APIs con FastAPI y conexión a Supabase.</p>
+                <a href="#fastapi" style="font-size: 0.8rem; font-weight: 600; color: var(--md-primary-color); text-decoration: none;">Ver más →</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="instalacion">
+        <h2>Instalación</h2>
+        <p>La forma más rápida de empezar es utilizando el instalador oficial para Windows.</p>
+        <a href="public/alvz_v0.12.0.zip" class="btn">Descargar Instalador (.zip)</a>
+        
+        <h3>Requisitos del sistema</h3>
+        <ul>
+            <li>Windows 10 o 11</li>
+            <li>No requiere Python instalado (el .exe es standalone)</li>
+        </ul>
+    </section>
+
+    <section id="vscode">
+        <h2>Extensión para VS Code</h2>
+        <p>Mejora tu experiencia de desarrollo con el resaltado de sintaxis oficial y snippets inteligentes para Alvz.</p>
+        
+        <div class="admonition">
+            <div class="admonition-title">Potencia tu flujo de trabajo</div>
+            La extensión oficial de Alvz proporciona resaltado de sintaxis preciso y autocompletado para todas las palabras clave en español.
+        </div>
+
+        <h3>Características</h3>
+        <ul>
+            <li><strong>Resaltado de Sintaxis:</strong> Identifica fácilmente palabras clave, funciones, textos y operadores.</li>
+            <li><strong>Snippets Inteligentes:</strong> Escribe <code>funcion</code>, <code>si</code>, <code>para</code> o <code>clase</code> y presiona Tab para autocompletar la estructura.</li>
+            <li><strong>Soporte FastAPI & Supabase:</strong> Resaltado especial para funciones de servidor y base de datos.</li>
+        </ul>
+    </section>
+
+    <section id="glosario">
+        <h2>Glosario de Palabras Reservadas</h2>
+        <p>En Alvz, el código se lee casi como una oración en español. Aquí tienes las palabras que el lenguaje usa para entenderte:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Palabras Clave</th>
+                    <th>Propósito</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lógica</strong></td>
+                    <td><code>si</code>, <code>sino</code>, <code>mientras</code>, <code>para</code>, <code>cada</code></td>
+                    <td>Controlan el flujo del programa.</td>
+                </tr>
+                <tr>
+                    <td><strong>Conectores</strong></td>
+                    <td><code>de</code>, <code>a</code>, <code>en</code></td>
+                    <td>Ayudan a leer bucles: <code>para i de 1 a 10</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Definiciones</strong></td>
+                    <td><code>variable</code>, <code>funcion</code>, <code>clase</code>, <code>nuevo</code>, <code>super</code></td>
+                    <td>Crean nuevos elementos y acceden a la clase padre.</td>
+                </tr>
+                <tr>
+                    <td><strong>Booleano</strong></td>
+                    <td><code>verdadero</code>, <code>falso</code>, <code>y</code>, <code>o</code>, <code>instancia</code></td>
+                    <td>Valores, lógica de verdad y verificación de tipo.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="hola-mundo">
+        <h2>Hola Mundo</h2>
+        <p>Compara cómo se ve el mismo código en Alvz y en Python:</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'hola-alvz')">inicio.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'hola-py')">inicio.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="hola-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">variable</span> mensaje = <span class="string">"¡Hola desde Alvz!"</span>
+<span class="keyword">imprimir</span>(mensaje)</pre>
+                </div>
+            </div>
+            <div id="hola-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>mensaje = <span class="string">"¡Hola desde Alvz!"</span>
+print(mensaje)</pre>
+                </div>
+            </div>
+        </div>
+        
+        <p>Ejecútalo desde la terminal:</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz inicio.alvz
+¡Hola desde Alvz!</pre>
+        </div>
+    </section>
+
+    <section id="variables">
+        <h2>Variables y Tipos</h2>
+        <p>Alvz es dinámico y soporta los tipos de datos más comunes.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Ejemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Texto</td>
+                    <td><code>"Hola Mundo"</code></td>
+                </tr>
+                <tr>
+                    <td>Número</td>
+                    <td><code>10</code> o <code>3.14</code></td>
+                </tr>
+                <tr>
+                    <td>Booleano</td>
+                    <td><code>verdadero</code> o <code>falso</code></td>
+                </tr>
+                <tr>
+                    <td>Lista</td>
+                    <td><code>[1, 2, 3]</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="funciones">
+        <h2>Funciones</h2>
+        <p>Las funciones te permiten reutilizar bloques de código. Compara la sintaxis:</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'func-alvz')">funciones.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'func-py')">funciones.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="func-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">funcion</span> sumar(a, b) {
+    <span class="keyword">retornar</span> a + b
+}
+
+<span class="keyword">variable</span> resultado = sumar(10, 5)
+<span class="keyword">imprimir</span>(resultado)</pre>
+                </div>
+            </div>
+            <div id="func-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>def sumar(a, b):
+    return a + b
+
+resultado = sumar(10, 5)
+print(resultado)</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="clases">
+        <h2>Clases y Objetos (POO)</h2>
+        <p>Alvz soporta programación orientada a objetos con sintaxis limpia en español.</p>
+
+        <h3>Definición básica</h3>
+        <p><code>self</code> se agrega automáticamente como primer parámetro. No necesitas declararlo.</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'clase-alvz')">clases.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'clase-py')">clases.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="clase-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">clase</span> Persona {
+    <span class="keyword">variable</span> nombre = <span class="string">""</span>
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">imprimir</span>(<span class="string">"Hola, soy "</span> + self.nombre)
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Persona()
+p.nombre = <span class="string">"Juan"</span>
+p.saludar()</pre>
+                </div>
+            </div>
+            <div id="clase-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>class Persona:
+    def __init__(self):
+        self.nombre = ""
+    def saludar(self):
+        print("Hola, soy " + self.nombre)
+
+p = Persona()
+p.nombre = "Juan"
+p.saludar()</pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>Constructor con argumentos</h3>
+        <p>Define <code>inicializar()</code> para recibir argumentos al crear la instancia.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Punto {
+    <span class="keyword">variable</span> x = 0
+    <span class="keyword">variable</span> y = 0
+    <span class="keyword">funcion</span> inicializar(x, y) {
+        self.x = x
+        self.y = y
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Punto(10, 20)
+<span class="keyword">imprimir</span>(p.x)</pre>
+        </div>
+
+        <h3>Propiedades con expresiones</h3>
+        <p>Las propiedades pueden inicializarse con cualquier expresión, no solo con valores simples.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Caja {
+    <span class="keyword">variable</span> items = [1, 2, 3]
+    <span class="keyword">variable</span> total = 5 + 10
+}
+
+<span class="keyword">variable</span> c = <span class="keyword">nuevo</span> Caja()
+<span class="keyword">imprimir</span>(c.items)
+<span class="keyword">imprimir</span>(c.total)</pre>
+        </div>
+
+        <h3>Herencia</h3>
+        <p>Usa <code>clase Hijo de Padre</code> para heredar propiedades y métodos.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {
+    <span class="keyword">variable</span> nombre = <span class="string">""</span>
+    <span class="keyword">funcion</span> inicializar(nombre) {
+        self.nombre = nombre
+    }
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> <span class="string">"Soy "</span> + self.nombre
+    }
+}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> ladrar() {
+        <span class="keyword">retornar</span> <span class="string">"Guau!"</span>
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro(<span class="string">"Rex"</span>)
+<span class="keyword">imprimir</span>(p.saludar())
+<span class="keyword">imprimir</span>(p.ladrar())</pre>
+        </div>
+    </section>
+
+    <section id="super-instanceof">
+        <h2>super e instanceof</h2>
+        <p>Alvz soporta dos características clave de POO avanzado: llamadas a métodos de la clase padre y verificación de tipo en tiempo de ejecución.</p>
+
+        <h3>super.metodo()</h3>
+        <p>Llama explícitamente a un método de la clase padre desde una clase hija.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> <span class="string">"Hola, soy un animal"</span>
+    }
+}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> super.saludar() + <span class="string">" (perro)"</span>
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro()
+<span class="keyword">imprimir</span>(p.saludar()) <span class="comment"># "Hola, soy un animal (perro)"</span></pre>
+        </div>
+
+        <h3>obj instancia Clase</h3>
+        <p>Verifica si un objeto es una instancia de una clase (o de sus clases padre).</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro()
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Perro)    <span class="comment"># verdadero</span>
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Animal)   <span class="comment"># verdadero (hereda)</span>
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Texto)     <span class="comment"># falso</span>
+<span class="keyword">imprimir</span>(42 <span class="keyword">instancia</span> Perro)    <span class="comment"># falso (no es objeto)</span></pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Soporta cadenas de herencia</div>
+            <code>instancia</code> recorre toda la cadena de padres. Si alguna clase en la jerarquía coincide, devuelve <code>verdadero</code>.
+        </div>
+    </section>
+
+    <section id="control">
+        <h2>Control de Flujo</h2>
+        <p>Alvz soporta las estructuras de control clásicas para tomar decisiones y repetir tareas.</p>
+
+        <h3>Condicionales (si / sino)</h3>
+        <div class="code-container">
+            <pre><span class="keyword">si</span> edad >= 18 {
+    <span class="keyword">imprimir</span>(<span class="string">"Eres mayor de edad"</span>)
+} <span class="keyword">sino</span> {
+    <span class="keyword">imprimir</span>(<span class="string">"Eres menor de edad"</span>)
+}</pre>
+        </div>
+
+        <h3>Bucles (mientras / para)</h3>
+        <p>Alvz ofrece bucles potentes, incluyendo iteración sobre rangos y listas.</p>
+        <div class="code-container">
+            <pre><span class="comment"># Bucle mientras</span>
+<span class="keyword">variable</span> i = 1
+<span class="keyword">mientras</span> i <= 5 {
+    <span class="keyword">imprimir</span>(i)
+    i = i + 1
+}
+
+<span class="comment"># Bucle para (rango)</span>
+<span class="keyword">para</span> j <span class="keyword">de</span> 1 <span class="keyword">a</span> 5 {
+    <span class="keyword">imprimir</span>(j)
+}
+
+<span class="comment"># Bucle para cada (listas)</span>
+<span class="keyword">variable</span> colores = [<span class="string">"rojo"</span>, <span class="string">"verde"</span>, <span class="string">"azul"</span>]
+<span class="keyword">para cada</span> c <span class="keyword">en</span> colores {
+    <span class="keyword">imprimir</span>(c)
+}</pre>
+        </div>
+    </section>
+
+    <section id="fastapi">
+        <h2>Desarrollo Web con FastAPI Pro</h2>
+        <p>Alvz soporta ahora la potencia completa de FastAPI, permitiendo parámetros de ruta, diferentes métodos HTTP y recepción de datos JSON.</p>
+        
+        <h3>API REST Completa</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'webpro-alvz')">api.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'webpro-py')">api.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="webpro-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="comment"># Función con parámetro de ruta {id}</span>
+<span class="keyword">funcion</span> obtener_usuario(id) {
+    <span class="keyword">retornar</span> {<span class="string">"id"</span>: id, <span class="string">"nombre"</span>: <span class="string">"Usuario "</span> + id}
+}
+
+<span class="comment"># Función para POST con datos del Body</span>
+<span class="keyword">funcion</span> crear(nombre, precio) {
+    <span class="keyword">retornar</span> {<span class="string">"estado"</span>: <span class="string">"ok"</span>, <span class="string">"nombre"</span>: nombre}
+}
+
+<span class="keyword">variable</span> rutas = {
+    <span class="string">"/usuarios/{id}"</span>: <span class="string">"obtener_usuario"</span>,
+    <span class="string">"/items"</span>: {<span class="string">"metodo"</span>: <span class="string">"POST"</span>, <span class="string">"funcion"</span>: <span class="string">"crear"</span>}
+}
+
+<span class="keyword">iniciar_servidor</span>(8000, rutas)</pre>
+                </div>
+            </div>
+            <div id="webpro-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("/usuarios/{id}")
+async def obtener_usuario(id: str):
+    return {"id": id, "nombre": f"Usuario {id}"}
+
+@app.post("/items")
+async def crear(item: dict):
+    return {"estado": "ok", "nombre": item.get("nombre")}
+
+import uvicorn
+uvicorn.run(app, port=8000)</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="python-power">
+        <h2>Python Power: Características Avanzadas</h2>
+        <p>Alvz hereda las características más potentes de Python. Mira las diferencias:</p>
+
+        <h3>Herencia</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'herencia-alvz')">animales.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'herencia-py')">animales.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="herencia-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> inicializar() {
+        self.tipo = <span class="string">"Canino"</span>
+    }
+}</pre>
+                </div>
+            </div>
+            <div id="herencia-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>class Perro(Animal):
+    def __init__(self):
+        self.tipo = "Canino"</pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>Slicing</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'slice-alvz')">slice.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'slice-py')">slice.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="slice-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">imprimir</span>(lista[1:4])
+<span class="keyword">imprimir</span>(texto[0:4])</pre>
+                </div>
+            </div>
+            <div id="slice-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>print(lista[1:4])
+print(texto[0:4])</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="supabase">
+        <h2>Integración con Supabase</h2>
+        <p>Conecta tu app a la nube en segundos. Alvz permite interactuar con bases de datos PostgreSQL a través de la API de Supabase sin configuraciones complejas.</p>
+        
+        <div class="code-container">
+            <div class="code-header"><span>nube.alvz</span></div>
+            <pre><span class="keyword">variable</span> url = <span class="string">"https://tu-proyecto.supabase.co"</span>
+<span class="keyword">variable</span> key = <span class="string">"tu-anon-key"</span>
+
+<span class="comment"># Insertar datos</span>
+<span class="keyword">variable</span> datos = {<span class="string">"usuario"</span>: <span class="string">"alvz_user"</span>, <span class="string">"puntos"</span>: 100}
+<span class="keyword">variable</span> status = <span class="keyword">supabase_insertar</span>(url, key, <span class="string">"ranking"</span>, datos)
+
+<span class="comment"># Consultar datos</span>
+<span class="keyword">variable</span> resultado = <span class="keyword">supabase_consultar</span>(url, key, <span class="string">"ranking"</span>)
+<span class="keyword">imprimir</span>(resultado)</pre>
+        </div>
+    </section>
+
+    <section id="modulos">
+        <h2>Módulos (importar)</h2>
+        <p>Divide tu código en archivos para una mejor organización.</p>
+        
+        <div class="code-container">
+            <div class="code-header"><span>app.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"calculos.alvz"</span>
+
+<span class="keyword">variable</span> r = calcular_total(100, 15)
+<span class="keyword">imprimir</span>(r)</pre>
+        </div>
+    </section>
+
+    <section id="stdlib">
+        <h2>Librería Estándar (StdLib)</h2>
+        <p>Funciones integradas para acelerar tu desarrollo.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>leer()</code></td>
+                    <td>Lee una entrada del usuario (texto o número).</td>
+                </tr>
+                <tr>
+                    <td><code>leer_numero()</code></td>
+                    <td>Lee una entrada y obliga al usuario a ingresar un número válido.</td>
+                </tr>
+                <tr>
+                    <td><code>tiempo()</code></td>
+                    <td>Obtiene el tiempo actual en segundos (Unix timestamp).</td>
+                </tr>
+                <tr>
+                    <td><code>tipo(valor)</code></td>
+                    <td>Devuelve el tipo de dato (texto, numero, booleano, lista, diccionario).</td>
+                </tr>
+                <tr>
+                    <td><code>json_codificar(v)</code></td>
+                    <td>Convierte una lista o diccionario a una cadena JSON.</td>
+                </tr>
+                <tr>
+                    <td><code>reemplazar(t, v, n)</code></td>
+                    <td>Reemplaza en el texto <code>t</code> todas las ocurrencias de <code>v</code> por <code>n</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>absoluto(n)</code></td>
+                    <td>Devuelve el valor absoluto de un número.</td>
+                </tr>
+                <tr>
+                    <td><code>azar(min, max)</code></td>
+                    <td>Genera un número aleatorio entre el rango dado.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-container">
+            <div class="code-header"><span>ejemplo_stdlib.alvz</span></div>
+            <pre><span class="keyword">variable</span> t = <span class="keyword">tiempo</span>()
+<span class="keyword">variable</span> texto = <span class="string">"Hola Mundo"</span>
+<span class="keyword">variable</span> nuevo = <span class="keyword">reemplazar</span>(texto, <span class="string">"Mundo"</span>, <span class="string">"Alvz"</span>)
+<span class="keyword">imprimir</span>(nuevo) <span class="comment"># Imprime: Hola Alvz</span>
+
+<span class="keyword">variable</span> lista = [1, 2, 3]
+<span class="keyword">imprimir</span>(<span class="keyword">json_codificar</span>(lista)) <span class="comment"># Imprime: [1, 2, 3]</span></pre>
+        </div>
+    </section>
+
+    <section id="repl">
+        <h2>Consola Interactiva (REPL)</h2>
+        <p>Prueba código al instante sin crear archivos. Solo escribe <code>alvz</code> en tu terminal.</p>
+        <div class="code-container">
+            <div class="code-header"><span>Consola Alvz</span></div>
+            <pre>alvz> <span class="keyword">variable</span> a = 5
+alvz> <span class="keyword">variable</span> b = 5
+alvz> <span class="keyword">imprimir</span>(a + b)
+10</pre>
+        </div>
+    </section>
+
+    <section id="errores">
+        <h2>Gestión de Errores Amigable</h2>
+        <p>Alvz está diseñado para ayudarte a programar. Si cometes un error tipográfico o intentas acceder a algo que no existe, el lenguaje te dará sugerencias inteligentes.</p>
+        
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz script.alvz
+<span class="keyword">Error:</span> La función 'imprimr' no existe. ¿Quisiste decir 'imprimir'?</pre>
+        </div>
+
+        <h3>Manejo de Excepciones (intentar / capturar)</h3>
+        <p>Puedes capturar errores para evitar que tu programa se detenga inesperadamente.</p>
+        <div class="code-container">
+            <pre><span class="keyword">intentar</span> {
+    <span class="keyword">variable</span> resultado = 10 / 0
+} <span class="keyword">capturar</span> {
+    <span class="keyword">imprimir</span>(<span class="string">"¡Ocurrió un error: "</span> + <span class="keyword">error_msj</span>() + <span class="string">"!"</span>)
+}</pre>
+        </div>
+
+        <h3>Tipos de Errores Soportados</h3>
+        <ul>
+            <li><strong>Errores Léxicos:</strong> Caracteres no reconocidos.</li>
+            <li><strong>Errores de Sintaxis:</strong> Estructuras incompletas o mal formadas (incluye sugerencias de palabras clave).</li>
+            <li><strong>Errores de Referencia:</strong> Variables o funciones no definidas (incluye sugerencias de nombres cercanos).</li>
+            <li><strong>Errores en Tiempo de Ejecución:</strong> Errores durante la ejecución (como división por cero o índice fuera de rango) con <strong>stack trace completo</strong> que muestra la línea exacta y la cadena de llamadas.</li>
+        </ul>
+    </section>
+
+    <footer style="margin-top: 100px; padding: 40px 0; border-top: 1px solid var(--border-color); color: #9e9e9e; font-size: 0.8rem;">
+        © 2026 Alvz Language Project. Documentación generada para desarrolladores.
+    </footer>
+</main>
+
+<script>
+    function openTab(evt, tabId) {
+        let i, tabcontent, tablinks;
+        // Get the parent container of the clicked button
+        let container = evt.currentTarget.closest('section') || evt.currentTarget.closest('main');
+        // Find tab content and buttons within that context or globally if needed
+        // Here we simplify by using the specific parent of the tabs
+        let tabGroup = evt.currentTarget.parentElement.nextElementSibling;
+        
+        tabcontent = tabGroup.getElementsByClassName("tab-pane");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        
+        tablinks = evt.currentTarget.parentElement.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+
+</body>
+</html>

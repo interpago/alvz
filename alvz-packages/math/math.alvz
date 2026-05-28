@@ -1,0 +1,50 @@
+facultad(n)
+funcion factorial(n: numero): numero {
+    si n <= 1 {
+        retornar 1
+    }
+    retornar n * factorial(n - 1)
+}
+
+// Maximo comun divisor
+funcion mcd(a: numero, b: numero): numero {
+    mientras b != 0 {
+        variable t = b
+        b = a % b
+        a = t
+    }
+    retornar a
+}
+
+// Minimo comun multiplo
+funcion mcm(a: numero, b: numero): numero {
+    retornar (a * b) / mcd(a, b)
+}
+
+// Fibonacci
+funcion fibonacci(n: numero): numero {
+    si n <= 1 {
+        retornar n
+    }
+    variable a = 0
+    variable b = 1
+    para i = 2 hasta n {
+        variable c = a + b
+        a = b
+        b = c
+    }
+    retornar b
+}
+
+// Es primo?
+funcion es_primo(n: numero): booleano {
+    si n < 2 {
+        retornar falso
+    }
+    para i = 2 hasta raiz(n) {
+        si n % i == 0 {
+            retornar falso
+        }
+    }
+    retornar verdadero
+}

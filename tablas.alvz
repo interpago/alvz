@@ -1,0 +1,11 @@
+funcion tablas(n) {
+    variable i = 1
+    mientras i <= 10 {
+        imprimir(n + " x " + i + " = " + (n * i))
+        i = i + 1
+    }
+}
+imprimir("Cual tabla quieres?")
+variable num = leer_numero ()
+imprimir("Tabla del " + num + ":" + num)
+tablas(num)

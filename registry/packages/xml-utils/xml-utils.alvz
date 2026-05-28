@@ -1,0 +1,38 @@
+funcion xml_escape(texto) {
+    variable resultado = ""
+    cada c en texto {
+        si c == "&" {
+            resultado = resultado + "&amp;"
+        } sino si c == "<" {
+            resultado = resultado + "&lt;"
+        } sino si c == ">" {
+            resultado = resultado + "&gt;"
+        } sino si c == "\"" {
+            resultado = resultado + "&quot;"
+        } sino si c == "'" {
+            resultado = resultado + "&apos;"
+        } sino {
+            resultado = resultado + c
+        }
+    }
+    retornar resultado
+}
+
+funcion xml_elemento(nombre, contenido, atributos) {
+    variable resultado = "<" + nombre
+    si atributos != nulo {
+        cada clave en atributos {
+            resultado = resultado + " " + clave + "=\"" + xml_escape(atributos[clave]) + "\""
+        }
+    }
+    si contenido == nulo o contenido == "" {
+        resultado = resultado + " />"
+    } sino {
+        resultado = resultado + ">" + xml_escape(contenido) + "</" + nombre + ">"
+    }
+    retornar resultado
+}
+
+funcion xml_documento(raiz) {
+    retornar "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + raiz
+}

@@ -1,0 +1,1 @@
+{"name": "http", "version": "1.0.0", "description": "Cliente HTTP simple (GET, POST, obtener JSON)", "author": "Alvz", "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/http/http.alvz", "entry": "http.alvz", "dependencies": ["json"]}

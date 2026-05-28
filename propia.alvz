@@ -1,0 +1,6 @@
+variable edad = 20
+variable hora_llegada = 23
+variable es_vip = falso
+
+imprimir(" Hola. Edad?")
+variable mi_edad = leer()

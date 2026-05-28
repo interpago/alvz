@@ -1,0 +1,16 @@
+imprimir("¿Cuál es tu edad?")
+variable edad = leer_numero()
+imprimir("¿Cómo te llamas?")
+variable nombre = leer()
+
+funcion saludar() {
+    imprimir("Adelante " + nombre)
+}
+
+si edad >= 18 {
+    saludar()
+} sino {
+    imprimir("No puedes pasar")
+}
+
+imprimir("Hola " + nombre + ". Actualmente tienes " + edad + " años.")

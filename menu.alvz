@@ -1,0 +1,35 @@
+# Definimos la tarea 1
+funcion mostrar_saludo() {
+    limpiar()
+    imprimir("¡HOLA! Soy Alvz, tu asistente personal.")
+    esperar(2)
+}
+
+# Definimos la tarea 2
+funcion mostrar_hora() {
+    limpiar()
+    imprimir("Hoy es un gran día para aprender algo nuevo.")
+    esperar(2)
+}
+
+# El programa principal
+variable opcion = 0
+mientras opcion != 3 {
+    limpiar()
+    imprimir("--- MI APP GENIAL ---")
+    imprimir("1. Saludar")
+    imprimir("2. Motivación")
+    imprimir("3. Salir")
+    imprimir("Elige una opción:")
+    opcion = leer()
+    
+    si opcion == 1 {
+        mostrar_saludo()
+    }
+    si opcion == 2 {
+        mostrar_hora()
+    }
+}
+
+limpiar()
+imprimir("¡Hasta mañana, Maestro!")

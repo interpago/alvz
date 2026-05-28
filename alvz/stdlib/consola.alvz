@@ -1,0 +1,73 @@
+funcion _ansi(codigo) {
+    retornar json_decodificar('"\u001b"') + "[" + codigo + "m"
+}
+
+funcion consola_color(texto, nombre_color) {
+    variable codigos = {
+        "negro": "30",
+        "rojo": "31",
+        "verde": "32",
+        "amarillo": "33",
+        "azul": "34",
+        "magenta": "35",
+        "cian": "36",
+        "blanco": "37"
+    }
+    variable codigo = codigos[nombre_color]
+    si codigo == nulo { retornar texto }
+    retornar _ansi(codigo) + texto + _ansi("0")
+}
+
+funcion consola_preguntar(pregunta) {
+    imprimir(pregunta)
+    retornar leer()
+}
+
+funcion consola_confirmar(pregunta) {
+    imprimir(pregunta + " (s/n)")
+    variable respuesta = leer()
+    si respuesta == "s" { retornar verdadero }
+    si respuesta == "si" { retornar verdadero }
+    si respuesta == "S" { retornar verdadero }
+    si respuesta == "SI" { retornar verdadero }
+    retornar falso
+}
+
+funcion consola_menu(titulo, opciones) {
+    imprimir("")
+    imprimir(titulo)
+    variable i = 0
+    mientras i < longitud(opciones) {
+        imprimir("  " + (i + 1) + ". " + opciones[i])
+        i = i + 1
+    }
+    imprimir("")
+    imprimir("Seleccione una opcion (1-" + longitud(opciones) + "): ")
+    retornar leer_numero()
+}
+
+funcion consola_progreso(actual, total, ancho) {
+    variable proporcion = actual / total
+    variable completado = redondear(proporcion * ancho)
+    variable barra = "["
+    variable i = 0
+    mientras i < ancho {
+        si i < completado {
+            barra = barra + "#"
+        } sino {
+            barra = barra + " "
+        }
+        i = i + 1
+    }
+    barra = barra + "] " + redondear(proporcion * 100) + "%"
+    retornar barra
+}
+
+funcion consola_separador() {
+    imprimir("----------------------------------------")
+}
+
+funcion consola_titulo(texto) {
+    imprimir("")
+    imprimir("=== " + texto + " ===")
+}

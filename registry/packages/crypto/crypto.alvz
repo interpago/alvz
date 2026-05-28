@@ -1,0 +1,56 @@
+funcion base64_codificar(texto) {
+    variable chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud(texto) {
+        variable c1 = texto[i]
+        variable c2 = texto[i + 1] si i + 1 < longitud(texto) sino nulo
+        variable c3 = texto[i + 2] si i + 2 < longitud(texto) sino nulo
+        variable b1 = c1
+        variable b2 = c2 si c2 != nulo sino 0
+        variable b3 = c3 si c3 != nulo sino 0
+        variable idx1 = (b1 >> 2) & 63
+        variable idx2 = ((b1 & 3) << 4) | ((b2 >> 4) & 15)
+        variable idx3 = ((b2 & 15) << 2) | ((b3 >> 6) & 3)
+        variable idx4 = b3 & 63
+        resultado = resultado + chars[idx1] + chars[idx2]
+        resultado = resultado + (chars[idx3] si c2 != nulo sino "=")
+        resultado = resultado + (chars[idx4] si c3 != nulo sino "=")
+        i = i + 3
+    }
+    retornar resultado
+}
+
+funcion hash_simple(texto) {
+    variable hash = 0
+    variable i = 0
+    mientras i < longitud(texto) {
+        hash = (hash * 31 + texto[i]) % 2147483647
+        i = i + 1
+    }
+    retornar hash
+}
+
+funcion generar_id() {
+    variable ts = tiempo()
+    variable r = azar(1000, 9999)
+    retornar "id_" + ts + "_" + r
+}
+
+funcion sanitizar(texto) {
+    variable resultado = ""
+    cada c en texto {
+        si c == "<" {
+            resultado = resultado + "&lt;"
+        } sino si c == ">" {
+            resultado = resultado + "&gt;"
+        } sino si c == "&" {
+            resultado = resultado + "&amp;"
+        } sino si c == "\"" {
+            resultado = resultado + "&quot;"
+        } sino {
+            resultado = resultado + c
+        }
+    }
+    retornar resultado
+}

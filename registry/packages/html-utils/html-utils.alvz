@@ -1,0 +1,55 @@
+funcion html_escape(texto) {
+    variable resultado = ""
+    cada c en texto {
+        si c == "&" {
+            resultado = resultado + "&amp;"
+        } sino si c == "<" {
+            resultado = resultado + "&lt;"
+        } sino si c == ">" {
+            resultado = resultado + "&gt;"
+        } sino si c == "\"" {
+            resultado = resultado + "&quot;"
+        } sino {
+            resultado = resultado + c
+        }
+    }
+    retornar resultado
+}
+
+funcion html_tabla(encabezados, filas, clase) {
+    variable resultado = "<table"
+    si clase != nulo {
+        resultado = resultado + " class=\"" + clase + "\""
+    }
+    resultado = resultado + ">\n<thead>\n<tr>"
+    cada h en encabezados {
+        resultado = resultado + "<th>" + html_escape(h) + "</th>"
+    }
+    resultado = resultado + "</tr>\n</thead>\n<tbody>\n"
+    cada fila en filas {
+        resultado = resultado + "<tr>"
+        cada celda en fila {
+            resultado = resultado + "<td>" + html_escape(celda) + "</td>"
+        }
+        resultado = resultado + "</tr>\n"
+    }
+    resultado = resultado + "</tbody>\n</table>"
+    retornar resultado
+}
+
+funcion html_lista(elementos, ordenada) {
+    variable etiqueta = "ul"
+    si ordenada {
+        etiqueta = "ol"
+    }
+    variable resultado = "<" + etiqueta + ">\n"
+    cada e en elementos {
+        resultado = resultado + "<li>" + html_escape(e) + "</li>\n"
+    }
+    resultado = resultado + "</" + etiqueta + ">"
+    retornar resultado
+}
+
+funcion html_enlace(texto, url) {
+    retornar "<a href=\"" + url + "\">" + html_escape(texto) + "</a>"
+}

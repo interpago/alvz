@@ -1,0 +1,38 @@
+funcion semver_parsear(version) {
+    variable partes = dividir(version, ".")
+    variable resultado = {}
+    resultado["major"] = a_numero(partes[0]) si longitud(partes) > 0 sino 0
+    resultado["minor"] = a_numero(partes[1]) si longitud(partes) > 1 sino 0
+    resultado["patch"] = a_numero(partes[2]) si longitud(partes) > 2 sino 0
+    retornar resultado
+}
+
+funcion semver_comparar(v1, v2) {
+    variable a = semver_parsear(v1)
+    variable b = semver_parsear(v2)
+    si a["major"] != b["major"] {
+        retornar a["major"] - b["major"]
+    }
+    si a["minor"] != b["minor"] {
+        retornar a["minor"] - b["minor"]
+    }
+    retornar a["patch"] - b["patch"]
+}
+
+funcion semver_mayor(v1, v2) {
+    retornar semver_comparar(v1, v2) > 0
+}
+
+funcion semver_menor(v1, v2) {
+    retornar semver_comparar(v1, v2) < 0
+}
+
+funcion semver_igual(v1, v2) {
+    retornar semver_comparar(v1, v2) == 0
+}
+
+funcion semver_compatible(v1, v2) {
+    variable a = semver_parsear(v1)
+    variable b = semver_parsear(v2)
+    retornar a["major"] == b["major"]
+}

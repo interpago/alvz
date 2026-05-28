@@ -1,0 +1,15 @@
+imprimir("Ingrese su nombre: ")
+variable nombre = leer()
+
+imprimir("Ingrese su edad: ")
+variable edad = leer()
+
+imprimir("Su nombre es: " + nombre + " y su edad es: " + edad)
+
+si (edad >= 18) {
+    imprimir("Es mayor de edad")
+} sino {
+    imprimir("Es menor de edad")
+}
+
+

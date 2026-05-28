@@ -1,0 +1,102 @@
+# ============================================================
+# ALVZ WEB ENGINE - PÁGINA OFICIAL COMPLETA
+# ============================================================
+# Este archivo programa toda la experiencia web del lenguaje.
+
+# 1. ESTILOS (CSS PRO)
+variable estilos = '<style>'
+estilos = estilos + ':root { --verde: #3ecf8e; --fondo: #0b0e14; --tarjeta: #161b22; --borde: #30363d; --texto: #c9d1d9; }'
+estilos = estilos + 'body { background: var(--fondo); color: var(--texto); font-family: "Inter", system-ui, sans-serif; margin: 0; line-height: 1.6; }'
+estilos = estilos + '.nav { background: rgba(11, 14, 20, 0.8); backdrop-filter: blur(10px); padding: 1rem 2rem; position: fixed; width: 100%; top: 0; border-bottom: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; }'
+estilos = estilos + '.hero { padding: 160px 20px 80px; text-align: center; background: radial-gradient(circle at 50% 0%, #1a3a2a 0%, var(--fondo) 70%); }'
+estilos = estilos + '.contenedor { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }'
+estilos = estilos + '.seccion-titulo { font-size: 2.5rem; color: white; margin-bottom: 40px; text-align: center; }'
+estilos = estilos + '.grid-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }'
+estilos = estilos + '.doc-card { background: var(--tarjeta); border: 1px solid var(--borde); padding: 25px; border-radius: 12px; transition: 0.3s; }'
+estilos = estilos + '.doc-card:hover { border-color: var(--verde); transform: translateY(-5px); }'
+estilos = estilos + '.doc-card h3 { color: var(--verde); margin-top: 0; font-size: 1.4rem; }'
+estilos = estilos + 'code { background: #000; color: #79c0ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }'
+estilos = estilos + 'pre { background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--borde); overflow-x: auto; color: var(--verde); }'
+estilos = estilos + '.footer { text-align: center; padding: 60px; border-top: 1px solid var(--borde); color: #8b949e; }'
+estilos = estilos + '.badge { background: var(--verde); color: var(--fondo); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }'
+estilos = estilos + '</style>'
+
+# 2. FUNCIONES DE GENERACIÓN
+funcion gen_head(titulo) {
+    imprimir('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">')
+    imprimir('<title>' + titulo + '</title>' + estilos + '</head><body>')
+}
+
+funcion gen_nav() {
+    imprimir('<nav class="nav"><div style="font-weight: bold; font-size: 1.5rem; color: var(--verde);">ALVZ</div>')
+    imprimir('<div><a href="#docs" style="color: white; text-decoration: none; margin-right: 20px;">Docs</a>')
+    imprimir('<a href="#ejemplos" style="color: white; text-decoration: none;">Ejemplos</a></div></nav>')
+}
+
+funcion gen_hero() {
+    imprimir('<header class="hero">')
+    imprimir('<span class="badge">v0.9 ya disponible</span>')
+    imprimir('<h1 style="font-size: 4rem; color: white; margin: 20px 0;">El Código en tu Idioma</h1>')
+    imprimir('<p style="font-size: 1.4rem; color: #8b949e; max-width: 700px; margin: 0 auto 40px;">')
+    imprimir('Crea aplicaciones potentes, conéctate a la nube y diseña la web usando el lenguaje diseñado para aprender.</p>')
+    imprimir('<a href="#docs" style="background: var(--verde); color: var(--fondo); padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: bold;">Explorar Documentación</a>')
+    imprimir('</header>')
+}
+
+# 3. DATOS DE DOCUMENTACIÓN (Usando Listas)
+variable docs_titulos = ["Variables", "Control de Flujo", "Funciones", "Nube y Archivos"]
+variable docs_desc = [
+    "Usa <code>variable x = 10</code>. Alvz detecta números, textos y listas automáticamente.",
+    "Domina <code>si/sino</code>, bucles <code>mientras</code> y el potente <code>para cada</code>.",
+    "Encapsula lógica con <code>funcion mi_tarea(p) { ... }</code> para código limpio.",
+    "Poder real: <code>enviar_web()</code> para Supabase y <code>escribir_archivo()</code>."
+]
+
+# 4. PROCESO DE CONSTRUCCIÓN
+limpiar()
+imprimir("Iniciando construcción de Alvz Web...")
+
+gen_head("Alvz | Documentación Oficial")
+gen_nav()
+gen_hero()
+
+# Sección de Documentación Dinámica
+imprimir('<section class="contenedor" id="docs">')
+imprimir('<h2 class="seccion-titulo">Documentación</h2>')
+imprimir('<div class="grid-docs">')
+
+# Usamos un bucle para generar las tarjetas
+para i de 0 a (longitud(docs_titulos) - 1) {
+    imprimir('<div class="doc-card">')
+    imprimir('<h3>' + docs_titulos[i] + '</h3>')
+    imprimir('<p>' + docs_desc[i] + '</p>')
+    imprimir('</div>')
+}
+
+imprimir('</div></section>')
+
+# Sección de Ejemplos
+imprimir('<section class="contenedor" id="ejemplos">')
+imprimir('<h2 class="seccion-titulo">Ejemplo Maestro</h2>')
+imprimir('<pre>')
+imprimir('# Programa que genera una lista y la muestra\n')
+imprimir('variable logros = ["Variables", "Bucles", "Web"]\n')
+imprimir('para cada l en logros {\n')
+imprimir('    imprimir("He dominado: " + l)\n')
+imprimir('}')
+imprimir('</pre>')
+imprimir('</section>')
+
+# Pie de página
+imprimir('<footer class="footer"><p>Construido íntegramente en <b>Alvz</b> por su Creador.</p></footer>')
+imprimir('</body></html>')
+
+# 5. GUARDADO AUTOMÁTICO
+variable contenido_final = obtener_salida()
+escribir_archivo("index.html", contenido_final)
+
+limpiar()
+imprimir("--- ALVZ WEB ENGINE ---")
+imprimir("Pagina generada exitosamente.")
+imprimir("Ubicacion: index.html")
+imprimir("-----------------------")

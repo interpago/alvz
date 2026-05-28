@@ -1,0 +1,53 @@
+funcion md_encabezado(texto, nivel) {
+    variable prefijo = ""
+    variable i = 0
+    mientras i < nivel {
+        prefijo = prefijo + "#"
+        i = i + 1
+    }
+    retornar prefijo + " " + texto
+}
+
+funcion md_negrita(texto) {
+    retornar "**" + texto + "**"
+}
+
+funcion md_cursiva(texto) {
+    retornar "*" + texto + "*"
+}
+
+funcion md_codigo(texto) {
+    retornar "`" + texto + "`"
+}
+
+funcion md_bloque_codigo(texto, lenguaje) {
+    si lenguaje == nulo {
+        lenguaje = ""
+    }
+    retornar "```" + lenguaje + "\n" + texto + "\n```"
+}
+
+funcion md_lista(elementos) {
+    variable resultado = ""
+    cada e en elementos {
+        resultado = resultado + "- " + e + "\n"
+    }
+    retornar resultado
+}
+
+funcion md_enlace(texto, url) {
+    retornar "[" + texto + "](" + url + ")"
+}
+
+funcion md_tabla(encabezados, filas) {
+    variable separador = "|"
+    cada h en encabezados {
+        separador = separador + " --- |"
+    }
+    variable resultado = "| " + unir(encabezados, " | ") + " |\n"
+    resultado = resultado + separador + "\n"
+    cada fila en filas {
+        resultado = resultado + "| " + unir(fila, " | ") + " |\n"
+    }
+    retornar resultado
+}

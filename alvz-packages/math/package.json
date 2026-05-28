@@ -1,0 +1,1 @@
+{"name": "math", "version": "1.0.0", "description": "Funciones matematicas avanzadas (factorial, mcd, mcm, fibonacci, primo)", "author": "Alvz", "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/math/math.alvz", "entry": "math.alvz", "dependencies": []}

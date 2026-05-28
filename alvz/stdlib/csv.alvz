@@ -1,0 +1,103 @@
+funcion csv_a_listas(texto) {
+    variable lineas = dividir(texto, "\n")
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(lineas) {
+        variable linea = lineas[i]
+        si linea != "" {
+            agregar(resultado, dividir(linea, ","))
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion csv_a_diccionarios(texto) {
+    variable lineas = dividir(texto, "\n")
+    si longitud(lineas) == 0 { retornar [] }
+    variable encabezados = dividir(lineas[0], ",")
+    variable resultado = []
+    variable i = 1
+    mientras i < longitud(lineas) {
+        variable linea = lineas[i]
+        si linea != "" {
+            variable valores = dividir(linea, ",")
+            variable fila = {}
+            variable j = 0
+            mientras j < longitud(encabezados) {
+                si j < longitud(valores) {
+                    fila[encabezados[j]] = valores[j]
+                } sino {
+                    fila[encabezados[j]] = ""
+                }
+                j = j + 1
+            }
+            agregar(resultado, fila)
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion csv_leer(ruta) {
+    variable contenido = leer_archivo(ruta)
+    si contenido == falso {
+        retornar falso
+    }
+    retornar csv_a_diccionarios(contenido)
+}
+
+funcion _escapar_csv(valor) {
+    variable str_val = "" + valor
+    si regex_buscar(str_val, ',') o regex_buscar(str_val, '"') o regex_buscar(str_val, '\n') {
+        str_val = '"' + reemplazar(str_val, '"', '""') + '"'
+    }
+    retornar str_val
+}
+
+funcion csv_listas_a_texto(datos) {
+    si longitud(datos) == 0 { retornar "" }
+    variable lineas = []
+    variable i = 0
+    mientras i < longitud(datos) {
+        variable fila = datos[i]
+        variable valores = []
+        variable j = 0
+        mientras j < longitud(fila) {
+            agregar(valores, _escapar_csv(fila[j]))
+            j = j + 1
+        }
+        agregar(lineas, unir(valores, ","))
+        i = i + 1
+    }
+    retornar unir(lineas, "\n")
+}
+
+funcion csv_diccionarios_a_texto(datos) {
+    si longitud(datos) == 0 { retornar "" }
+    variable claves_lista = []
+    para cada clave en datos[0] {
+        agregar(claves_lista, clave)
+    }
+    variable texto = unir(claves_lista, ",")
+    variable i = 0
+    mientras i < longitud(datos) {
+        texto = texto + "\n"
+        variable valores = []
+        variable j = 0
+        mientras j < longitud(claves_lista) {
+            variable val = datos[i][claves_lista[j]]
+            si val == nulo { val = "" }
+            agregar(valores, _escapar_csv(val))
+            j = j + 1
+        }
+        texto = texto + unir(valores, ",")
+        i = i + 1
+    }
+    retornar texto
+}
+
+funcion csv_escribir(ruta, datos) {
+    variable texto = csv_diccionarios_a_texto(datos)
+    retornar escribir_archivo(ruta, texto)
+}

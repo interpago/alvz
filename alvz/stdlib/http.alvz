@@ -1,0 +1,27 @@
+funcion http_obtener(url, parametros) {
+    retornar solicitud_http("GET", url, parametros)
+}
+
+funcion http_post(url, datos) {
+    retornar solicitud_http("POST", url, datos)
+}
+
+funcion http_put(url, datos) {
+    retornar solicitud_http("PUT", url, datos)
+}
+
+funcion http_eliminar(url) {
+    retornar solicitud_http("DELETE", url, {})
+}
+
+funcion http_exito(respuesta) {
+    retornar respuesta["codigo"] >= 200 y respuesta["codigo"] < 300
+}
+
+funcion http_cuerpo(respuesta) {
+    retornar respuesta["cuerpo"]
+}
+
+funcion http_json(respuesta) {
+    retornar respuesta["json"]
+}

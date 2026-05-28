@@ -1,0 +1,49 @@
+funcion ini_parsear(texto) {
+    variable resultado = {}
+    variable seccion = "general"
+    resultado[seccion] = {}
+    variable lineas = dividir(texto, "\n")
+    cada linea en lineas {
+        variable linea_trim = dividir(linea, "#")[0]
+        linea_trim = dividir(linea_trim, ";")[0]
+        si longitud(linea_trim) > 0 {
+            si linea_trim[0] == "[" {
+                variable idx = 1
+                variable nombre = ""
+                mientras idx < longitud(linea_trim) y linea_trim[idx] != "]" {
+                    nombre = nombre + linea_trim[idx]
+                    idx = idx + 1
+                }
+                seccion = nombre
+                si resultado[seccion] == nulo {
+                    resultado[seccion] = {}
+                }
+            } sino {
+                variable partes = dividir(linea_trim, "=")
+                si longitud(partes) >= 2 {
+                    variable clave = partes[0]
+                    variable valor = partes[1]
+                    resultado[seccion][clave] = valor
+                }
+            }
+        }
+    }
+    retornar resultado
+}
+
+funcion ini_generar(datos) {
+    variable resultado = ""
+    cada seccion en datos {
+        resultado = resultado + "[" + seccion + "]\n"
+        cada clave en datos[seccion] {
+            resultado = resultado + clave + "=" + datos[seccion][clave] + "\n"
+        }
+        resultado = resultado + "\n"
+    }
+    retornar resultado
+}
+
+funcion ini_leer_archivo(ruta) {
+    variable contenido = archivo_leer(ruta)
+    retornar ini_parsear(contenido)
+}

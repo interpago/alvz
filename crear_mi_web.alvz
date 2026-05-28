@@ -1,0 +1,30 @@
+imprimir("--- CREADOR DE WEBS ALVZ ---")
+
+variable nombre_archivo = "mi_pagina.html"
+variable titulo = "Mi Increíble Lenguaje"
+
+# Construimos el contenido HTML poco a poco
+variable contenido = "<html>"
+contenido = contenido + "<head><title>" + titulo + "</title></head>"
+contenido = contenido + "<body style='font-family: Arial; background-color: #e3f2fd; text-align: center;'>"
+contenido = contenido + "  <h1 style='color: #0d47a1;'>Hola desde Alvz</h1>"
+contenido = contenido + "  <p>Esta página fue creada automáticamente usando la función <b>escribir_archivo</b>.</p>"
+contenido = contenido + "  <div style='background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);'>"
+contenido = contenido + "    <h3>Mis Logros:</h3>"
+contenido = contenido + "    <ul style='text-align: left;'>"
+contenido = contenido + "      <li>Variables</li>"
+contenido = contenido + "      <li>Bucles</li>"
+contenido = contenido + "      <li>Internet</li>"
+contenido = contenido + "      <li>¡Archivos Reales!</li>"
+contenido = contenido + "    </ul>"
+contenido = contenido + "  </div>"
+contenido = contenido + "</body>"
+contenido = contenido + "</html>"
+
+imprimir("Escribiendo el archivo " + nombre_archivo + "...")
+esperar(1)
+
+# Usamos la nueva función
+escribir_archivo(nombre_archivo, contenido)
+
+imprimir("¡HECHO! Ahora puedes buscar el archivo '" + nombre_archivo + "' en tu carpeta y abrirlo.")

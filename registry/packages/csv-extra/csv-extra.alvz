@@ -1,0 +1,55 @@
+funcion csv_parsear_con_tipos(texto, separador) {
+    si separador == nulo {
+        separador = ","
+    }
+    variable lineas = dividir(texto, "\n")
+    si longitud(lineas) == 0 {
+        retornar []
+    }
+    variable encabezados = dividir(lineas[0], separador)
+    variable resultado = []
+    variable i = 1
+    mientras i < longitud(lineas) {
+        si longitud(lineas[i]) > 0 {
+            variable valores = dividir(lineas[i], separador)
+            variable fila = {}
+            variable j = 0
+            mientras j < longitud(encabezados) {
+                variable val = valores[j] si j < longitud(valores) sino ""
+                si es_numero(val) {
+                    fila[encabezados[j]] = a_numero(val)
+                } sino si val == "verdadero" {
+                    fila[encabezados[j]] = verdadero
+                } sino si val == "falso" {
+                    fila[encabezados[j]] = falso
+                } sino {
+                    fila[encabezados[j]] = val
+                }
+                j = j + 1
+            }
+            agregar(resultado, fila)
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion es_numero(texto) {
+    si longitud(texto) == 0 {
+        retornar falso
+    }
+    variable i = 0
+    variable tiene_punto = falso
+    mientras i < longitud(texto) {
+        si texto[i] == "." {
+            si tiene_punto {
+                retornar falso
+            }
+            tiene_punto = verdadero
+        } sino si texto[i] < "0" o texto[i] > "9" {
+            retornar falso
+        }
+        i = i + 1
+    }
+    retornar verdadero
+}

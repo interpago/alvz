@@ -1,0 +1,247 @@
+{
+  "name": "alvz-packages",
+  "description": "Registro publico de paquetes para Alvz Language",
+  "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/index.json",
+  "packages": {
+    "base-convert": {
+      "name": "base-convert",
+      "version": "1.0.0",
+      "description": "Conversion de bases: binario, octal, hexadecimal",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/base-convert/base-convert.alvz",
+      "entry": "base-convert.alvz"
+    },
+    "collections": {
+      "name": "collections",
+      "version": "1.0.0",
+      "description": "Operaciones con listas: agrupar, ordenar, unique, aplanar",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/collections/collections.alvz",
+      "entry": "collections.alvz"
+    },
+    "color-utils": {
+      "name": "color-utils",
+      "version": "1.0.0",
+      "description": "Colores terminal ANSI: rojo, verde, azul, negrita, subrayado",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/color-utils/color-utils.alvz",
+      "entry": "color-utils.alvz"
+    },
+    "crypto": {
+      "name": "crypto",
+      "version": "1.0.0",
+      "description": "Utilidades crypto: base64, hash simple, IDs, sanitizacion HTML",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/crypto/crypto.alvz",
+      "entry": "crypto.alvz"
+    },
+    "csv-extra": {
+      "name": "csv-extra",
+      "version": "1.0.0",
+      "description": "CSV con tipos automaticos: parsear con deteccion de numeros",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/csv-extra/csv-extra.alvz",
+      "entry": "csv-extra.alvz"
+    },
+    "date-utils": {
+      "name": "date-utils",
+      "version": "1.0.0",
+      "description": "Calculos de fechas: sumar dias, diferencia, timestamp conversion",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/date-utils/date-utils.alvz",
+      "entry": "date-utils.alvz"
+    },
+    "datos": {
+      "name": "datos",
+      "version": "1.0.0",
+      "description": "Procesamiento tabular: CSV, filtrar, seleccionar columnas",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/datos/datos.alvz",
+      "entry": "datos.alvz"
+    },
+    "file-utils": {
+      "name": "file-utils",
+      "version": "1.0.0",
+      "description": "Operaciones avanzadas de archivos: glob, mover, temporales, directorios",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/file-utils/file-utils.alvz",
+      "entry": "file-utils.alvz"
+    },
+    "fs-extra": {
+      "name": "fs-extra",
+      "version": "1.0.0",
+      "description": "Operaciones de archivos: leer directorios, copiar arboles",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/fs-extra/fs-extra.alvz",
+      "entry": "fs-extra.alvz"
+    },
+    "html-utils": {
+      "name": "html-utils",
+      "version": "1.0.0",
+      "description": "Generacion HTML: tablas, listas, enlaces, escape",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/html-utils/html-utils.alvz",
+      "entry": "html-utils.alvz"
+    },
+    "ini-utils": {
+      "name": "ini-utils",
+      "version": "1.0.0",
+      "description": "Parseo INI: leer y generar archivos de configuracion",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/ini-utils/ini-utils.alvz",
+      "entry": "ini-utils.alvz"
+    },
+    "json-utils": {
+      "name": "json-utils",
+      "version": "1.0.0",
+      "description": "Utilidades JSON: merge, diff, patch, validar esquemas",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/json-utils/json-utils.alvz",
+      "entry": "json-utils.alvz"
+    },
+    "markdown": {
+      "name": "markdown",
+      "version": "1.0.0",
+      "description": "Generacion Markdown: encabezados, listas, tablas, codigo",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/markdown/markdown.alvz",
+      "entry": "markdown.alvz"
+    },
+    "math": {
+      "name": "math",
+      "version": "1.0.0",
+      "description": "Funciones matematicas avanzadas: fibonacci, primos, combinatoria",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/math/math.alvz",
+      "entry": "math.alvz"
+    },
+    "math-extra": {
+      "name": "math-extra",
+      "version": "1.0.0",
+      "description": "Matematicas adicionales: MCD, MCM, factorial, permutaciones, par/impar",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/math-extra/math-extra.alvz",
+      "entry": "math-extra.alvz"
+    },
+    "path-utils": {
+      "name": "path-utils",
+      "version": "1.0.0",
+      "description": "Manipulacion de rutas: join, dirname, basename, extension",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/path-utils/path-utils.alvz",
+      "entry": "path-utils.alvz"
+    },
+    "random-utils": {
+      "name": "random-utils",
+      "version": "1.0.0",
+      "description": "Utilidades aleatorias: choice, shuffle, sample, weighted choice",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/random-utils/random-utils.alvz",
+      "entry": "random-utils.alvz"
+    },
+    "retry": {
+      "name": "retry",
+      "version": "1.0.0",
+      "description": "Reintentos con backoff: ejecutar, respaldo, condicional",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/retry/retry.alvz",
+      "entry": "retry.alvz"
+    },
+    "semver": {
+      "name": "semver",
+      "version": "1.0.0",
+      "description": "Versionado semantico: parsear, comparar, compatible",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/semver/semver.alvz",
+      "entry": "semver.alvz"
+    },
+    "slugify": {
+      "name": "slugify",
+      "version": "1.0.0",
+      "description": "Generacion de slugs URL a partir de textos",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/slugify/slugify.alvz",
+      "entry": "slugify.alvz"
+    },
+    "stats": {
+      "name": "stats",
+      "version": "1.0.0",
+      "description": "Estadisticas: media, mediana, moda, varianza, desviacion, min/max",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/stats/stats.alvz",
+      "entry": "stats.alvz"
+    },
+    "strings": {
+      "name": "strings",
+      "version": "1.0.0",
+      "description": "Manipulacion de textos: invertir, capitalizar, palindromos, snake_case",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/strings/strings.alvz",
+      "entry": "strings.alvz"
+    },
+    "template": {
+      "name": "template",
+      "version": "1.0.0",
+      "description": "Plantillas simples: render, repetir, reemplazar",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/template/template.alvz",
+      "entry": "template.alvz"
+    },
+    "text-utils": {
+      "name": "text-utils",
+      "version": "1.0.0",
+      "description": "Utilidades de texto: wrap, indent, center, tabular",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/text-utils/text-utils.alvz",
+      "entry": "text-utils.alvz"
+    },
+    "throttle": {
+      "name": "throttle",
+      "version": "1.0.0",
+      "description": "Rate limiting: throttle, espera, rate limiter",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/throttle/throttle.alvz",
+      "entry": "throttle.alvz"
+    },
+    "tiempo": {
+      "name": "tiempo",
+      "version": "1.0.0",
+      "description": "Formateo de fecha/hora: timestamps, bisiestos, dias entre fechas",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/tiempo/tiempo.alvz",
+      "entry": "tiempo.alvz"
+    },
+    "unit-convert": {
+      "name": "unit-convert",
+      "version": "1.0.0",
+      "description": "Conversion de unidades: temperatura, distancia, peso, volumen",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/unit-convert/unit-convert.alvz",
+      "entry": "unit-convert.alvz"
+    },
+    "validacion": {
+      "name": "validacion",
+      "version": "1.0.0",
+      "description": "Validacion de datos: email, telefono, URL, rangos, longitud",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/validacion/validacion.alvz",
+      "entry": "validacion.alvz"
+    },
+    "xml-utils": {
+      "name": "xml-utils",
+      "version": "1.0.0",
+      "description": "Generacion XML: escape, elementos, documentos",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/xml-utils/xml-utils.alvz",
+      "entry": "xml-utils.alvz"
+    },
+    "yaml-utils": {
+      "name": "yaml-utils",
+      "version": "1.0.0",
+      "description": "Serializacion YAML: diccionarios y listas a YAML",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/yaml-utils/yaml-utils.alvz",
+      "entry": "yaml-utils.alvz"
+    }
+  }
+}

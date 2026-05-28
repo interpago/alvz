@@ -1,0 +1,5 @@
+funcion saludar(nombre) {
+    imprimir("¡Hola desde el módulo importado, " + nombre + "!")
+}
+
+variable VERSION_MODULO = "1.0 Beta"

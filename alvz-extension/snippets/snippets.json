@@ -1,0 +1,838 @@
+{
+    "Definir Función": {
+        "prefix": "funcion",
+        "body": [
+            "funcion ${1:nombre}(${2:parametros}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Crea una nueva función"
+    },
+    "Condicional Si": {
+        "prefix": "si",
+        "body": [
+            "si ${1:condicion} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Bloque condicional si"
+    },
+    "Condicional Si-Sino": {
+        "prefix": "sino",
+        "body": [
+            "si ${1:condicion} {",
+            "\t$2",
+            "} sino {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Bloque condicional si con sino"
+    },
+    "Bucle Mientras": {
+        "prefix": "mientras",
+        "body": [
+            "mientras ${1:condicion} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Bucle mientras"
+    },
+    "Bucle Para": {
+        "prefix": "para",
+        "body": [
+            "para ${1:variable} de ${2:inicio} a ${3:fin} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Bucle para con rango"
+    },
+    "Bucle Cada": {
+        "prefix": "cada",
+        "body": [
+            "cada ${1:elemento} en ${2:lista} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Bucle para cada elemento en lista"
+    },
+    "Definir Clase": {
+        "prefix": "clase",
+        "body": [
+            "clase ${1:NombreClase} {",
+            "\tfuncion inicializar(${2:parametros}) {",
+            "\t\t$0",
+            "\t}",
+            "}"
+        ],
+        "description": "Crea una nueva clase con constructor"
+    },
+    "Clase con Herencia": {
+        "prefix": "claseh",
+        "body": [
+            "clase ${1:Hija} de ${2:Padre} {",
+            "\tfuncion inicializar(${3:parametros}) {",
+            "\t\tsuper.${2:Padre}.inicializar(${4:args_padre})",
+            "\t\t$0",
+            "\t}",
+            "",
+            "\tfuncion ${5:metodo_nuevo}() {",
+            "\t\t$6",
+            "\t}",
+            "}"
+        ],
+        "description": "Crea una clase con herencia"
+    },
+    "Propiedad Getter/Setter": {
+        "prefix": "propiedad",
+        "body": [
+            "propiedad ${1:nombre} {",
+            "\tobtener {",
+            "\t\tretornar ${2:valor_privado}",
+            "\t}",
+            "\testablecer(${3:valor}) {",
+            "\t\t${2:valor_privado} = ${3:valor}",
+            "\t}",
+            "}"
+        ],
+        "description": "Define una propiedad con getter y setter"
+    },
+    "Método Estático": {
+        "prefix": "estatico",
+        "body": [
+            "funcion estatico ${1:nombre}(${2:args}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Define un método estático"
+    },
+    "Imprimir en Consola": {
+        "prefix": "imprimir",
+        "body": [
+            "imprimir(${1:mensaje})"
+        ],
+        "description": "Imprime un mensaje en la terminal"
+    },
+    "Iniciar Servidor API": {
+        "prefix": "servidor",
+        "body": [
+            "funcion ${1:ruta_inicio}() {",
+            "\tretornar {\"mensaje\": \"${2:API funcionando}\"}",
+            "}",
+            "",
+            "variable rutas = {",
+            "\t\"/\": \"${1:ruta_inicio}\"",
+            "}",
+            "iniciar_servidor(${3:8000}, rutas)"
+        ],
+        "description": "Configura e inicia un servidor FastAPI"
+    },
+    "API con múltiples rutas": {
+        "prefix": "api",
+        "body": [
+            "funcion ${1:inicio}() {",
+            "\tretornar {\"mensaje\": \"Bienvenido\"}",
+            "}",
+            "",
+            "funcion ${2:obtener_item}(id) {",
+            "\tretornar {\"id\": id, \"nombre\": \"Item \" + id}",
+            "}",
+            "",
+            "funcion ${3:crear_item}(datos) {",
+            "\tretornar {\"creado\": verdadero, \"datos\": datos}",
+            "}",
+            "",
+            "variable rutas = {",
+            "\t\"/\": \"${1:inicio}\",",
+            "\t\"/items/{id}\": \"${2:obtener_item}\",",
+            "\t\"/items\": {",
+            "\t\t\"funcion\": \"${3:crear_item}\",",
+            "\t\t\"metodo\": \"POST\"",
+            "\t}",
+            "}",
+            "iniciar_servidor(${4:8000}, rutas)"
+        ],
+        "description": "Crea una API REST completa con GET y POST"
+    },
+    "Conexión Supabase": {
+        "prefix": "supabase",
+        "body": [
+            "variable SUPABASE_URL = \"${1:https://tu-proyecto.supabase.co}\"",
+            "variable SUPABASE_KEY = \"${2:tu-api-key}\"",
+            "variable TABLA = \"${3:nombre_tabla}\"",
+            "",
+            "funcion listar() {",
+            "\timprimir(\"Listando datos de \" + TABLA)",
+            "\t$0",
+            "}"
+        ],
+        "description": "Configura conexión a Supabase"
+    },
+    "Supabase Insertar": {
+        "prefix": "supainsert",
+        "body": [
+            "variable datos = {",
+            "\t\"${1:columna}\": ${2:valor}",
+            "}",
+            "variable codigo = supabase_insertar(SUPABASE_URL, SUPABASE_KEY, \"${3:tabla}\", datos)",
+            "si codigo == 201 {",
+            "\timprimir(\"Insertado correctamente\")",
+            "} sino {",
+            "\timprimir(\"Error al insertar: \" + codigo)",
+            "}"
+        ],
+        "description": "Inserta datos en Supabase"
+    },
+    "Importar Archivo": {
+        "prefix": "importar",
+        "body": [
+            "importar \"${1:archivo}.alvz\""
+        ],
+        "description": "Importa otro archivo Alvz"
+    },
+    "Función Async": {
+        "prefix": "async",
+        "body": [
+            "funcion async ${1:nombre}(${2:parametros}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Crea una nueva función asíncrona"
+    },
+    "Aguardar": {
+        "prefix": "aguardar",
+        "body": [
+            "aguardar ${1:funcion}(${2:args})"
+        ],
+        "description": "Espera la ejecución de una función asíncrona"
+    },
+    "Async Paralelo": {
+        "prefix": "asyncpar",
+        "body": [
+            "funcion async ${1:tarea_a}() {",
+            "\timprimir(\"Inicia tarea A\")",
+            "\tesperar(${2:1})",
+            "\timprimir(\"Termina tarea A\")",
+            "\tretornar \"Resultado A\"",
+            "}",
+            "",
+            "funcion async ${3:tarea_b}() {",
+            "\timprimir(\"Inicia tarea B\")",
+            "\tesperar(${4:0.5})",
+            "\timprimir(\"Termina tarea B\")",
+            "\tretornar \"Resultado B\"",
+            "}",
+            "",
+            "funcion async ${5:main}() {",
+            "\tvariable a = aguardar ${1:tarea_a}()",
+            "\tvariable b = aguardar ${3:tarea_b}()",
+            "\timprimir(\"Completado: \" + a + \" - \" + b)",
+            "}",
+            "",
+            "aguardar ${5:main}()"
+        ],
+        "description": "Ejecuta múltiples funciones async en paralelo"
+    },
+    "Leer Archivo": {
+        "prefix": "leerarchivo",
+        "body": [
+            "variable contenido = leer_archivo(\"${1:archivo.txt}\")",
+            "si contenido == falso {",
+            "\timprimir(\"Error: No se pudo leer el archivo\")",
+            "} sino {",
+            "\timprimir(contenido)",
+            "}"
+        ],
+        "description": "Lee el contenido de un archivo"
+    },
+    "Escribir Archivo": {
+        "prefix": "escribirarchivo",
+        "body": [
+            "variable exito = escribir_archivo(\"${1:archivo.txt}\", ${2:contenido})",
+            "si exito {",
+            "\timprimir(\"Archivo guardado correctamente\")",
+            "} sino {",
+            "\timprimir(\"Error al guardar el archivo\")",
+            "}"
+        ],
+        "description": "Escribe contenido en un archivo"
+    },
+    "JSON Codificar": {
+        "prefix": "jsonenc",
+        "body": [
+            "variable datos = {",
+            "\t\"${1:clave}\": ${2:valor}",
+            "}",
+            "variable json = json_codificar(datos)",
+            "imprimir(json)"
+        ],
+        "description": "Convierte un diccionario a JSON"
+    },
+    "JSON Decodificar": {
+        "prefix": "jsondec",
+        "body": [
+            "variable datos = json_decodificar(\"${1:{'clave': 'valor'}}\")",
+            "imprimir(datos[\"${2:clave}\"])"
+        ],
+        "description": "Convierte un JSON a diccionario"
+    },
+    "Enviar Petición HTTP": {
+        "prefix": "enviarweb",
+        "body": [
+            "variable respuesta = enviar_web(\"${1:https://api.ejemplo.com/datos}\", ${2:datos})",
+            "si respuesta == 200 {",
+            "\timprimir(\"Datos enviados correctamente\")",
+            "} sino {",
+            "\timprimir(\"Error HTTP: \" + respuesta)",
+            "}"
+        ],
+        "description": "Envía datos a una URL via HTTP POST"
+    },
+    "Fecha Actual": {
+        "prefix": "fecha",
+        "body": [
+            "variable formato = \"${1:%Y-%m-%d %H:%M:%S}\"",
+            "variable ahora = fecha_actual(formato)",
+            "imprimir(\"Fecha actual: \" + ahora)"
+        ],
+        "description": "Obtiene la fecha y hora actual con formato"
+    },
+    "Timestamp Unix": {
+        "prefix": "timestamp",
+        "body": [
+            "variable ahora = tiempo()",
+            "imprimir(\"Timestamp: \" + ahora)"
+        ],
+        "description": "Obtiene el timestamp Unix actual"
+    },
+    "Esperar (Sleep)": {
+        "prefix": "esperar",
+        "body": [
+            "esperar(${1:1})",
+            "imprimir(\"Espera de \" + ${1:1} + \" segundo completada\")"
+        ],
+        "description": "Pausa la ejecución por N segundos"
+    },
+    "Validar Email": {
+        "prefix": "validaremail",
+        "body": [
+            "funcion validar_email(email) {",
+            "\tvariable partes = dividir(email, \"@\")",
+            "\tsi longitud(partes) != 2 { retornar falso }",
+            "\tvariable dominio = partes[1]",
+            "\tvariable tiene_punto = regex_buscar(dominio, \"\\\\.\")",
+            "\tretornar longitud(tiene_punto) > 0",
+            "}",
+            "",
+            "variable email = \"${1:usuario@ejemplo.com}\"",
+            "si validar_email(email) {",
+            "\timprimir(\"Email valido\")",
+            "} sino {",
+            "\timprimir(\"Email invalido\")",
+            "}"
+        ],
+        "description": "Valida un formato de email"
+    },
+    "Validar Campos Requeridos": {
+        "prefix": "validarreq",
+        "body": [
+            "funcion campos_requeridos(datos, campos) {",
+            "\tcada campo en campos {",
+            "\t\tsi datos[campo] == nulo o datos[campo] == \"\" {",
+            "\t\t\tretornar falso",
+            "\t\t}",
+            "\t}",
+            "\tretornar verdadero",
+            "}",
+            "",
+            "variable datos = ${1:input}",
+            "variable campos = ${2:[\"nombre\", \"email\"]}",
+            "si campos_requeridos(datos, campos) {",
+            "\timprimir(\"Todos los campos requeridos estan presentes\")",
+            "} sino {",
+            "\timprimir(\"Faltan campos requeridos\")",
+            "}"
+        ],
+        "description": "Valida que campos requeridos no estén vacíos"
+    },
+    "Manejo de Errores": {
+        "prefix": "intentar",
+        "body": [
+            "intentar {",
+            "\t$1",
+            "} capturar {",
+            "\timprimir(\"Error: \" + error_msj())",
+            "}"
+        ],
+        "description": "Bloque try-catch para manejo de errores"
+    },
+    "Lanzar Error": {
+        "prefix": "lanzar",
+        "body": [
+            "lanzar(\"${1:mensaje de error}\")"
+        ],
+        "description": "Lanza un error personalizado"
+    },
+    "Dividir Texto": {
+        "prefix": "dividir",
+        "body": [
+            "variable partes = dividir(\"${1:texto}\", \"${2:,}\")",
+            "cada parte en partes {",
+            "\timprimir(parte)",
+            "}"
+        ],
+        "description": "Divide un texto usando un separador"
+    },
+    "Unir Lista": {
+        "prefix": "unir",
+        "body": [
+            "variable lista = ${1:[\"a\", \"b\", \"c\"]}",
+            "variable texto = unir(lista, \"${2:, }\")",
+            "imprimir(texto)"
+        ],
+        "description": "Une los elementos de una lista con un separador"
+    },
+    "Buscar con Regex": {
+        "prefix": "regex",
+        "body": [
+            "variable coincidencias = regex_buscar(\"${1:texto}\", \"${2:patron}\")",
+            "imprimir(\"Coincidencias encontradas: \" + longitud(coincidencias))",
+            "cada c en coincidencias {",
+            "\timprimir(c)",
+            "}"
+        ],
+        "description": "Busca patrones en un texto usando expresiones regulares"
+    },
+    "Menú Interactivo": {
+        "prefix": "menu",
+        "body": [
+            "funcion mostrar_menu() {",
+            "\timprimir(\"${1:=== MENU PRINCIPAL ===}\")",
+            "\timprimir(\"${2:1}. Opcion 1\")",
+            "\timprimir(\"${3:2}. Opcion 2\")",
+            "\timprimir(\"${4:3}. Salir\")",
+            "}",
+            "",
+            "variable opcion = 0",
+            "mientras opcion != ${4:3} {",
+            "\tmostrar_menu()",
+            "\topcion = leer_numero()",
+            "\tsi opcion == ${2:1} {",
+            "\t\timprimir(\"Elegiste opcion 1\")",
+            "\t} sino si opcion == ${3:2} {",
+            "\t\timprimir(\"Elegiste opcion 2\")",
+            "\t} sino si opcion == ${4:3} {",
+            "\t\timprimir(\"Hasta luego\")",
+            "\t} sino {",
+            "\t\timprimir(\"Opcion invalida\")",
+            "\t}",
+            "}"
+        ],
+        "description": "Crea un menú interactivo por consola"
+    },
+    "Configuración desde Variables": {
+        "prefix": "config",
+        "body": [
+            "variable CONFIG = {",
+            "\t\"${1:puerto}\": ${2:8000},",
+            "\t\"${3:debug}\": ${4:verdadero},",
+            "\t\"${5:base_url}\": \"${6:http://localhost}\"",
+            "}",
+            "",
+            "funcion obtener_config(clave) {",
+            "\tsi CONFIG[clave] != nulo {",
+            "\t\tretornar CONFIG[clave]",
+            "\t}",
+            "\tretornar nulo",
+            "}"
+        ],
+        "description": "Define configuración global con acceso tipado"
+    },
+    "CRUD Completo": {
+        "prefix": "crud",
+        "body": [
+            "variable items = []",
+            "",
+            "funcion crear(id, nombre) {",
+            "\tagregar(items, {\"id\": id, \"nombre\": nombre})",
+            "\timprimir(\"Item creado: \" + nombre)",
+            "}",
+            "",
+            "funcion listar() {",
+            "\tcada item en items {",
+            "\t\timprimir(item[\"id\"] + \": \" + item[\"nombre\"])",
+            "\t}",
+            "}",
+            "",
+            "funcion actualizar(id, nuevo_nombre) {",
+            "\tvariable i = 0",
+            "\tmientras i < longitud(items) {",
+            "\t\tsi items[i][\"id\"] == id {",
+            "\t\t\titems[i][\"nombre\"] = nuevo_nombre",
+            "\t\t\timprimir(\"Item \" + id + \" actualizado\")",
+            "\t\t\tretornar",
+            "\t\t}",
+            "\t\ti = i + 1",
+            "\t}",
+            "\timprimir(\"Item \" + id + \" no encontrado\")",
+            "}",
+            "",
+            "funcion eliminar(id) {",
+            "\tvariable nueva_lista = []",
+            "\tcada item en items {",
+            "\t\tsi item[\"id\"] != id {",
+            "\t\t\tagregar(nueva_lista, item)",
+            "\t\t}",
+            "\t}",
+            "\titems = nueva_lista",
+            "\timprimir(\"Item \" + id + \" eliminado\")",
+            "}"
+        ],
+        "description": "CRUD completo en memoria con crear, listar, actualizar, eliminar"
+    },
+    "Pagina Web HTML": {
+        "prefix": "pagina",
+        "body": [
+            "funcion generar_html(titulo, contenido) {",
+            "\tvariable html = \"<!DOCTYPE html>\"",
+            "\thtml = html + \"<html><head><title>\" + titulo + \"</title></head>\"",
+            "\thtml = html + \"<body><h1>\" + titulo + \"</h1>\"",
+            "\thtml = html + \"<p>\" + contenido + \"</p></body></html>\"",
+            "\tretornar html",
+            "}",
+            "",
+            "variable html = generar_html(\"${1:Mi Pagina}\", \"${2:Hola Mundo}\")",
+            "escribir_archivo(\"${3:index.html}\", html)",
+            "imprimir(\"Pagina creada: ${3:index.html}\")"
+        ],
+        "description": "Genera una página HTML y la guarda en un archivo"
+    },
+    "Generar API desde Archivo JSON": {
+        "prefix": "apijson",
+        "body": [
+            "funcion ${1:cargar_datos}() {",
+            "\tvariable datos = leer_archivo(\"${2:datos.json}\")",
+            "\tsi datos == falso { retornar [] }",
+            "\tretornar json_decodificar(datos)",
+            "}",
+            "",
+            "funcion ${3:guardar_datos}(datos) {",
+            "\tescribir_archivo(\"${2:datos.json}\", json_codificar(datos))",
+            "}",
+            "",
+            "funcion ${4:obtener_lista}() {",
+ "\tretornar ${1:cargar_datos}()",
+            "}",
+            "",
+            "funcion ${5:agregar_item}(nuevo) {",
+            "\tvariable lista = ${1:cargar_datos}()",
+            "\tagregar(lista, nuevo)",
+            "\t${3:guardar_datos}(lista)",
+            "\tretornar {\"exito\": verdadero}",
+            "}",
+            "",
+            "variable rutas = {",
+            "\t\"/api/items\": \"${4:obtener_lista}\",",
+            "\t\"/api/items\": {",
+            "\t\t\"funcion\": \"${5:agregar_item}\",",
+            "\t\t\"metodo\": \"POST\"",
+            "\t}",
+            "}",
+            "iniciar_servidor(${6:8000}, rutas)"
+        ],
+        "description": "API REST con persistencia en archivo JSON"
+    },
+    "Clase Persona (Ejemplo POO)": {
+        "prefix": "persona",
+        "body": [
+            "clase ${1:Persona} {",
+            "\tfuncion inicializar(nombre, edad) {",
+            "\t\tself.nombre = nombre",
+            "\t\tself.edad = edad",
+            "\t}",
+            "",
+            "\tfuncion saludar() {",
+            "\t\tretornar \"Hola, soy \" + self.nombre",
+            "\t}",
+            "",
+            "\tfuncion es_mayor_edad() {",
+            "\t\tretornar self.edad >= 18",
+            "\t}",
+            "}",
+            "",
+            "variable p = nuevo ${1:Persona}(\"${2:Juan}\", ${3:25})",
+            "imprimir(p.saludar())",
+            "si p.es_mayor_edad() {",
+            "\timprimir(\"Es mayor de edad\")",
+            "}"
+        ],
+        "description": "Ejemplo completo de clase Persona con POO"
+    },
+    "Filtrar Lista": {
+        "prefix": "filtrar",
+        "body": [
+            "funcion filtrar(lista, condicion) {",
+            "\tvariable resultado = []",
+            "\tcada item en lista {",
+            "\t\tsi condicion(item) {",
+            "\t\t\tagregar(resultado, item)",
+            "\t\t}",
+            "\t}",
+            "\tretornar resultado",
+            "}",
+            "",
+            "variable numeros = ${1:[1, 2, 3, 4, 5, 6]}",
+            "variable pares = filtrar(numeros, funcion(n) { retornar n % 2 == 0 })",
+            "imprimir(pares)"
+        ],
+        "description": "Filtra elementos de una lista usando una función condición"
+    },
+    "Mapear Lista": {
+        "prefix": "mapear",
+        "body": [
+            "funcion mapear(lista, transformacion) {",
+            "\tvariable resultado = []",
+            "\tcada item en lista {",
+            "\t\tagregar(resultado, transformacion(item))",
+            "\t}",
+            "\tretornar resultado",
+            "}",
+            "",
+            "variable numeros = ${1:[1, 2, 3, 4, 5]}",
+            "variable dobles = mapear(numeros, funcion(n) { retornar n * 2 })",
+            "imprimir(dobles)"
+        ],
+        "description": "Transforma cada elemento de una lista usando una función"
+    },
+    "Contar coincidencias en texto": {
+        "prefix": "contar",
+        "body": [
+            "funcion contar_coincidencias(texto, palabra) {",
+            "\tvariable partes = dividir(texto, \" \")",
+            "\tvariable contador = 0",
+            "\tcada p en partes {",
+            "\t\tsi p == palabra {",
+            "\t\t\tcontador = contador + 1",
+            "\t\t}",
+            "\t}",
+            "\tretornar contador",
+            "}",
+            "",
+            "variable texto = \"${1:el gato y el perro y el pajaro}\"",
+            "variable conteo = contar_coincidencias(texto, \"${2:el}\")",
+            "imprimir(\"Coincidencias: \" + conteo)"
+        ],
+        "description": "Cuenta cuántas veces aparece una palabra en un texto"
+    },
+    "Ordenar Lista": {
+        "prefix": "ordenar",
+        "body": [
+            "funcion ordenar(lista) {",
+            "\tvariable n = longitud(lista)",
+            "\tvariable i = 0",
+            "\tmientras i < n {",
+            "\t\tvariable j = 0",
+            "\t\tmientras j < n - i - 1 {",
+            "\t\t\tsi lista[j] > lista[j + 1] {",
+            "\t\t\t\tvariable temp = lista[j]",
+            "\t\t\t\tlista[j] = lista[j + 1]",
+            "\t\t\t\tlista[j + 1] = temp",
+            "\t\t\t}",
+            "\t\t\tj = j + 1",
+            "\t\t}",
+            "\t\ti = i + 1",
+            "\t}",
+            "\tretornar lista",
+            "}",
+            "",
+            "variable numeros = ${1:[3, 1, 4, 1, 5, 9]}",
+            "imprimir(ordenar(numeros))"
+        ],
+        "description": "Ordena una lista numérica usando el algoritmo de burbuja"
+    },
+    "Función con tipo de retorno": {
+        "prefix": "funciont",
+        "body": [
+            "funcion ${1:nombre}(${2:parametros}): ${3:texto} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Crea una función con tipo de retorno anotado"
+    },
+    "Variable con tipo": {
+        "prefix": "variablet",
+        "body": [
+            "variable ${1:nombre}: ${2:numero} = ${3:valor}"
+        ],
+        "description": "Declara una variable con tipo estático"
+    },
+    "Generar API CRUD desde Supabase": {
+        "prefix": "supacrud",
+        "body": [
+            "variable SU_URL = \"${1:https://proyecto.supabase.co}\"",
+            "variable SU_KEY = \"${2:api-key}\"",
+            "variable TABLA = \"${3:items}\"",
+            "",
+            "funcion listar_items() {",
+            "\tvariable url = SU_URL + \"/rest/v1/\" + TABLA",
+            "\t# Simula consulta get",
+            "\tretornar {\"items\": []}",
+            "}",
+            "",
+            "funcion crear_item(datos) {",
+            "\tvariable codigo = supabase_insertar(SU_URL, SU_KEY, TABLA, datos)",
+            "\tsi codigo == 201 {",
+            "\t\tretornar {\"exito\": verdadero, \"codigo\": codigo}",
+            "\t}",
+            "\tretornar {\"exito\": falso, \"codigo\": codigo}",
+            "}",
+            "",
+            "variable rutas = {",
+            "\t\"/api/items\": \"listar_items\",",
+            "\t\"/api/items\": {\"funcion\": \"crear_item\", \"metodo\": \"POST\"}",
+            "}",
+            "iniciar_servidor(${4:8000}, rutas)"
+        ],
+        "description": "API CRUD conectada a Supabase"
+    },
+    "Script de base": {
+        "prefix": "base",
+        "body": [
+            "importar \"cadenas.alvz\"",
+            "importar \"colecciones.alvz\"",
+            "importar \"matematicas.alvz\"",
+            "",
+            "funcion main() {",
+            "\timprimir(\"${1:Aplicacion iniciada}\")",
+            "\t$0",
+            "}",
+            "",
+            "main()"
+        ],
+        "description": "Estructura base de un script Alvz con imports estándar"
+    },
+    "Leer Entrada de Usuario": {
+        "prefix": "leer",
+        "body": [
+            "imprimir(\"${1:Ingresa tu nombre:}\")",
+            "variable nombre = leer()",
+            "imprimir(\"Hola, \" + nombre)",
+            "",
+            "imprimir(\"${2:Ingresa tu edad:}\")",
+            "variable edad = leer_numero()",
+            "imprimir(\"Tienes \" + edad + \" anios\")"
+        ],
+        "description": "Lee entrada de texto y número del usuario"
+    },
+    "Número Aleatorio": {
+        "prefix": "azar",
+        "body": [
+            "variable minimo = ${1:1}",
+            "variable maximo = ${2:100}",
+            "variable aleatorio = azar(minimo, maximo)",
+            "imprimir(\"Numero aleatorio: \" + aleatorio)"
+        ],
+        "description": "Genera un número aleatorio en un rango"
+    },
+    "Instancia de Clase": {
+        "prefix": "instancia",
+        "body": [
+            "si instancia ${1:objeto} de ${2:Clase} {",
+            "\timprimir(\"${1:objeto} es una instancia de ${2:Clase}\")",
+            "}"
+        ],
+        "description": "Verifica si un objeto es instancia de una clase"
+    },
+    "Reemplazar en Texto": {
+        "prefix": "reemplazar",
+        "body": [
+            "variable texto = \"${1:El gato y el perro}\"",
+            "variable nuevo = reemplazar(texto, \"${2:gato}\", \"${3: pajaro}\")",
+            "imprimir(nuevo)"
+        ],
+        "description": "Reemplaza todas las ocurrencias de un texto por otro"
+    },
+    "Potencia y Raíz": {
+        "prefix": "potencia",
+        "body": [
+            "variable base = ${1:2}",
+            "variable exponente = ${2:3}",
+            "variable resultado = potencia(base, exponente)",
+            "imprimir(base + \"^\" + exponente + \" = \" + resultado)",
+            "",
+            "variable raiz_cuadrada = raiz(${3:16})",
+            "imprimir(\"Raiz cuadrada: \" + raiz_cuadrada)"
+        ],
+        "description": "Calcula potencias y raíces cuadradas"
+    },
+    "Redondear y Absoluto": {
+        "prefix": "redondear",
+        "body": [
+            "variable numero = ${1:3.14159}",
+            "variable redondeado = redondear(numero)",
+            "variable absoluto_val = absoluto(-${2:10})",
+            "imprimir(\"Redondeado: \" + redondeado + \", Absoluto: \" + absoluto_val)"
+        ],
+        "description": "Redondea un número y obtiene su valor absoluto"
+    },
+    "Tipo de Dato": {
+        "prefix": "tipo",
+        "body": [
+            "variable valor = ${1:42}",
+            "variable tipo_valor = tipo(valor)",
+            "imprimir(\"El tipo es: \" + tipo_valor)"
+        ],
+        "description": "Obtiene el tipo de dato de una variable"
+    },
+    "Limpiar Consola": {
+        "prefix": "limpiar",
+        "body": [
+            "limpiar()",
+            "imprimir(\"Consola limpiada\")"
+        ],
+        "description": "Limpia la terminal"
+    },
+    "Convertir a Número": {
+        "prefix": "anumero",
+        "body": [
+            "variable texto = \"${1:42}\"",
+            "variable numero = a_numero(texto)",
+            "imprimir(\"Numero: \" + (numero + ${2:1}))"
+        ],
+        "description": "Convierte un texto a número"
+    },
+    "Mayúsculas y Minúsculas": {
+        "prefix": "mayusculas",
+        "body": [
+            "variable texto = \"${1:Hola Mundo}\"",
+            "imprimir(\"Mayusculas: \" + mayusculas(texto))",
+            "imprimir(\"Minusculas: \" + minusculas(texto))"
+        ],
+        "description": "Convierte texto a mayúsculas y minúsculas"
+    },
+    "Obtener Salida Acumulada": {
+        "prefix": "salida",
+        "body": [
+            "imprimir(\"${1:mensaje 1}\")",
+            "imprimir(\"${2:mensaje 2}\")",
+            "variable salida = obtener_salida()",
+            "imprimir(\"Salida acumulada:\")",
+            "imprimir(salida)"
+        ],
+        "description": "Obtiene toda la salida impresa hasta el momento"
+    },
+    "Bucle con Romper y Continuar": {
+        "prefix": "romper",
+        "body": [
+            "para i de ${1:1} a ${2:10} {",
+            "\tsi i == ${3:5} {",
+            "\t\tcontinuar",
+            "\t}",
+            "\tsi i == ${4:8} {",
+            "\t\tromper",
+            "\t}",
+            "\timprimir(\"i = \" + i)",
+            "}"
+        ],
+        "description": "Ejemplo de bucle con continue y break"
+    }
+}

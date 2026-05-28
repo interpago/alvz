@@ -1,0 +1,35 @@
+imprimir("--- BIENVENIDO AL JUEGO DE ADIVINAR 2.0 ---")
+imprimir("Estoy pensando un número...")
+esperar(1.5)
+imprimir("¡Ya lo tengo!")
+esperar(0.5)
+
+variable secreto = azar(1, 10)
+variable intentos = 0
+variable adivinado = falso
+
+mientras adivinado == falso {
+    imprimir("¿Cuál crees que es el número? (1 al 10)")
+    variable numero = leer()
+    intentos = intentos + 1
+    
+    imprimir("Analizando tu respuesta...")
+    esperar(1)
+    
+    si numero == secreto {
+        imprimir("¡INCREÍBLE! Has adivinado el número secreto.")
+        imprimir("Lo lograste en " + intentos + " intentos.")
+        adivinado = verdadero
+    } sino {
+        si numero < secreto {
+            imprimir("Mmm... no. Mi número es MAYOR.")
+        } sino {
+            imprimir("Nop. Mi número es MENOR.")
+        }
+        imprimir("Inténtalo de nuevo.")
+        imprimir("---------------------------")
+        esperar(0.5)
+    }
+}
+
+imprimir("¡Gracias por jugar! Alvz es genial.")

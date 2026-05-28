@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de Alvz - El lenguaje en español</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+    <style>
+        :root {
+            --md-primary: #05998b;
+            --md-accent: #00bcd4;
+            --text: #37474f;
+            --text-heading: #263238;
+            --bg: #ffffff;
+            --sidebar-bg: #f8f9fb;
+            --code-bg: #f5f5f5;
+            --border: #e0e0e0;
+            --admonition-bg: #e6f5f3;
+            --tab-bg: #e0e0e0;
+            --tab-hover: #f0f0f0;
+            --table-header: #fcfcfc;
+            --footer-text: #9e9e9e;
+            --keyword: #d73a49;
+            --string: #032f62;
+            --comment: #6a737d;
+            --shadow: rgba(0,0,0,0.1);
+            --badge-bg: rgba(255,255,255,0.2);
+        }
+
+        [data-theme="dark"] {
+            --md-primary: #05998b;
+            --md-accent: #4dd0e1;
+            --text: #cfd8dc;
+            --text-heading: #eceff1;
+            --bg: #121212;
+            --sidebar-bg: #1e1e1e;
+            --code-bg: #2d2d2d;
+            --border: #333;
+            --admonition-bg: #1a3a36;
+            --tab-bg: #333;
+            --tab-hover: #444;
+            --table-header: #2a2a2a;
+            --footer-text: #757575;
+            --keyword: #f97583;
+            --string: #9ecbff;
+            --comment: #6a737d;
+            --shadow: rgba(0,0,0,0.3);
+            --badge-bg: rgba(0,0,0,0.3);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 64px 1fr;
+            height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Header */
+        header {
+            grid-column: 1 / span 2;
+            background: var(--md-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px var(--shadow);
+            z-index: 100;
+            position: relative;
+        }
+
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .version { font-size: 0.7rem; background: var(--badge-bg); padding: 2px 8px; border-radius: 4px; }
+        .tech-badges { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+        .badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .badge-supabase { background: #3ecf8e; color: #1c1c1c; }
+        .badge-fastapi { background: #05998b; color: white; border: 1px solid rgba(255,255,255,0.3); }
+        .badge svg { flex-shrink: 0; }
+
+        .dark-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 12px;
+            transition: 0.2s;
+        }
+        .dark-toggle:hover { background: rgba(255,255,255,0.1); }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 12px;
+        }
+
+        /* Sidebar */
+        aside {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            overflow-y: auto;
+            transition: background 0.3s;
+        }
+
+        aside h4 { font-size: 0.8rem; text-transform: uppercase; color: #9e9e9e; margin-bottom: 12px; }
+        aside nav ul { list-style: none; padding: 0; margin: 0; }
+        aside nav li { margin-bottom: 8px; }
+        aside nav a { text-decoration: none; color: var(--text); font-size: 0.9rem; transition: 0.2s; display: block; }
+        aside nav a:hover { color: var(--md-primary); }
+        aside nav a.active { color: var(--md-primary); font-weight: 600; }
+
+        /* Main Content */
+        main {
+            padding: 40px 80px;
+            overflow-y: auto;
+            max-width: 1000px;
+            transition: background 0.3s;
+        }
+
+        h1 { font-size: 2.2rem; margin-top: 0; color: var(--text-heading); }
+        h2 { font-size: 1.6rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top: 40px; color: var(--text-heading); }
+        h3 { font-size: 1.2rem; margin-top: 30px; color: var(--text-heading); }
+
+        p { line-height: 1.7; font-size: 1rem; }
+
+        /* Code Blocks */
+        .code-container {
+            background: var(--code-bg);
+            border-radius: 4px;
+            margin: 20px 0;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .code-header {
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            color: #757575;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--text-heading);
+            overflow-x: auto;
+        }
+
+        .keyword { color: var(--keyword); }
+        .string { color: var(--string); }
+        .comment { color: var(--comment); font-style: italic; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+        th { background: var(--table-header); text-align: left; padding: 12px; border-bottom: 2px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            background: var(--md-primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        /* Admonitions */
+        .admonition {
+            padding: 16px;
+            border-left: 4px solid var(--md-primary);
+            background: var(--admonition-bg);
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .admonition-title { font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--tab-bg);
+            border-radius: 4px 4px 0 0;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #757575;
+            transition: 0.2s;
+            border-right: 1px solid var(--border);
+        }
+        .tab-btn:hover { background: var(--tab-hover); }
+        .tab-btn.active {
+            background: var(--code-bg);
+            color: var(--md-primary);
+            border-bottom: 2px solid var(--md-primary);
+        }
+        .tab-content .tab-pane { display: none; }
+        .tab-content .tab-pane.active { display: block; }
+        .tab-content .code-container { margin-top: 0; border-radius: 0 0 4px 4px; }
+
+        /* Card grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: var(--sidebar-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .card h3 { margin-top: 0; color: var(--md-primary); }
+        .card p { font-size: 0.85rem; }
+        .card a { font-size: 0.8rem; font-weight: 600; color: var(--md-primary); text-decoration: none; }
+
+        /* Footer */
+        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid var(--border); color: var(--footer-text); font-size: 0.8rem; }
+
+        /* Sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+        }
+
+        @media (max-width: 900px) {
+            body { grid-template-columns: 1fr; }
+            aside {
+                display: none;
+                position: fixed;
+                top: 64px;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 99;
+                box-shadow: 2px 0 8px var(--shadow);
+            }
+            aside.open { display: block; }
+            .sidebar-overlay.open { display: block; }
+            main { padding: 30px 20px; }
+            .menu-toggle { display: block; }
+            .tech-badges .badge:not(.badge-always) { display: none; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 0 12px; }
+            .logo { font-size: 1rem; }
+            .version { display: none; }
+            main { padding: 20px 16px; }
+            h1 { font-size: 1.5rem; }
+            pre { font-size: 0.8rem; padding: 12px; }
+            .tech-badges { gap: 4px; }
+            .badge { font-size: 0.65rem; padding: 2px 8px; }
+            .dark-toggle span { display: none; }
+        }
+
+        @media print {
+            body { display: block; height: auto; }
+            header, aside, .dark-toggle, .menu-toggle, .sidebar-overlay { display: none; }
+            main { padding: 20px; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Menú">☰</button>
+    <div class="logo">
+        <span>ALVZ Language</span>
+        <span class="version">v0.16.0</span>
+    </div>
+    <div class="tech-badges">
+        <div class="badge badge-supabase badge-always">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21.362 9.354H12V.337L2.638 14.646H12v9.017z"/></svg>
+            Supabase
+        </div>
+        <div class="badge badge-fastapi badge-always">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            FastAPI
+        </div>
+        <div class="badge badge-always" style="background:#4CAF50; color:white;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            StdLib
+        </div>
+        <div class="badge" style="background:#ffd700; color:#1c1c1c;">POO</div>
+        <div class="badge" style="background:#2196F3; color:white;">LSP+DAP</div>
+        <div class="badge" style="background:#FF5722; color:white;">Async</div>
+        <div class="badge" style="background:#4CAF50; color:white;">Multiplatform</div>
+        <div class="badge" style="background:#E91E63; color:white;">v1.3.0</div>
+        <div class="badge" style="background:#9C27B0; color:white;">Nat&#237;vo</div>
+        <a href="https://github.com/interpago/alvz-packages" target="_blank" style="text-decoration:none;">
+            <div class="badge badge-always" style="background:#24292e; color:white; cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span id="gh-stars">0</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-left:2px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <span id="gh-forks">0</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-left:2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+        </a>
+        <script>
+            fetch('https://api.github.com/repos/interpago/alvz-packages')
+                .then(r => r.json())
+                .then(d => {
+                    document.getElementById('gh-stars').textContent = d.stargazers_count || 0;
+                    document.getElementById('gh-forks').textContent = d.forks_count || 0;
+                })
+                .catch(() => {});
+        </script>
+    </div>
+    <button class="dark-toggle" onclick="toggleDarkMode()" aria-label="Modo oscuro">
+        <svg id="dark-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="dark-label">Oscuro</span>
+    </button>
+</header>
+
+<div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+
+<aside id="sidebar">
+    <h4>Comenzando</h4>
+    <nav>
+        <ul>
+            <li><a href="#intro" class="active">Introducción</a></li>
+            <li><a href="#curso">Plan de Aprendizaje</a></li>
+            <li><a href="#instalacion">Instalación</a></li>
+            <li><a href="#hola-mundo">Hola Mundo</a></li>
+        </ul>
+    </nav>
+    <h4 style="margin-top: 30px;">Referencia</h4>
+    <nav>
+        <ul>
+            <li><a href="#vscode">VS Code v1.3.0 (Semántico + Autocompletado)</a></li>
+            <li><a href="#glosario">Glosario de Palabras</a></li>
+            <li><a href="#variables">Variables y Tipos</a></li>
+            <li><a href="#tipado">Tipado Estático</a></li>
+            <li><a href="#funciones">Funciones</a></li>
+            <li><a href="#lambdas">Funciones Anónimas</a></li>
+            <li><a href="#clases">Clases (POO)</a></li>
+            <li><a href="#super-instanceof">super e instanceof</a></li>
+            <li><a href="#getters-setters">Getters y Setters</a></li>
+            <li><a href="#estaticos">Métodos Estáticos</a></li>
+            <li><a href="#control">Control de Flujo</a></li>
+            <li><a href="#global">global keyword</a></li>
+            <li><a href="#fastapi">FastAPI (Web)</a></li>
+            <li><a href="#python-power">Python Power</a></li>
+            <li><a href="#supabase">Supabase (Nube)</a></li>
+            <li><a href="#modulos">Módulos</a></li>
+            <li><a href="#stdlib">Librería Estándar</a></li>
+            <li><a href="#async-await">Async / Await</a></li>
+            <li><a href="#optimizer">Optimizador</a></li>
+            <li><a href="#package-manager">Package Manager (30 paquetes)</a></li>
+            <li><a href="#native">Compilación Nativa &amp; Multiplataforma</a></li>
+            <li><a href="#cli">CLI: test, fmt, nuevo</a></li>
+            <li><a href="#lsp">LSP (Editor)</a></li>
+            <li><a href="#dap">Depurador DAP</a></li>
+            <li><a href="#repl">Consola Interactiva</a></li>
+            <li><a href="#errores">Gestión de Errores</a></li>
+        </ul>
+    </nav>
+</aside>
+
+<main>
+    <section id="intro">
+        <h1>Introducción</h1>
+        <p>
+            <strong>Alvz</strong> es un lenguaje de programación de alto rendimiento basado en Python, diseñado para ser intuitivo y potente, con palabras clave en español. 
+            Permite crear aplicaciones conectadas a la nube y generar contenido web de forma nativa.
+        </p>
+
+        <div class="admonition">
+            <div class="admonition-title">¿Por qué Alvz?</div>
+            Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
+            <br><br>
+            <strong>v0.16.0</strong> — 5 nuevos módulos StdLib: aleatorio (aleatorios), csv (CSV parsing/escritura), expresiones_regulares (regex), consola (terminal interactiva), json (JSON dedicado). 473 tests. Forward references fix en compile_import.
+        </div>
+    </section>
+
+    <section id="curso">
+        <h2>Plan de Aprendizaje Paso a Paso</h2>
+        <p>Domina Alvz desde cero con este camino guiado. Cada lección incluye conceptos clave y un reto práctico.</p>
+        
+        <div class="card-grid">
+            <div class="card">
+                <h3>1. Fundamentos</h3>
+                <p>Hola Mundo, variables y tipos de datos básicos.</p>
+                <a href="#hola-mundo">Empezar →</a>
+            </div>
+            <div class="card">
+                <h3>2. Lógica</h3>
+                <p>Condicionales <code>si/sino</code> y bucles <code>mientras/para</code>.</p>
+                <a href="#control">Ver más →</a>
+            </div>
+            <div class="card">
+                <h3>3. Estructuras</h3>
+                <p>Funciones, listas y el potente bucle <code>cada</code>.</p>
+                <a href="#funciones">Ver más →</a>
+            </div>
+            <div class="card">
+                <h3>4. Objetos</h3>
+                <p>Programación Orientada a Objetos (Clases y Herencia).</p>
+                <a href="#clases">Ver más →</a>
+            </div>
+            <div class="card">
+                <h3>5. Nivel Pro</h3>
+                <p>Desarrollo de APIs con FastAPI y conexión a Supabase.</p>
+                <a href="#fastapi">Ver más →</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="instalacion">
+        <h2>Instalación</h2>
+        <p>Alvz funciona en Windows, Linux y macOS. Hay varias formas de instalarlo.</p>
+
+        <h3>Windows — Instalador</h3>
+        <p>Descarga el ZIP con el instalador y la extensión de VS Code.</p>
+        <a href="alvz_v0.14.0.zip" class="btn">Descargar Instalador (.zip)</a>
+        <ul>
+            <li>Windows 10 u 11</li>
+            <li>No requiere Python instalado (el .exe es standalone)</li>
+        </ul>
+
+        <h3>Linux / macOS — vía pip</h3>
+        <p>Alvz también se instala como paquete Python estándar en Linux y macOS:</p>
+        <div class="code-container">
+            <pre><span class="comment"># Instalar desde el código fuente</span>
+git clone https://github.com/interpago/alvz-packages
+cd alvz-packages
+pip install -e .
+
+<span class="comment"># Ejecutar</span>
+alvz archivo.alvz</pre>
+        </div>
+        <ul>
+            <li>Requiere Python 3.10+</li>
+            <li>Con <code>alvz build</code> puedes generar ejecutables standalone con PyInstaller</li>
+        </ul>
+
+        <h3>Verificar instalación</h3>
+        <div class="code-container">
+            <pre>$ alvz --version
+Alvz v0.16.0</pre>
+        </div>
+    </section>
+
+    <section id="vscode">
+        <h2>Extensión para VS Code</h2>
+        <p>Mejora tu experiencia de desarrollo con resaltado semántico, autocompletado real y más de <strong>60 snippets inteligentes</strong> para Alvz.</p>
+        
+        <div class="admonition">
+            <div class="admonition-title">v1.3.0 — Resaltado semántico + Autocompletado real</div>
+            <p><strong>Resaltado semántico:</strong> Variables, funciones, clases, keywords, strings, números, builtins, propiedades y comentarios se colorean según su rol en el código, no solo por sintaxis.</p>
+            <p><strong>Autocompletado real:</strong> Sugiere keywords, estructuras completas vía snippets, funciones de la StdLib con parámetros, constantes y módulos stdlib al escribir <code>importar "..."</code>.</p>
+            <p><strong>Snippets para Supabase, API REST, CRUD, archivos, JSON, async/paralelo, POO, menús, validación, fecha/hora, regex, listas, errores y más.</strong></p>
+        </div>
+
+        <h3>Instalación</h3>
+        <p>Descarga el archivo <code>.vsix</code> desde el <a href="alvz_v0.14.0.zip">instalador (.zip)</a> (viene incluido) o directamente del repositorio.</p>
+        <ol>
+            <li>Abre VS Code</li>
+            <li>Ve a la sección de Extensiones (<kbd>Ctrl+Shift+X</kbd>)</li>
+            <li>Haz clic en el menú <strong>"..."</strong> (esquina superior derecha)</li>
+            <li>Selecciona <strong>"Instalar desde VSIX..."</strong></li>
+            <li>Elige el archivo <code>alvz-language-1.3.0.vsix</code></li>
+        </ol>
+
+        <h3>Características</h3>
+        <ul>
+            <li><strong>Resaltado Semántico:</strong> El editor entiende el rol de cada token — variables declaradas con <code>variable</code>, funciones definidas con <code>funcion</code>, clases, builtins de la StdLib y más — y los colorea con precisión.</li>
+            <li><strong>Autocompletado Contextual:</strong> Sugiere keywords del lenguaje, snippets con Tab, funciones de la StdLib con firmas, constantes (<code>verdadero</code>, <code>falso</code>, <code>nulo</code>) y módulos stdlib al escribir <code>importar "..."</code>.</li>
+            <li><strong>60+ Snippets Inteligentes:</strong> Escribe <code>funcion</code>, <code>si</code>, <code>para</code>, <code>clase</code>, <code>async</code>, <code>servidor</code>, <code>supabase</code>, <code>crud</code>, <code>menu</code>, <code>api</code> y presiona Tab para autocompletar la estructura completa.</li>
+            <li><strong>Soporte FastAPI & Supabase:</strong> Resaltado especial para funciones de servidor y base de datos.</li>
+        </ul>
+
+        <h3>Snippets incluidos</h3>
+        <table>
+            <thead>
+                <tr><th>Categoría</th><th>Prefix</th><th>Descripción</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Supabase</strong></td><td><code>supabase</code>, <code>supainsert</code>, <code>supacrud</code></td><td>Conexión, inserción y API CRUD con Supabase</td></tr>
+                <tr><td><strong>API/FastAPI</strong></td><td><code>servidor</code>, <code>api</code>, <code>apijson</code></td><td>Servidor REST, rutas GET/POST, persistencia JSON</td></tr>
+                <tr><td><strong>CRUD</strong></td><td><code>crud</code></td><td>CRUD completo en memoria (crear, listar, actualizar, eliminar)</td></tr>
+                <tr><td><strong>Archivos</strong></td><td><code>leerarchivo</code>, <code>escribirarchivo</code></td><td>Lectura y escritura de archivos</td></tr>
+                <tr><td><strong>JSON</strong></td><td><code>jsonenc</code>, <code>jsondec</code></td><td>Codificar y decodificar JSON</td></tr>
+                <tr><td><strong>HTTP</strong></td><td><code>enviarweb</code></td><td>Enviar peticiones HTTP POST</td></tr>
+                <tr><td><strong>Async</strong></td><td><code>asyncpar</code></td><td>Ejecución paralela de corutinas</td></tr>
+                <tr><td><strong>POO</strong></td><td><code>claseh</code>, <code>persona</code>, <code>propiedad</code>, <code>estatico</code></td><td>Herencia, propiedades, métodos estáticos</td></tr>
+                <tr><td><strong>Validación</strong></td><td><code>validaremail</code>, <code>validarreq</code></td><td>Validación de email y campos requeridos</td></tr>
+                <tr><td><strong>Fecha/Hora</strong></td><td><code>fecha</code>, <code>timestamp</code></td><td>Formateo de fecha y timestamp Unix</td></tr>
+                <tr><td><strong>Listas</strong></td><td><code>filtrar</code>, <code>mapear</code>, <code>ordenar</code>, <code>contar</code></td><td>Operaciones funcionales sobre listas</td></tr>
+                <tr><td><strong>Texto</strong></td><td><code>dividir</code>, <code>unir</code>, <code>regex</code>, <code>reemplazar</code></td><td>Manipulación de cadenas</td></tr>
+                <tr><td><strong>Errores</strong></td><td><code>intentar</code>, <code>lanzar</code></td><td>Bloques try-catch</td></tr>
+                <tr><td><strong>Menús</strong></td><td><code>menu</code></td><td>Menú interactivo por consola</td></tr>
+                <tr><td><strong>Utilidades</strong></td><td><code>leer</code>, <code>azar</code>, <code>tipo</code>, <code>potencia</code>, <code>salida</code>, <code>base</code></td><td>Entrada, aleatorios, tipos, matemáticas, script base</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="glosario">
+        <h2>Glosario de Palabras Reservadas</h2>
+        <p>En Alvz, el código se lee casi como una oración en español. Aquí tienes las palabras que el lenguaje usa para entenderte:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Palabras Clave</th>
+                    <th>Propósito</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lógica</strong></td>
+                    <td><code>si</code>, <code>sino</code>, <code>mientras</code>, <code>para</code>, <code>cada</code></td>
+                    <td>Controlan el flujo del programa.</td>
+                </tr>
+                <tr>
+                    <td><strong>Conectores</strong></td>
+                    <td><code>de</code>, <code>a</code>, <code>en</code></td>
+                    <td>Ayudan a leer bucles: <code>para i de 1 a 10</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Definiciones</strong></td>
+                    <td><code>variable</code>, <code>funcion</code>, <code>clase</code>, <code>nuevo</code>, <code>super</code>, <code>propiedad</code>, <code>estatico</code></td>
+                    <td>Crean nuevos elementos y acceden a la clase padre.</td>
+                </tr>
+                <tr>
+                    <td><strong>Valores</strong></td>
+                    <td><code>verdadero</code>, <code>falso</code>, <code>nulo</code></td>
+                    <td>Valores booleanos y nulo.</td>
+                </tr>
+                <tr>
+                    <td><strong>Lógica</strong></td>
+                    <td><code>y</code>, <code>o</code>, <code>instancia</code></td>
+                    <td>Operadores lógicos y verificación de tipo.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="hola-mundo">
+        <h2>Hola Mundo</h2>
+        <p>Compara cómo se ve el mismo código en Alvz y en Python:</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'hola-alvz')">inicio.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'hola-py')">inicio.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="hola-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">variable</span> mensaje = <span class="string">"¡Hola desde Alvz!"</span>
+<span class="keyword">imprimir</span>(mensaje)</pre>
+                </div>
+            </div>
+            <div id="hola-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>mensaje = <span class="string">"¡Hola desde Alvz!"</span>
+print(mensaje)</pre>
+                </div>
+            </div>
+        </div>
+        
+        <p>Ejecútalo desde la terminal:</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz inicio.alvz
+¡Hola desde Alvz!</pre>
+        </div>
+    </section>
+
+    <section id="variables">
+        <h2>Variables y Tipos</h2>
+        <p>Alvz es dinámicamente tipado con soporte opcional de anotaciones de tipo estáticas.</p>
+        
+        <h3>Tipos de datos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Ejemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Texto</td>
+                    <td><code>"Hola Mundo"</code></td>
+                </tr>
+                <tr>
+                    <td>Número</td>
+                    <td><code>10</code> o <code>3.14</code></td>
+                </tr>
+                <tr>
+                    <td>Booleano</td>
+                    <td><code>verdadero</code> o <code>falso</code></td>
+                </tr>
+                <tr>
+                    <td>Nulo</td>
+                    <td><code>nulo</code></td>
+                </tr>
+                <tr>
+                    <td>Lista</td>
+                    <td><code>[1, 2, 3]</code></td>
+                </tr>
+                <tr>
+                    <td>Diccionario</td>
+                    <td><code>{"clave": "valor"}</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Anotaciones de tipo (opcionales)</h3>
+        <p>Puedes declarar el tipo esperado de una variable usando <code>:</code> después del nombre.</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> x: <span class="keyword">numero</span> = 5
+<span class="keyword">variable</span> s: <span class="keyword">texto</span> = <span class="string">"hola"</span>
+<span class="keyword">variable</span> b: <span class="keyword">booleano</span> = <span class="keyword">verdadero</span>
+<span class="keyword">variable</span> n: <span class="keyword">nulo</span> = <span class="keyword">nulo</span></pre>
+        </div>
+    </section>
+
+    <section id="tipado">
+        <h2>Tipado Estático</h2>
+        <p>Alvz incluye un verificador de tipos estático opcional que analiza tu código en tiempo de compilación. Se activa con <code>--check-types</code> o <code>-T</code>.</p>
+
+        <h3>Anotaciones en variables</h3>
+        <p>Puedes declarar el tipo de una variable usando <code>:</code> después del nombre.</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> x: <span class="keyword">numero</span> = <span class="number">5</span>
+<span class="keyword">variable</span> nombre: <span class="keyword">texto</span> = <span class="string">"Alvz"</span>
+<span class="keyword">variable</span> activo: <span class="keyword">booleano</span> = <span class="keyword">verdadero</span></pre>
+        </div>
+
+        <h3>Anotaciones en funciones</h3>
+        <p>Puedes anotar tipos en parámetros y valor de retorno. El verificador valida que los argumentos coincidan.</p>
+        <div class="code-container">
+            <pre><span class="keyword">funcion</span> suma(a: <span class="keyword">numero</span>, b: <span class="keyword">numero</span>): <span class="keyword">numero</span> {
+    <span class="keyword">retornar</span> a + b
+}
+
+<span class="comment"># Error en compilacion:</span>
+<span class="keyword">variable</span> x: <span class="keyword">texto</span> = suma(<span class="number">1</span>, <span class="number">2</span>)  <span class="comment"># esperaba texto, encontro numero</span></pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Inferencia automática</div>
+            El type checker infiere tipos desde literales. Si asignas <code>5</code>, sabe que es <code>numero</code>. Sin anotaciones, no hay verificación.
+        </div>
+
+        <h3>Tipos disponibles</h3>
+        <ul>
+            <li><code>numero</code> — enteros y decimales</li>
+            <li><code>texto</code> — cadenas</li>
+            <li><code>booleano</code> — verdadero/falso</li>
+            <li><code>nulo</code> — valor nulo</li>
+            <li><code>lista</code> — arreglos dinámicos</li>
+            <li><code>diccionario</code> — mapas clave-valor</li>
+            <li><code>funcion</code> — funciones como valor</li>
+            <li><code>cualquiera</code> — tipo dinámico (predeterminado)</li>
+        </ul>
+    </section>
+
+    <section id="funciones">
+        <h2>Funciones</h2>
+        <p>Las funciones te permiten reutilizar bloques de código. Compara la sintaxis:</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'func-alvz')">funciones.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'func-py')">funciones.py</button>
+        </div>
+        <div class="tab-content">
+                <div id="func-alvz" class="tab-pane active">
+                    <div class="code-container">
+                        <pre><span class="keyword">funcion</span> sumar(a: <span class="keyword">numero</span>, b: <span class="keyword">numero</span>): <span class="keyword">numero</span> {
+    <span class="keyword">retornar</span> a + b
+}
+
+<span class="keyword">variable</span> resultado = sumar(10, 5)
+<span class="keyword">imprimir</span>(resultado)</pre>
+                </div>
+            </div>
+            <div id="func-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>def sumar(a, b):
+    return a + b
+
+resultado = sumar(10, 5)
+print(resultado)</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="lambdas">
+        <h2>Funciones Anónimas (Lambdas)</h2>
+        <p>Las funciones anónimas (también llamadas lambdas) permiten definir funciones sin nombre como expresiones. Son ideales para callbacks, operaciones sobre listas y composición funcional.</p>
+
+        <h3>Sintaxis</h3>
+        <p>Una función anónima se define con la palabra clave <code>funcion</code> seguida de parámetros y cuerpo entre llaves, todo como una expresión:</p>
+        <div class="code-container">
+            <pre><span class="keyword">funcion</span>(a, b) {
+    <span class="keyword">retornar</span> a + b
+}</pre>
+        </div>
+
+        <h3>Asignación a variable</h3>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> suma = <span class="keyword">funcion</span>(a, b) {
+    <span class="keyword">retornar</span> a + b
+}
+<span class="keyword">imprimir</span>(suma(3, 4))  <span class="comment"># 7</span></pre>
+        </div>
+
+        <h3>Uso como argumento (callbacks)</h3>
+        <div class="code-container">
+            <pre><span class="keyword">funcion</span> aplicar_operacion(x, y, operacion) {
+    <span class="keyword">retornar</span> operacion(x, y)
+}
+
+<span class="keyword">variable</span> resultado = aplicar_operacion(10, 5, <span class="keyword">funcion</span>(a, b) {
+    <span class="keyword">retornar</span> a * b
+})
+<span class="keyword">imprimir</span>(resultado)  <span class="comment"># 50</span></pre>
+        </div>
+
+        <h3>Con listas: mapear y filtrar</h3>
+        <p>Las lambdas son especialmente útiles al trabajar con listas:</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> numeros = [1, 2, 3, 4, 5]
+
+<span class="comment"># Mapear: doblar cada valor</span>
+<span class="keyword">variable</span> dobles = numeros.mapear(<span class="keyword">funcion</span>(n) {
+    <span class="keyword">retornar</span> n * 2
+})
+<span class="keyword">imprimir</span>(dobles)  <span class="comment"># [2, 4, 6, 8, 10]</span>
+
+<span class="comment"># Filtrar: solo pares</span>
+<span class="keyword">variable</span> pares = numeros.filtrar(<span class="keyword">funcion</span>(n) {
+    <span class="keyword">retornar</span> n % 2 == 0
+})
+<span class="keyword">imprimir</span>(pares)  <span class="comment"># [2, 4]</span></pre>
+        </div>
+    </section>
+
+    <section id="clases">
+        <h2>Clases y Objetos (POO)</h2>
+        <p>Alvz soporta programación orientada a objetos con sintaxis limpia en español.</p>
+
+        <h3>Definición básica</h3>
+        <p><code>self</code> se agrega automáticamente como primer parámetro. No necesitas declararlo.</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'clase-alvz')">clases.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'clase-py')">clases.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="clase-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">clase</span> Persona {
+    <span class="keyword">variable</span> nombre = <span class="string">""</span>
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">imprimir</span>(<span class="string">"Hola, soy "</span> + self.nombre)
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Persona()
+p.nombre = <span class="string">"Juan"</span>
+p.saludar()</pre>
+                </div>
+            </div>
+            <div id="clase-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>class Persona:
+    def __init__(self):
+        self.nombre = ""
+    def saludar(self):
+        print("Hola, soy " + self.nombre)
+
+p = Persona()
+p.nombre = "Juan"
+p.saludar()</pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>Constructor con argumentos</h3>
+        <p>Define <code>inicializar()</code> para recibir argumentos al crear la instancia.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Punto {
+    <span class="keyword">variable</span> x = 0
+    <span class="keyword">variable</span> y = 0
+    <span class="keyword">funcion</span> inicializar(x, y) {
+        self.x = x
+        self.y = y
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Punto(10, 20)
+<span class="keyword">imprimir</span>(p.x)</pre>
+        </div>
+
+        <h3>Propiedades con expresiones</h3>
+        <p>Las propiedades pueden inicializarse con cualquier expresión, no solo con valores simples.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Caja {
+    <span class="keyword">variable</span> items = [1, 2, 3]
+    <span class="keyword">variable</span> total = 5 + 10
+}
+
+<span class="keyword">variable</span> c = <span class="keyword">nuevo</span> Caja()
+<span class="keyword">imprimir</span>(c.items)
+<span class="keyword">imprimir</span>(c.total)</pre>
+        </div>
+
+        <h3>Herencia</h3>
+        <p>Usa <code>clase Hijo de Padre</code> para heredar propiedades y métodos.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {
+    <span class="keyword">variable</span> nombre = <span class="string">""</span>
+    <span class="keyword">funcion</span> inicializar(nombre) {
+        self.nombre = nombre
+    }
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> <span class="string">"Soy "</span> + self.nombre
+    }
+}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> ladrar() {
+        <span class="keyword">retornar</span> <span class="string">"Guau!"</span>
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro(<span class="string">"Rex"</span>)
+<span class="keyword">imprimir</span>(p.saludar())
+<span class="keyword">imprimir</span>(p.ladrar())</pre>
+        </div>
+    </section>
+
+    <section id="super-instanceof">
+        <h2>super e instanceof</h2>
+        <p>Alvz soporta dos características clave de POO avanzado: llamadas a métodos de la clase padre y verificación de tipo en tiempo de ejecución.</p>
+
+        <h3>super.metodo()</h3>
+        <p>Llama explícitamente a un método de la clase padre desde una clase hija.</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> <span class="string">"Hola, soy un animal"</span>
+    }
+}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> saludar() {
+        <span class="keyword">retornar</span> super.saludar() + <span class="string">" (perro)"</span>
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro()
+<span class="keyword">imprimir</span>(p.saludar()) <span class="comment"># "Hola, soy un animal (perro)"</span></pre>
+        </div>
+
+        <h3>obj instancia Clase</h3>
+        <p>Verifica si un objeto es una instancia de una clase (o de sus clases padre).</p>
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Animal {}
+<span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Perro()
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Perro)    <span class="comment"># verdadero</span>
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Animal)   <span class="comment"># verdadero (hereda)</span>
+<span class="keyword">imprimir</span>(p <span class="keyword">instancia</span> Texto)     <span class="comment"># falso</span>
+<span class="keyword">imprimir</span>(42 <span class="keyword">instancia</span> Perro)    <span class="comment"># falso (no es objeto)</span></pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Soporta cadenas de herencia</div>
+            <code>instancia</code> recorre toda la cadena de padres. Si alguna clase en la jerarquía coincide, devuelve <code>verdadero</code>.
+        </div>
+    </section>
+
+    <section id="getters-setters">
+        <h2>Getters y Setters</h2>
+        <p>Define propiedades calculadas con acceso controlado usando la sintaxis <code>propiedad</code>.</p>
+
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Persona {
+    <span class="keyword">variable</span> _nombre = <span class="string">""</span>
+    <span class="keyword">propiedad</span> nombre {
+        <span class="keyword">obtener</span> {
+            <span class="keyword">retornar</span> mayusculas(self._nombre)
+        }
+        <span class="keyword">establecer</span>(valor) {
+            self._nombre = valor
+        }
+    }
+    <span class="keyword">funcion</span> inicializar(nombre) {
+        self._nombre = nombre
+    }
+}
+
+<span class="keyword">variable</span> p = <span class="keyword">nuevo</span> Persona(<span class="string">"juan"</span>)
+<span class="keyword">imprimir</span>(p.nombre)  <span class="comment"># "JUAN" (getter aplica mayusculas)</span>
+p.nombre = <span class="string">"maria"</span>
+<span class="keyword">imprimir</span>(p.nombre)  <span class="comment"># "MARIA"</span></pre>
+        </div>
+
+        <p>Los getters y setters soportan herencia. Una clase hija puede heredar propiedades con getter/setter de la clase padre.</p>
+    </section>
+
+    <section id="estaticos">
+        <h2>Métodos Estáticos</h2>
+        <p>Define métodos que pertenecen a la clase, no a la instancia, usando <code>funcion estatico</code>.</p>
+
+        <div class="code-container">
+            <pre><span class="keyword">clase</span> Matematicas {
+    <span class="keyword">funcion estatico</span> cuadrado(n) {
+        <span class="keyword">retornar</span> n * n
+    }
+    <span class="keyword">funcion estatico</span> pi() {
+        <span class="keyword">retornar</span> 3.1416
+    }
+}
+
+<span class="keyword">imprimir</span>(Matematicas.cuadrado(5))  <span class="comment"># 25</span>
+<span class="keyword">imprimir</span>(Matematicas.pi())           <span class="comment"># 3.1416</span></pre>
+        </div>
+
+        <p>Los métodos estáticos se llaman directamente desde la clase, sin necesidad de crear una instancia con <code>nuevo</code>.</p>
+    </section>
+
+    <section id="control">
+        <h2>Control de Flujo</h2>
+        <p>Alvz soporta las estructuras de control clásicas para tomar decisiones y repetir tareas.</p>
+
+        <h3>Condicionales (si / sino)</h3>
+        <div class="code-container">
+            <pre><span class="keyword">si</span> edad >= 18 {
+    <span class="keyword">imprimir</span>(<span class="string">"Eres mayor de edad"</span>)
+} <span class="keyword">sino</span> {
+    <span class="keyword">imprimir</span>(<span class="string">"Eres menor de edad"</span>)
+}</pre>
+        </div>
+
+        <h3>Bucles (mientras / para)</h3>
+        <p>Alvz ofrece bucles potentes, incluyendo iteración sobre rangos y listas.</p>
+        <div class="code-container">
+            <pre><span class="comment"># Bucle mientras</span>
+<span class="keyword">variable</span> i = 1
+<span class="keyword">mientras</span> i <= 5 {
+    <span class="keyword">imprimir</span>(i)
+    i = i + 1
+}
+
+<span class="comment"># Bucle para (rango)</span>
+<span class="keyword">para</span> j <span class="keyword">de</span> 1 <span class="keyword">a</span> 5 {
+    <span class="keyword">imprimir</span>(j)
+}
+
+<span class="comment"># Bucle para cada (listas)</span>
+<span class="keyword">variable</span> colores = [<span class="string">"rojo"</span>, <span class="string">"verde"</span>, <span class="string">"azul"</span>]
+<span class="keyword">para cada</span> c <span class="keyword">en</span> colores {
+    <span class="keyword">imprimir</span>(c)
+}</pre>
+        </div>
+    </section>
+
+    <section id="global">
+        <h2>global keyword</h2>
+        <p>La palabra clave <code>global</code> permite declarar y modificar variables globales dentro del ámbito de una función.</p>
+
+        <h3>Declaración</h3>
+        <p>Usa <code>global</code> para indicar que una variable pertenece al ámbito global:</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> contador = 0
+
+<span class="keyword">funcion</span> incrementar() {
+    <span class="keyword">global</span> contador
+    contador = contador + 1
+}
+
+incrementar()
+<span class="keyword">imprimir</span>(contador)  <span class="comment"># 1</span></pre>
+        </div>
+
+        <h3>Lectura y escritura</h3>
+        <p>Sin <code>global</code>, una función crea una variable local al asignar. Con <code>global</code>, lee y escribe la variable del ámbito global:</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> mensaje = <span class="string">"Hola"</span>
+
+<span class="keyword">funcion</span> cambiar_mensaje() {
+    <span class="keyword">global</span> mensaje
+    mensaje = <span class="string">"Mundo"</span>
+}
+
+cambiar_mensaje()
+<span class="keyword">imprimir</span>(mensaje)  <span class="comment"># "Mundo"</span></pre>
+        </div>
+
+        <h3>Asignación compuesta</h3>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> total = 100
+
+<span class="keyword">funcion</span> agregar(valor) {
+    <span class="keyword">global</span> total
+    total += valor
+}
+
+agregar(50)
+<span class="keyword">imprimir</span>(total)  <span class="comment"># 150</span></pre>
+        </div>
+
+        <h3>Múltiples variables globales</h3>
+        <p>Puedes declarar varias variables globales en una sola línea:</p>
+        <div class="code-container">
+            <pre><span class="keyword">variable</span> x = 1
+<span class="keyword">variable</span> y = 2
+<span class="keyword">variable</span> z = 3
+
+<span class="keyword">funcion</span> reiniciar() {
+    <span class="keyword">global</span> x, y, z
+    x = 0
+    y = 0
+    z = 0
+}
+
+reiniciar()
+<span class="keyword">imprimir</span>(x, y, z)  <span class="comment"># 0 0 0</span></pre>
+        </div>
+    </section>
+
+    <section id="fastapi">
+        <h2>Desarrollo Web con FastAPI Pro</h2>
+        <p>Alvz soporta ahora la potencia completa de FastAPI, permitiendo parámetros de ruta, diferentes métodos HTTP y recepción de datos JSON.</p>
+        
+        <h3>API REST Completa</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'webpro-alvz')">api.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'webpro-py')">api.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="webpro-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="comment"># Función con parámetro de ruta {id}</span>
+<span class="keyword">funcion</span> obtener_usuario(id) {
+    <span class="keyword">retornar</span> {<span class="string">"id"</span>: id, <span class="string">"nombre"</span>: <span class="string">"Usuario "</span> + id}
+}
+
+<span class="comment"># Función para POST con datos del Body</span>
+<span class="keyword">funcion</span> crear(nombre, precio) {
+    <span class="keyword">retornar</span> {<span class="string">"estado"</span>: <span class="string">"ok"</span>, <span class="string">"nombre"</span>: nombre}
+}
+
+<span class="keyword">variable</span> rutas = {
+    <span class="string">"/usuarios/{id}"</span>: <span class="string">"obtener_usuario"</span>,
+    <span class="string">"/items"</span>: {<span class="string">"metodo"</span>: <span class="string">"POST"</span>, <span class="string">"funcion"</span>: <span class="string">"crear"</span>}
+}
+
+<span class="keyword">iniciar_servidor</span>(8000, rutas)</pre>
+                </div>
+            </div>
+            <div id="webpro-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("/usuarios/{id}")
+async def obtener_usuario(id: str):
+    return {"id": id, "nombre": f"Usuario {id}"}
+
+@app.post("/items")
+async def crear(item: dict):
+    return {"estado": "ok", "nombre": item.get("nombre")}
+
+import uvicorn
+uvicorn.run(app, port=8000)</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="python-power">
+        <h2>Python Power: Características Avanzadas</h2>
+        <p>Alvz hereda las características más potentes de Python. Mira las diferencias:</p>
+
+        <h3>Herencia</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'herencia-alvz')">animales.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'herencia-py')">animales.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="herencia-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">clase</span> Perro <span class="keyword">de</span> Animal {
+    <span class="keyword">funcion</span> inicializar() {
+        self.tipo = <span class="string">"Canino"</span>
+    }
+}</pre>
+                </div>
+            </div>
+            <div id="herencia-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>class Perro(Animal):
+    def __init__(self):
+        self.tipo = "Canino"</pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>Slicing</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'slice-alvz')">slice.alvz</button>
+            <button class="tab-btn" onclick="openTab(event, 'slice-py')">slice.py</button>
+        </div>
+        <div class="tab-content">
+            <div id="slice-alvz" class="tab-pane active">
+                <div class="code-container">
+                    <pre><span class="keyword">imprimir</span>(lista[1:4])
+<span class="keyword">imprimir</span>(texto[0:4])</pre>
+                </div>
+            </div>
+            <div id="slice-py" class="tab-pane">
+                <div class="code-container">
+                    <pre>print(lista[1:4])
+print(texto[0:4])</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="supabase">
+        <h2>Integración con Supabase</h2>
+        <p>Conecta tu app a la nube en segundos. Alvz permite interactuar con bases de datos PostgreSQL a través de la API de Supabase sin configuraciones complejas.</p>
+        
+        <div class="code-container">
+            <div class="code-header"><span>nube.alvz</span></div>
+            <pre><span class="keyword">variable</span> url = <span class="string">"https://tu-proyecto.supabase.co"</span>
+<span class="keyword">variable</span> key = <span class="string">"tu-anon-key"</span>
+
+<span class="comment"># Insertar datos</span>
+<span class="keyword">variable</span> datos = {<span class="string">"usuario"</span>: <span class="string">"alvz_user"</span>, <span class="string">"puntos"</span>: 100}
+<span class="keyword">variable</span> status = <span class="keyword">supabase_insertar</span>(url, key, <span class="string">"ranking"</span>, datos)
+
+<span class="comment"># Consultar datos</span>
+<span class="keyword">variable</span> resultado = <span class="keyword">supabase_consultar</span>(url, key, <span class="string">"ranking"</span>)
+<span class="keyword">imprimir</span>(resultado)</pre>
+        </div>
+    </section>
+
+    <section id="modulos">
+        <h2>Módulos (importar)</h2>
+        <p>Divide tu código en archivos para una mejor organización. También puedes importar módulos de la librería estándar.</p>
+        
+        <h3>Importar un archivo local</h3>
+        <div class="code-container">
+            <div class="code-header"><span>app.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"calculos.alvz"</span>
+
+<span class="keyword">variable</span> r = calcular_total(100, 15)
+<span class="keyword">imprimir</span>(r)</pre>
+        </div>
+
+        <h3>Importar de la librería estándar</h3>
+        <div class="code-container">
+            <div class="code-header"><span>app.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"matematicas"</span>
+<span class="keyword">imprimir</span>(factorial(5))  <span class="comment"># 120</span>
+<span class="keyword">imprimir</span>(maximo(10, 20)) <span class="comment"># 20</span></pre>
+        </div>
+
+        <h3>Importar desde paquetes instalados</h3>
+        <p>Los paquetes instalados con <code>alvz install</code> se importan igual que los módulos de la StdLib:</p>
+        <div class="code-container">
+            <div class="code-header"><span>app.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"http"</span>
+
+<span class="keyword">variable</span> resp = http_obtener(<span class="string">"https://api.example.com"</span>)
+<span class="keyword">imprimir</span>(resp)</pre>
+        </div>
+    </section>
+
+    <section id="stdlib">
+        <h2>Librería Estándar (StdLib)</h2>
+        <p>Alvz incluye módulos reutilizables que puedes importar con <code>importar "nombre"</code>.</p>
+
+        <h3>matematicas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>factorial(n)</code></td><td>Calcula el factorial de <code>n</code>.</td></tr>
+                <tr><td><code>maximo(a, b)</code></td><td>Devuelve el mayor de dos números.</td></tr>
+                <tr><td><code>minimo(a, b)</code></td><td>Devuelve el menor de dos números.</td></tr>
+                <tr><td><code>promedio(lista)</code></td><td>Calcula el promedio de una lista de números.</td></tr>
+                <tr><td><code>es_par(n)</code></td><td>Devuelve <code>verdadero</code> si <code>n</code> es par.</td></tr>
+                <tr><td><code>es_impar(n)</code></td><td>Devuelve <code>verdadero</code> si <code>n</code> es impar.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"matematicas"</span>
+<span class="keyword">imprimir</span>(factorial(5))       <span class="comment"># 120</span>
+<span class="keyword">imprimir</span>(maximo(10, 20))    <span class="comment"># 20</span>
+<span class="keyword">imprimir</span>(promedio([1,2,3])) <span class="comment"># 2</span></pre>
+        </div>
+
+        <h3>cadenas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>reversa(texto)</code></td><td>Invierte el texto.</td></tr>
+                <tr><td><code>capitalizar(texto)</code></td><td>Pone la primera letra en mayúscula.</td></tr>
+                <tr><td><code>contiene(texto, subcadena)</code></td><td>Verifica si un texto contiene una subcadena.</td></tr>
+                <tr><td><code>empieza_con(texto, prefijo)</code></td><td>Verifica si un texto empieza con un prefijo.</td></tr>
+                <tr><td><code>termina_con(texto, sufijo)</code></td><td>Verifica si un texto termina con un sufijo.</td></tr>
+                <tr><td><code>recortar(texto)</code></td><td>Elimina espacios al inicio y final.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"cadenas"</span>
+<span class="keyword">imprimir</span>(reversa(<span class="string">"Hola"</span>))        <span class="comment"># aloH</span>
+<span class="keyword">imprimir</span>(capitalizar(<span class="string">"hola"</span>))    <span class="comment"># Hola</span>
+<span class="keyword">imprimir</span>(contiene(<span class="string">"Hola Mundo"</span>, <span class="string">"Mundo"</span>))  <span class="comment"># verdadero</span>
+<span class="keyword">imprimir</span>(recortar(<span class="string">"  texto  "</span>))  <span class="comment"># "texto"</span></pre>
+        </div>
+
+        <h3>colecciones</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>vacio(lista)</code></td><td>Verifica si una lista está vacía.</td></tr>
+                <tr><td><code>primero(lista)</code></td><td>Devuelve el primer elemento.</td></tr>
+                <tr><td><code>ultimo(lista)</code></td><td>Devuelve el último elemento.</td></tr>
+                <tr><td><code>contiene(lista, elem)</code></td><td>Verifica si un elemento está en la lista.</td></tr>
+                <tr><td><code>sin_duplicados(lista)</code></td><td>Elimina elementos duplicados.</td></tr>
+                <tr><td><code>invertir(lista)</code></td><td>Invierte el orden de la lista.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"colecciones"</span>
+<span class="keyword">imprimir</span>(primero([10, 20, 30]))       <span class="comment"># 10</span>
+<span class="keyword">imprimir</span>(ultimo([10, 20, 30]))        <span class="comment"># 30</span>
+<span class="keyword">imprimir</span>(contiene([1, 2, 3], 2))     <span class="comment"># verdadero</span>
+<span class="keyword">imprimir</span>(sin_duplicados([1, 1, 2]))  <span class="comment"># [1, 2]</span></pre>
+        </div>
+
+        <h3>http</h3>
+        <p>Cliente HTTP para consumir APIs REST. Los métodos devuelven un diccionario con <code>codigo</code>, <code>cuerpo</code> y <code>json</code>.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>http_obtener(url, params)</code></td><td>Realiza una petición GET con parámetros opcionales.</td></tr>
+                <tr><td><code>http_post(url, datos)</code></td><td>Realiza una petición POST con datos JSON.</td></tr>
+                <tr><td><code>http_put(url, datos)</code></td><td>Realiza una petición PUT con datos JSON.</td></tr>
+                <tr><td><code>http_eliminar(url)</code></td><td>Realiza una petición DELETE.</td></tr>
+                <tr><td><code>http_exito(respuesta)</code></td><td>Devuelve <code>verdadero</code> si el código es 2xx.</td></tr>
+                <tr><td><code>http_cuerpo(respuesta)</code></td><td>Obtiene el cuerpo como texto.</td></tr>
+                <tr><td><code>http_json(respuesta)</code></td><td>Obtiene la respuesta parseada como JSON.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"http"</span>
+<span class="keyword">variable</span> resp = http_obtener(<span class="string">"https://api.github.com"</span>, {})
+<span class="keyword">si</span> http_exito(resp) {
+    <span class="keyword">variable</span> datos = http_json(resp)
+    <span class="keyword">imprimir</span>(datos)
+}</pre>
+        </div>
+
+        <h3>fecha</h3>
+        <p>Funciones para obtener y formatear fecha/hora actual.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>ahora()</code></td><td>Devuelve fecha y hora actual: <code>YYYY-MM-DD HH:MM:SS</code>.</td></tr>
+                <tr><td><code>hoy()</code></td><td>Devuelve fecha actual: <code>YYYY-MM-DD</code>.</td></tr>
+                <tr><td><code>hora_actual()</code></td><td>Devuelve hora actual: <code>HH:MM:SS</code>.</td></tr>
+                <tr><td><code>timestamp_actual()</code></td><td>Devuelve el timestamp Unix actual en segundos.</td></tr>
+                <tr><td><code>formatear_fecha(formato)</code></td><td>Formatea la fecha actual con el formato dado.</td></tr>
+                <tr><td><code>anio_actual()</code></td><td>Devuelve el año actual.</td></tr>
+                <tr><td><code>mes_actual()</code></td><td>Devuelve el mes actual.</td></tr>
+                <tr><td><code>dia_actual()</code></td><td>Devuelve el día actual.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"fecha"</span>
+<span class="keyword">imprimir</span>(ahora())                  <span class="comment"># 2026-05-27 12:00:00</span>
+<span class="keyword">imprimir</span>(dia_actual())             <span class="comment"># 27</span>
+<span class="keyword">imprimir</span>(formatear_fecha(<span class="string">"%d/%m/%Y"</span>))  <span class="comment"># 27/05/2026</span></pre>
+        </div>
+
+        <h3>testing</h3>
+        <p>Framework de pruebas unitarias para testear tu código Alvz.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>describir(nombre)</code></td><td>Inicia un grupo de tests con nombre descriptivo.</td></tr>
+                <tr><td><code>probar(nombre, funcion)</code></td><td>Ejecuta una prueba. Si falla, captura el error y continua.</td></tr>
+                <tr><td><code>afirmar(condicion, msj)</code></td><td>Lanza error si la condición es <code>falso</code>.</td></tr>
+                <tr><td><code>afirmar_igual(a, b, msj)</code></td><td>Lanza error si <code>a != b</code>.</td></tr>
+                <tr><td><code>afirmar_diferente(a, b, msj)</code></td><td>Lanza error si <code>a == b</code>.</td></tr>
+                <tr><td><code>afirmar_error(funcion, msj)</code></td><td>Verifica que una función lance un error con el mensaje esperado.</td></tr>
+                <tr><td><code>resumen()</code></td><td>Muestra total de tests, exitos y fallos.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"testing"</span>
+
+describir(<span class="string">"Matematicas"</span>)
+probar(<span class="string">"suma funciona"</span>, funcion() {
+    afirmar_igual(5, 2 + 3, <span class="string">"2+3=5"</span>)
+})
+probar(<span class="string">"division"</span>, funcion() {
+    afirmar_igual(2, 10 / 5, <span class="string">"10/5=2"</span>)
+})
+resumen()</pre>
+        </div>
+
+        <h3>sistema</h3>
+        <p>Operaciones del sistema: archivos, JSON, rutas.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>archivo_existe(ruta)</code></td><td>Verifica si un archivo existe.</td></tr>
+                <tr><td><code>archivo_leer(ruta)</code></td><td>Lee el contenido de un archivo.</td></tr>
+                <tr><td><code>archivo_escribir(ruta, cont)</code></td><td>Escribe contenido en un archivo.</td></tr>
+                <tr><td><code>archivo_copiar(origen, dest)</code></td><td>Copia un archivo.</td></tr>
+                <tr><td><code>json_a_texto(datos)</code></td><td>Convierte un diccionario/lista a texto JSON.</td></tr>
+                <tr><td><code>texto_a_json(texto)</code></td><td>Convierte texto JSON a diccionario/lista.</td></tr>
+                <tr><td><code>archivo_leer_json(ruta)</code></td><td>Lee y parsea un archivo JSON.</td></tr>
+                <tr><td><code>archivo_escribir_json(ruta, datos)</code></td><td>Convierte a JSON y guarda en archivo.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"sistema"</span>
+<span class="keyword">variable</span> datos = {<span class="string">"nombre"</span>: <span class="string">"Alvz"</span>, <span class="string">"version"</span>: 1}
+archivo_escribir_json(<span class="string">"datos.json"</span>, datos)
+<span class="keyword">variable</span> leido = archivo_leer_json(<span class="string">"datos.json"</span>)
+<span class="keyword">imprimir</span>(leido[<span class="string">"nombre"</span>])  <span class="comment"># Alvz</span></pre>
+        </div>
+
+        <h3>sqlite</h3>
+        <p>Base de datos SQLite embebida para persistencia local.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>base_abrir(ruta)</code></td><td>Abre (o crea) una base de datos SQLite.</td></tr>
+                <tr><td><code>base_ejecutar(conn, sql)</code></td><td>Ejecuta una sentencia SQL (INSERT, UPDATE, DELETE).</td></tr>
+                <tr><td><code>base_consultar(conn, sql)</code></td><td>Ejecuta una consulta SELECT, devuelve lista de registros.</td></tr>
+                <tr><td><code>base_crear_tabla(conn, nom, cols)</code></td><td>Crea una tabla con las columnas especificadas.</td></tr>
+                <tr><td><code>base_insertar(conn, tabla, datos)</code></td><td>Inserta un diccionario como fila en la tabla.</td></tr>
+                <tr><td><code>base_seleccionar(conn, tabla, cond)</code></td><td>Selecciona registros con condición WHERE opcional.</td></tr>
+                <tr><td><code>base_cerrar(conn)</code></td><td>Cierra la conexión a la base de datos.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"sqlite"</span>
+<span class="keyword">variable</span> db = base_abrir(<span class="string">"ejemplo.db"</span>)
+base_crear_tabla(db, <span class="string">"usuarios"</span>, [<span class="string">"id INTEGER PRIMARY KEY"</span>, <span class="string">"nombre TEXT"</span>, <span class="string">"edad INTEGER"</span>])
+base_insertar(db, <span class="string">"usuarios"</span>, {<span class="string">"id"</span>: 1, <span class="string">"nombre"</span>: <span class="string">"Ana"</span>, <span class="string">"edad"</span>: 30})
+<span class="keyword">variable</span> resultados = base_seleccionar(db, <span class="string">"usuarios"</span>, <span class="string">""</span>)
+<span class="keyword">cada</span> r en resultados {
+    <span class="keyword">imprimir</span>(r[<span class="string">"nombre"</span>])  <span class="comment"># Ana</span>
+}
+base_cerrar(db)</pre>
+        </div>
+
+        <h3>aleatorio</h3>
+        <p>Números aleatorios, selección y mezcla de colecciones, generación de cadenas aleatorias.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>aleatorio_numero(min, max)</code></td><td>Devuelve un entero aleatorio entre <code>min</code> y <code>max</code> (inclusive).</td></tr>
+                <tr><td><code>aleatorio_flotante(min, max)</code></td><td>Devuelve un número decimal aleatorio entre <code>min</code> y <code>max</code>.</td></tr>
+                <tr><td><code>aleatorio_escoger(lista)</code></td><td>Selecciona un elemento al azar de la lista.</td></tr>
+                <tr><td><code>aleatorio_escoger_varios(lista, n)</code></td><td>Selecciona <code>n</code> elementos distintos al azar.</td></tr>
+                <tr><td><code>aleatorio_mezclar(lista)</code></td><td>Devuelve una copia de la lista con elementos reordenados aleatoriamente.</td></tr>
+                <tr><td><code>aleatorio_cadena(longitud)</code></td><td>Genera una cadena alfanumérica aleatoria de la longitud dada.</td></tr>
+                <tr><td><code>aleatorio_booleano()</code></td><td>Devuelve <code>verdadero</code> o <code>falso</code> al azar.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"aleatorio"</span>
+<span class="keyword">variable</span> dado = aleatorio_numero(1, 6)
+<span class="keyword">variable</span> cartas = [<span class="string">"A"</span>, <span class="string">"K"</span>, <span class="string">"Q"</span>, <span class="string">"J"</span>]
+<span class="keyword">variable</span> mano = aleatorio_escoger_varios(cartas, 2)
+<span class="keyword">variable</span> token = aleatorio_cadena(16)
+<span class="keyword">imprimir</span>(dado, mano, token)</pre>
+        </div>
+
+        <h3>csv</h3>
+        <p>Lectura y escritura de archivos CSV con soporte para formato de diccionarios y listas.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>csv_a_listas(texto)</code></td><td>Parsea texto CSV y devuelve una lista de listas.</td></tr>
+                <tr><td><code>csv_a_diccionarios(texto)</code></td><td>Parsea texto CSV usando la primera fila como encabezados, devuelve lista de diccionarios.</td></tr>
+                <tr><td><code>csv_leer(ruta)</code></td><td>Lee un archivo CSV y devuelve lista de diccionarios.</td></tr>
+                <tr><td><code>csv_listas_a_texto(datos)</code></td><td>Convierte una lista de listas a texto CSV.</td></tr>
+                <tr><td><code>csv_diccionarios_a_texto(datos)</code></td><td>Convierte una lista de diccionarios a texto CSV.</td></tr>
+                <tr><td><code>csv_escribir(ruta, datos)</code></td><td>Guarda una lista de diccionarios como archivo CSV.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"csv"</span>
+<span class="keyword">importar</span> <span class="string">"sistema"</span>
+
+<span class="keyword">variable</span> usuarios = [
+    {<span class="string">"nombre"</span>: <span class="string">"Ana"</span>, <span class="string">"edad"</span>: <span class="string">"30"</span>},
+    {<span class="string">"nombre"</span>: <span class="string">"Bob"</span>, <span class="string">"edad"</span>: <span class="string">"25"</span>}
+]
+csv_escribir(<span class="string">"usuarios.csv"</span>, usuarios)
+<span class="keyword">variable</span> datos = csv_leer(<span class="string">"usuarios.csv"</span>)
+<span class="keyword">cada</span> u en datos {
+    <span class="keyword">imprimir</span>(u[<span class="string">"nombre"</span>])
+}</pre>
+        </div>
+
+        <h3>expresiones_regulares</h3>
+        <p>Validación y extracción de patrones con expresiones regulares.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>regex_coincide(texto, patron)</code></td><td>Devuelve <code>verdadero</code> si el patrón aparece al menos una vez.</td></tr>
+                <tr><td><code>regex_extraer(texto, patron)</code></td><td>Devuelve la primera coincidencia del patrón, o cadena vacía.</td></tr>
+                <tr><td><code>regex_todas(texto, patron)</code></td><td>Devuelve una lista con todas las coincidencias.</td></tr>
+                <tr><td><code>regex_contar(texto, patron)</code></td><td>Cuenta cuántas veces aparece el patrón en el texto.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"expresiones_regulares"</span>
+<span class="keyword">variable</span> email = <span class="string">"usuario@ejemplo.com"</span>
+<span class="keyword">si</span> regex_coincide(email, <span class="string">"^.+@.+\\..+$"</span>) {
+    <span class="keyword">imprimir</span>(<span class="string">"Email válido"</span>)
+}
+<span class="keyword">variable</span> texto = <span class="string">"precio: $10, $20, $30"</span>
+<span class="keyword">imprimir</span>(regex_todas(texto, <span class="string">"\\$\\d+"</span>))  <span class="comment"># ["$10", "$20", "$30"]</span></pre>
+        </div>
+
+        <h3>consola</h3>
+        <p>Utilidades interactivas para terminal: menús, confirmaciones, colores y barras de progreso.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>consola_color(texto, color)</code></td><td>Envuelve el texto en códigos ANSI del color especificado (rojo, verde, azul, etc.).</td></tr>
+                <tr><td><code>consola_preguntar(pregunta)</code></td><td>Muestra una pregunta y devuelve la respuesta del usuario.</td></tr>
+                <tr><td><code>consola_confirmar(pregunta)</code></td><td>Muestra una pregunta de sí/no y devuelve <code>verdadero</code> o <code>falso</code>.</td></tr>
+                <tr><td><code>consola_menu(titulo, opciones)</code></td><td>Muestra un menú numerado y devuelve la opción seleccionada.</td></tr>
+                <tr><td><code>consola_progreso(actual, total, ancho)</code></td><td>Genera una barra de progreso visual como texto.</td></tr>
+                <tr><td><code>consola_separador()</code></td><td>Imprime una línea separadora.</td></tr>
+                <tr><td><code>consola_titulo(texto)</code></td><td>Imprime un título formateado.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"consola"</span>
+<span class="keyword">variable</span> nombre = consola_preguntar(<span class="string">"¿Cómo te llamas?"</span>)
+<span class="keyword">si</span> consola_confirmar(<span class="string">"¿Quieres continuar?"</span>) {
+    <span class="keyword">variable</span> opcion = consola_menu(<span class="string">"Elige:"</span>, [<span class="string">"Opción A"</span>, <span class="string">"Opción B"</span>])
+    <span class="keyword">imprimir</span>(consola_color(<span class="string">"Listo"</span>, <span class="string">"verde"</span>))
+}</pre>
+        </div>
+
+        <h3>json</h3>
+        <p>Codificación y decodificación JSON, validación y lectura/escritura de archivos.</p>
+        <table>
+            <thead><tr><th>Función</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>json_a_texto(datos)</code></td><td>Convierte un diccionario o lista a cadena JSON.</td></tr>
+                <tr><td><code>texto_a_json(texto)</code></td><td>Convierte una cadena JSON a diccionario o lista.</td></tr>
+                <tr><td><code>json_leer_archivo(ruta)</code></td><td>Lee y parsea un archivo JSON.</td></tr>
+                <tr><td><code>json_escribir_archivo(ruta, datos)</code></td><td>Convierte datos a JSON y los guarda en un archivo.</td></tr>
+                <tr><td><code>json_valido(texto)</code></td><td>Devuelve <code>verdadero</code> si el texto es JSON válido.</td></tr>
+            </tbody>
+        </table>
+        <div class="code-container">
+            <pre><span class="keyword">importar</span> <span class="string">"json"</span>
+<span class="keyword">variable</span> datos = {<span class="string">"nombre"</span>: <span class="string">"Ana"</span>, <span class="string">"edad"</span>: 30}
+<span class="keyword">variable</span> texto = json_a_texto(datos)
+<span class="keyword">imprimir</span>(texto)              <span class="comment"># {"nombre": "Ana", "edad": 30}</span>
+<span class="keyword">variable</span> recuperado = texto_a_json(texto)
+<span class="keyword">imprimir</span>(recuperado[<span class="string">"nombre"</span>])  <span class="comment"># Ana</span></pre>
+        </div>
+
+        <h3>Funciones incorporadas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>leer()</code></td>
+                    <td>Lee una entrada del usuario (texto o número).</td>
+                </tr>
+                <tr>
+                    <td><code>leer_numero()</code></td>
+                    <td>Lee una entrada y obliga al usuario a ingresar un número válido.</td>
+                </tr>
+                <tr>
+                    <td><code>tiempo()</code></td>
+                    <td>Obtiene el tiempo actual en segundos (Unix timestamp).</td>
+                </tr>
+                <tr>
+                    <td><code>tipo(valor)</code></td>
+                    <td>Devuelve el tipo de dato (texto, numero, booleano, lista, diccionario, nulo).</td>
+                </tr>
+                <tr>
+                    <td><code>json_codificar(v)</code></td>
+                    <td>Convierte una lista o diccionario a una cadena JSON.</td>
+                </tr>
+                <tr>
+                    <td><code>reemplazar(t, v, n)</code></td>
+                    <td>Reemplaza en el texto <code>t</code> todas las ocurrencias de <code>v</code> por <code>n</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>absoluto(n)</code></td>
+                    <td>Devuelve el valor absoluto de un número.</td>
+                </tr>
+                <tr>
+                    <td><code>azar(min, max)</code></td>
+                    <td>Genera un número aleatorio entre el rango dado.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-container">
+            <div class="code-header"><span>ejemplo_stdlib.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"matematicas"</span>
+<span class="keyword">importar</span> <span class="string">"fecha"</span>
+<span class="keyword">importar</span> <span class="string">"aleatorio"</span>
+<span class="keyword">importar</span> <span class="string">"json"</span>
+
+<span class="keyword">imprimir</span>(factorial(5))                    <span class="comment"># 120</span>
+<span class="keyword">imprimir</span>(ahora())                          <span class="comment"># "2026-05-27 12:00:00"</span>
+<span class="keyword">variable</span> token = aleatorio_cadena(16)
+<span class="keyword">imprimir</span>(json_a_texto({<span class="string">"token"</span>: token}))  <span class="comment"># {"token": "a3f8..."}</span></pre>
+        </div>
+    </section>
+
+    <section id="async-await">
+        <h2>Async / Await</h2>
+        <p>Alvz soporta programación asíncrona con las palabras clave <code>async</code> y <code>aguardar</code>. Las funciones marcadas como <code>async</code> se ejecutan mediante un <strong>event loop real con threads</strong>, permitiendo concurrencia verdadera.</p>
+
+        <div class="code-container">
+            <div class="code-header"><span>async.alvz</span></div>
+            <pre><span class="keyword">funcion async</span> obtener_datos(id) {
+    <span class="keyword">retornar</span> id * 2
+}
+
+<span class="keyword">variable</span> resultado = <span class="keyword">aguardar</span> obtener_datos(5)
+<span class="keyword">imprimir</span>(resultado)  <span class="comment"># 10</span></pre>
+        </div>
+
+        <h3>Concurrencia real</h3>
+        <p>Múltiples tareas async se ejecutan en paralelo usando <code>ThreadPoolExecutor</code>. Ejemplo con <code>esperar()</code>:</p>
+        <div class="code-container">
+            <pre><span class="keyword">funcion async</span> tarea(n, segundos) {
+    <span class="keyword">imprimir</span>(<span class="string">"Inicia tarea "</span> + n)
+    esperar(segundos)
+    <span class="keyword">imprimir</span>(<span class="string">"Termina tarea "</span> + n)
+}
+
+<span class="keyword">aguardar</span> tarea(<span class="string">"A"</span>, 0.5)
+<span class="keyword">aguardar</span> tarea(<span class="string">"B"</span>, 0.3)</pre>
+        </div>
+
+        <h3>Sintaxis</h3>
+        <ul>
+            <li><strong>Función async:</strong> <code>funcion async nombre(args) { cuerpo }</code> — define una función que devuelve una corutina.</li>
+            <li><strong>Aguardar:</strong> <code>aguardar expresion</code> — ejecuta una corutina y espera su resultado.</li>
+        </ul>
+
+        <p><code>aguardar</code> puede usarse tanto en expresiones (asignación) como en sentencias (llamada directa):</p>
+
+        <div class="code-container">
+            <pre><span class="comment">// Como expresión</span>
+<span class="keyword">variable</span> x = <span class="keyword">aguardar</span> foo()
+
+<span class="comment">// Como sentencia</span>
+<span class="keyword">aguardar</span> foo()</pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Concurrencia real</div>
+            El event loop usa <code>ThreadPoolExecutor</code> para lanzar corutinas en threads separados. Las tareas con <code>esperar()</code> se ejecutan verdaderamente en paralelo.
+        </div>
+    </section>
+
+    <section id="optimizer">
+        <h2>Optimizador de Bytecode</h2>
+        <p>Alvz incluye un optimizador de bytecode que mejora el rendimiento de tus programas. Se activa con la bandera <code>--optimize</code> o <code>-O</code> al ejecutar un archivo.</p>
+
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz --optimize script.alvz</pre>
+        </div>
+
+        <h3>Optimizaciones</h3>
+        <ul>
+            <li><strong>Plegado de constantes (Constant Folding):</strong> Evalúa expresiones aritméticas y lógicas con operandos constantes en tiempo de compilación. Ejemplo: <code>2 + 3</code> se convierte en <code>5</code> antes de ejecutar.</li>
+            <li><strong>Eliminación de código muerto:</strong> Remueve instrucciones después de <code>OP_HALT</code> que nunca se ejecutarán.</li>
+            <li><strong>Reasignación de saltos:</strong> Actualiza direcciones de salto automáticamente tras las optimizaciones.</li>
+        </ul>
+
+        <h3>Compatibilidad</h3>
+        <p>El optimizador es completamente transparente: el programa produce el mismo resultado con o sin <code>--optimize</code>. La diferencia está en la velocidad de ejecución y el tamaño del bytecode.</p>
+    </section>
+
+    <section id="package-manager">
+        <h2>Package Manager</h2>
+        <p>Alvz incluye un gestor de paquetes para instalar y compartir librerías. Los paquetes se obtienen del <strong>registro público</strong> en <a href="https://github.com/interpago/alvz-packages" target="_blank">github.com/interpago/alvz-packages</a>.</p>
+
+        <h3>Paquetes disponibles</h3>
+        <p>Actualmente hay <strong>30 paquetes</strong> en el registro:</p>
+        <table>
+            <tr><th>Paquete</th><th>Versión</th><th>Descripción</th></tr>
+            <tr><td><code>base-convert</code></td><td>1.0.0</td><td>Conversión de bases: binario, octal, hexadecimal</td></tr>
+            <tr><td><code>collections</code></td><td>1.0.0</td><td>Operaciones con listas: agrupar, ordenar, unique, aplanar</td></tr>
+            <tr><td><code>color-utils</code></td><td>1.0.0</td><td>Colores terminal ANSI: rojo, verde, azul, negrita, subrayado</td></tr>
+            <tr><td><code>crypto</code></td><td>1.0.0</td><td>Utilidades crypto: base64, hash simple, IDs, sanitización HTML</td></tr>
+            <tr><td><code>csv-extra</code></td><td>1.0.0</td><td>CSV con tipos automáticos: parsear con detección de números</td></tr>
+            <tr><td><code>datos</code></td><td>1.0.0</td><td>Procesamiento tabular: CSV, filtrar, seleccionar columnas</td></tr>
+            <tr><td><code>date-utils</code></td><td>1.0.0</td><td>Cálculos de fechas: sumar días, diferencia, timestamp</td></tr>
+            <tr><td><code>file-utils</code></td><td>1.0.0</td><td>Operaciones avanzadas de archivos: glob, mover, temporales</td></tr>
+            <tr><td><code>fs-extra</code></td><td>1.0.0</td><td>Operaciones de archivos: directorios, estadísticas, copiar</td></tr>
+            <tr><td><code>html-utils</code></td><td>1.0.0</td><td>Generación HTML: tablas, listas, enlaces, escape</td></tr>
+            <tr><td><code>ini-utils</code></td><td>1.0.0</td><td>Parseo INI: leer y generar archivos de configuración</td></tr>
+            <tr><td><code>json-utils</code></td><td>1.0.0</td><td>Utilidades JSON: merge, diff, patch, validar esquemas</td></tr>
+            <tr><td><code>markdown</code></td><td>1.0.0</td><td>Generación Markdown: encabezados, listas, tablas, código</td></tr>
+            <tr><td><code>math</code></td><td>1.0.0</td><td>Funciones matemáticas: fibonacci, primos, combinatoria</td></tr>
+            <tr><td><code>math-extra</code></td><td>1.0.0</td><td>Matemáticas adicionales: MCD, MCM, factorial, permutaciones</td></tr>
+            <tr><td><code>path-utils</code></td><td>1.0.0</td><td>Manipulación de rutas: join, dirname, basename, extension</td></tr>
+            <tr><td><code>random-utils</code></td><td>1.0.0</td><td>Aleatorias: choice, shuffle, sample, weighted choice</td></tr>
+            <tr><td><code>retry</code></td><td>1.0.0</td><td>Reintentos: backoff, respaldo, condicional</td></tr>
+            <tr><td><code>semver</code></td><td>1.0.0</td><td>Versionado semántico: parsear, comparar, compatible</td></tr>
+            <tr><td><code>slugify</code></td><td>1.0.0</td><td>Generación de slugs URL a partir de textos</td></tr>
+            <tr><td><code>stats</code></td><td>1.0.0</td><td>Estadísticas: media, mediana, moda, varianza, desviación</td></tr>
+            <tr><td><code>strings</code></td><td>1.0.0</td><td>Manipulación de textos: invertir, capitalizar, palíndromos</td></tr>
+            <tr><td><code>template</code></td><td>1.0.0</td><td>Plantillas simples: render, repetir, reemplazar</td></tr>
+            <tr><td><code>text-utils</code></td><td>1.0.0</td><td>Utilidades de texto: wrap, indent, center, tabular</td></tr>
+            <tr><td><code>throttle</code></td><td>1.0.0</td><td>Rate limiting: throttle, espera, rate limiter</td></tr>
+            <tr><td><code>tiempo</code></td><td>1.0.0</td><td>Formateo de fecha/hora: timestamps, bisiestos, días entre fechas</td></tr>
+            <tr><td><code>unit-convert</code></td><td>1.0.0</td><td>Conversión de unidades: temperatura, distancia, peso, volumen</td></tr>
+            <tr><td><code>validacion</code></td><td>1.0.0</td><td>Validación de datos: email, teléfono, URL, rangos, longitud</td></tr>
+            <tr><td><code>xml-utils</code></td><td>1.0.0</td><td>Generación XML: escape, elementos, documentos</td></tr>
+            <tr><td><code>yaml-utils</code></td><td>1.0.0</td><td>Serialización YAML: diccionarios y listas a YAML</td></tr>
+        </table>
+
+        <h3>Instalación</h3>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz install math          <span class="comment"># Instala la última versión</span>
+$ alvz install json-utils    <span class="comment"># Utilidades JSON</span>
+$ alvz install fs-extra@1.0.0 <span class="comment"># Versión específica</span>
+$ alvz search json           <span class="comment"># Busca paquetes relacionados</span></pre>
+        </div>
+
+        <h3>Comandos</h3>
+        <table>
+            <tr><th>Comando</th><th>Descripción</th></tr>
+            <tr><td><code>alvz install &lt;paquete&gt;[@version]</code></td><td>Instala un paquete (con versión opcional)</td></tr>
+            <tr><td><code>alvz uninstall &lt;paquete&gt;</code></td><td>Desinstala un paquete</td></tr>
+            <tr><td><code>alvz search &lt;consulta&gt;</code></td><td>Busca paquetes en el registro</td></tr>
+            <tr><td><code>alvz list-packages</code></td><td>Lista paquetes instalados</td></tr>
+            <tr><td><code>alvz info &lt;paquete&gt;</code></td><td>Muestra información detallada de un paquete</td></tr>
+            <tr><td><code>alvz debug &lt;archivo&gt;</code></td><td>Depuración con DAP (breakpoints, paso a paso, variables)</td></tr>
+        </table>
+        
+        <h3>Instalación de paquetes</h3>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz install stats           <span class="comment"># Estadísticas</span>
+$ alvz install html-utils      <span class="comment"># Generación HTML</span>
+$ alvz install semver          <span class="comment"># Versionado semántico</span>
+$ alvz install retry           <span class="comment"># Reintentos</span>
+$ alvz list-packages           <span class="comment"># Ver instalados</span></pre>
+        </div>
+
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz list-packages
+$ alvz info math
+$ alvz uninstall json-utils</pre>
+        </div>
+
+        <p>Los paquetes se instalan en <code>~/.alvz/packages/</code> y pueden importarse con <code>importar "nombre"</code>.</p>
+        
+        <h3>Uso desde código</h3>
+        <div class="code-container">
+            <pre><span class="comment"># Después de instalar un paquete:</span>
+importar "strings"
+importar "stats"
+importar "html-utils"
+
+variable texto = "Hola Mundo"
+imprimir(invertir(texto))    <span class="comment"># odnuM aloH</span>
+
+variable nums = [4, 7, 1, 9, 3]
+imprimir(media(nums))        <span class="comment"># 4.8</span></pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Registro público</div>
+            El registro oficial está en <a href="https://github.com/interpago/alvz-packages" target="_blank">github.com/interpago/alvz-packages</a>. Los paquetes se obtienen del archivo <code>index.json</code> en ese repositorio. ¡Puedes contribuir con tus propios paquetes!
+        </div>
+    </section>
+
+    <section id="native">
+        <h2>Compilación Nativa &amp; Multiplataforma</h2>
+        <p>Alvz genera ejecutables independientes mediante <code>alvz build</code> que funcionan en <strong>Windows, Linux y macOS</strong>. Todos los 82 opcodes del VM están soportados: clases, SQLite, HTTP, lambdas, async/await, etc. Los binarios se empaquetan con PyInstaller y no requieren dependencias externas.</p>
+
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz build programa.alvz
+$ ./programa</pre>
+        </div>
+
+        <h3>Cómo funciona</h3>
+        <ol>
+            <li>El código fuente Alvz se compila a bytecode</li>
+            <li>El bytecode se empaqueta con el VM Python vía PyInstaller</li>
+            <li>Se genera un ejecutable standalone para la plataforma actual</li>
+        </ol>
+
+        <div class="code-container">
+            <div class="code-header"><span>programa.alvz</span></div>
+            <pre><span class="keyword">funcion</span> suma(a: <span class="keyword">numero</span>, b: <span class="keyword">numero</span>): <span class="keyword">numero</span> {
+    <span class="keyword">retornar</span> a + b
+}
+<span class="keyword">variable</span> x = suma(<span class="number">10</span>, <span class="number">20</span>)
+<span class="keyword">imprimir</span>(x)</pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Multiplataforma</div>
+            El ejecutable generado es un binario nativo sin dependencias externas, ideal para distribución y despliegue en cualquier sistema operativo.
+        </div>
+    </section>
+
+    <section id="cli">
+        <h2>Herramientas CLI</h2>
+        <p>Alvz incluye herramientas de línea de comandos para testear, formatear y generar proyectos.</p>
+
+        <h3>Test Runner</h3>
+        <p>Ejecuta pruebas unitarias automáticamente. Descubre archivos <code>test_*.alvz</code> o <code>*_test.alvz</code>.</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz test tests/              <span class="comment"># Ejecuta todos los tests en la carpeta</span>
+$ alvz test test_mi_app.alvz    <span class="comment"># Ejecuta un archivo específico</span></pre>
+        </div>
+        <div class="code-container">
+            <div class="code-header"><span>test_ejemplo.alvz</span></div>
+            <pre><span class="keyword">importar</span> <span class="string">"testing"</span>
+
+<span class="keyword">funcion</span> suma(a, b) {
+    <span class="keyword">retornar</span> a + b
+}
+
+<span class="keyword">describir</span>(<span class="string">"Pruebas de suma"</span>)
+
+<span class="keyword">probar</span>(<span class="string">"suma funciona"</span>, funcion_suma_test)
+<span class="keyword">funcion</span> funcion_suma_test() {
+    <span class="keyword">afirmar_igual</span>(5, suma(2, 3), <span class="string">"2 + 3 = 5"</span>)
+}
+
+<span class="keyword">resumen</span>()</pre>
+        </div>
+
+        <h3>Formateador</h3>
+        <p>Formatea automáticamente tu código Alvz con indentación correcta de llaves.</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz fmt app.alvz              <span class="comment"># Formatea el archivo</span>
+$ alvz fmt --check app.alvz     <span class="comment"># Solo verifica (no modifica)</span></pre>
+        </div>
+
+        <h3>Scaffolding</h3>
+        <p>Genera proyectos completos con estructura lista para usar.</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz nuevo proyecto mi_app    <span class="comment"># Proyecto completo</span>
+$ alvz nuevo api mi_api          <span class="comment"># API REST con FastAPI</span>
+$ alvz nuevo cli mi_cli          <span class="comment"># Aplicación CLI</span>
+$ alvz nuevo lib mi_lib          <span class="comment"># Librería reutilizable</span>
+$ alvz nuevo test mis_pruebas    <span class="comment"># Archivo de test</span></pre>
+        </div>
+    </section>
+
+    <section id="lsp">
+        <h2>Servidor de Lenguaje (LSP)</h2>
+        <p>Alvz incluye un servidor LSP (Language Server Protocol) que proporciona asistencia inteligente en tu editor.</p>
+
+        <h3>Características</h3>
+        <ul>
+            <li><strong>Autocompletado:</strong> Sugiere palabras clave, funciones incorporadas y nombres de variables.</li>
+            <li><strong>Diagnóstico en vivo:</strong> Detecta errores de sintaxis (paréntesis/llaves desbalanceados, caracteres inesperados).</li>
+            <li><strong>Ir a definición:</strong> Navega a la definición de funciones, variables y clases.</li>
+            <li><strong>Información al hover:</strong> Muestra el tipo y documentación de símbolos al pasar el ratón.</li>
+            <li><strong>Símbolos del documento:</strong> Lista estructurada de funciones, variables, clases y propiedades.</li>
+        </ul>
+
+        <h3>Uso</h3>
+        <p>Ejecuta el servidor LSP desde la terminal:</p>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz-lsp</pre>
+        </div>
+        <p>Luego configura tu editor para conectarse al servidor. El LSP se comunica vía JSON-RPC sobre stdin/stdout.</p>
+    </section>
+
+    <section id="dap">
+        <h2>Depurador (DAP)</h2>
+        <p>Alvz implementa el Debug Adapter Protocol (DAP) para depuración interactiva desde tu editor.</p>
+
+        <h3>Características</h3>
+        <ul>
+            <li><strong>Breakpoints:</strong> Pausa la ejecución en líneas específicas.</li>
+            <li><strong>Paso a paso:</strong> Step over, step into, step out.</li>
+            <li><strong>Inspección de variables:</strong> Examina variables locales y globales.</li>
+            <li><strong>Stack trace:</strong> Muestra la cadena de llamadas actual.</li>
+            <li><strong>Evaluación:</strong> Evalúa expresiones en contexto de depuración.</li>
+        </ul>
+
+        <h3>Uso</h3>
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz-dap</pre>
+        </div>
+        <p>El depurador se comunica vía JSON-RPC sobre stdin/stdout. Compatible con editores que soporten DAP (VS Code, etc.).</p>
+    </section>
+
+    <section id="repl">
+        <h2>Consola Interactiva (REPL)</h2>
+        <p>Prueba código al instante sin crear archivos. Solo escribe <code>alvz</code> en tu terminal.</p>
+        <div class="code-container">
+            <div class="code-header"><span>Consola Alvz</span></div>
+            <pre>alvz> <span class="keyword">variable</span> a = 5
+alvz> <span class="keyword">variable</span> b = 5
+alvz> <span class="keyword">imprimir</span>(a + b)
+10</pre>
+        </div>
+    </section>
+
+    <section id="errores">
+        <h2>Gestión de Errores Amigable</h2>
+        <p>Alvz está diseñado para ayudarte a programar. Si cometes un error tipográfico o intentas acceder a algo que no existe, el lenguaje te dará sugerencias inteligentes.</p>
+        
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz script.alvz
+<span class="keyword">Error:</span> La función 'imprimr' no existe. ¿Quisiste decir 'imprimir'?</pre>
+        </div>
+
+        <h3>Manejo de Excepciones (intentar / capturar)</h3>
+        <p>Puedes capturar errores para evitar que tu programa se detenga inesperadamente.</p>
+        <div class="code-container">
+            <pre><span class="keyword">intentar</span> {
+    <span class="keyword">variable</span> resultado = 10 / 0
+} <span class="keyword">capturar</span> {
+    <span class="keyword">imprimir</span>(<span class="string">"¡Ocurrió un error: "</span> + <span class="keyword">error_msj</span>() + <span class="string">"!"</span>)
+}</pre>
+        </div>
+
+        <h3>Tipos de Errores Soportados</h3>
+        <ul>
+            <li><strong>Errores Léxicos:</strong> Caracteres no reconocidos.</li>
+            <li><strong>Errores de Sintaxis:</strong> Estructuras incompletas o mal formadas (incluye sugerencias de palabras clave).</li>
+            <li><strong>Errores de Referencia:</strong> Variables o funciones no definidas (incluye sugerencias de nombres cercanos).</li>
+            <li><strong>Errores en Tiempo de Ejecución:</strong> Errores durante la ejecución (como división por cero o índice fuera de rango) con <strong>stack trace completo</strong> que muestra la línea exacta y la cadena de llamadas.</li>
+        </ul>
+    </section>
+
+    <footer>
+        © 2026 Alvz Language Project. Documentación generada para desarrolladores.
+    </footer>
+</main>
+
+<script>
+    // Dark mode
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('alvz-theme', isDark ? 'light' : 'dark');
+        updateDarkIcon(!isDark);
+    }
+
+    function updateDarkIcon(isDark) {
+        const label = document.getElementById('dark-label');
+        if (label) label.textContent = isDark ? 'Claro' : 'Oscuro';
+    }
+
+    (function initTheme() {
+        const saved = localStorage.getItem('alvz-theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            updateDarkIcon(true);
+        }
+    })();
+
+    // Tabs
+    function openTab(evt, tabId) {
+        const tabGroup = evt.currentTarget.parentElement.nextElementSibling;
+        if (!tabGroup) return;
+        const panes = tabGroup.getElementsByClassName("tab-pane");
+        for (let i = 0; i < panes.length; i++) {
+            panes[i].classList.remove("active");
+        }
+        const btns = evt.currentTarget.parentElement.getElementsByClassName("tab-btn");
+        for (let i = 0; i < btns.length; i++) {
+            btns[i].classList.remove("active");
+        }
+        const target = document.getElementById(tabId);
+        if (target) target.classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Mobile sidebar
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+        document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+    }
+
+    // Close sidebar on nav click (mobile)
+    document.querySelectorAll('aside nav a').forEach(a => {
+        a.addEventListener('click', () => {
+            if (window.innerWidth <= 900) toggleMobileMenu();
+        });
+    });
+
+    // Active nav link on scroll
+    const sections = document.querySelectorAll('main section[id]');
+    const navLinks = document.querySelectorAll('aside nav a');
+    function updateActiveLink() {
+        let current = '';
+        sections.forEach(s => {
+            const top = s.getBoundingClientRect().top;
+            if (top <= 150) current = s.getAttribute('id');
+        });
+        navLinks.forEach(a => {
+            a.classList.remove('active');
+            if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+        });
+    }
+    window.addEventListener('scroll', updateActiveLink);
+</script>
+
+</body>
+</html>

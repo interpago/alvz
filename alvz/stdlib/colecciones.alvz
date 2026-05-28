@@ -1,0 +1,44 @@
+funcion vacio(lista) {
+    retornar longitud(lista) == 0
+}
+
+funcion primero(lista) {
+    retornar lista[0]
+}
+
+funcion ultimo(lista) {
+    retornar lista[longitud(lista) - 1]
+}
+
+funcion contiene(lista, elemento) {
+    para cada item en lista {
+        si item == elemento { retornar verdadero }
+    }
+    retornar falso
+}
+
+funcion sin_duplicados(lista) {
+    variable resultado = []
+    para cada item en lista {
+        variable encontrado = falso
+        para cada r en resultado {
+            si r == item {
+                encontrado = verdadero
+            }
+        }
+        si encontrado == falso {
+            agregar(resultado, item)
+        }
+    }
+    retornar resultado
+}
+
+funcion invertir(lista) {
+    variable resultado = []
+    variable i = longitud(lista) - 1
+    mientras i >= 0 {
+        agregar(resultado, lista[i])
+        i = i - 1
+    }
+    retornar resultado
+}

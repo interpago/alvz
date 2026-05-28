@@ -1,0 +1,71 @@
+funcion es_email(texto) {
+    variable arroba = falso
+    variable punto = falso
+    variable i = 0
+    mientras i < longitud(texto) {
+        si texto[i] == "@" {
+            arroba = verdadero
+        }
+        si texto[i] == "." y arroba {
+            punto = verdadero
+        }
+        i = i + 1
+    }
+    retornar arroba y punto
+}
+
+funcion es_telefono(texto) {
+    si longitud(texto) < 7 {
+        retornar falso
+    }
+    variable i = 0
+    mientras i < longitud(texto) {
+        si texto[i] < "0" o texto[i] > "9" {
+            si texto[i] != "+" y texto[i] != " " y texto[i] != "-" {
+                retornar falso
+            }
+        }
+        i = i + 1
+    }
+    retornar verdadero
+}
+
+funcion es_url(texto) {
+    retornar texto[0..7] == "https://" o texto[0..6] == "http://"
+}
+
+funcion es_numero(texto) {
+    si longitud(texto) == 0 {
+        retornar falso
+    }
+    variable i = 0
+    variable tiene_punto = falso
+    mientras i < longitud(texto) {
+        si texto[i] == "." {
+            si tiene_punto {
+                retornar falso
+            }
+            tiene_punto = verdadero
+        } sino si texto[i] < "0" o texto[i] > "9" {
+            retornar falso
+        }
+        i = i + 1
+    }
+    retornar verdadero
+}
+
+funcion entre(valor, minimo, maximo) {
+    retornar valor >= minimo y valor <= maximo
+}
+
+funcion no_vacio(texto) {
+    retornar longitud(texto) > 0
+}
+
+funcion longitud_min(texto, min) {
+    retornar longitud(texto) >= min
+}
+
+funcion longitud_max(texto, max) {
+    retornar longitud(texto) <= max
+}

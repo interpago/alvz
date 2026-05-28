@@ -1,0 +1,42 @@
+importar "fecha"
+
+funcion formatear_fecha_corta() {
+    variable f = hoy()
+    retornar f["anio"] + "-" + f["mes"] + "-" + f["dia"]
+}
+
+funcion formatear_hora_completa() {
+    variable h = hora_actual()
+    retornar h["horas"] + ":" + h["minutos"] + ":" + h["segundos"]
+}
+
+funcion timestamp_a_fecha(ts) {
+    variable dias = ts / 86400
+    variable anio = 1970
+    mientras dias >= 365 {
+        si anio % 4 == 0 y (anio % 100 != 0 o anio % 400 == 0) {
+            si dias >= 366 {
+                dias = dias - 366
+                anio = anio + 1
+            } sino {
+                romper
+            }
+        } sino {
+            dias = dias - 365
+            anio = anio + 1
+        }
+    }
+    retornar anio
+}
+
+funcion dias_entre(ts1, ts2) {
+    variable diff = ts1 - ts2
+    si diff < 0 {
+        diff = -diff
+    }
+    retornar redondear(diff / 86400)
+}
+
+funcion es_bisiesto(anio) {
+    retornar anio % 4 == 0 y (anio % 100 != 0 o anio % 400 == 0)
+}

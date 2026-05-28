@@ -1,0 +1,54 @@
+funcion retry_ejecutar(fn, args, intentos_max, espera_ms) {
+    si espera_ms == nulo {
+        espera_ms = 1000
+    }
+    variable intento = 1
+    mientras intento <= intentos_max {
+        variable exito = falso
+        variable error = ""
+        intentar {
+            variable resultado = fn(args)
+            retornar resultado
+        } capturar e {
+            error = e
+            exito = falso
+        }
+        si exito {
+            retornar resultado
+        }
+        si intento < intentos_max {
+            esperar(espera_ms * intento)
+        }
+        intento = intento + 1
+    }
+    lanzar("Error despues de " + intentos_max + " intentos: " + error)
+}
+
+funcion retry_con_respaldo(fn, args, intentos_max, espera_inicial_ms, respaldo) {
+    variable intento = 1
+    mientras intento <= intentos_max {
+        intentar {
+            variable resultado = fn(args)
+            retornar resultado
+        } capturar e {
+            si intento == intentos_max {
+                retornar respaldo
+            }
+            esperar(espera_inicial_ms * intento * intento)
+        }
+        intento = intento + 1
+    }
+    retornar respaldo
+}
+
+funcion retry_condicional(fn, args, condicion_reintentar, intentos_max) {
+    variable intento = 1
+    mientras intento <= intentos_max {
+        variable resultado = fn(args)
+        si condicion_reintentar(resultado) {
+            retornar resultado
+        }
+        intento = intento + 1
+    }
+    retornar resultado
+}

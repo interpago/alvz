@@ -1,0 +1,21 @@
+funcion bienvenida() {
+    retornar {"mensaje": "API de Tablas de Multiplicar", "ejemplo": "/tablas/7"}
+}
+
+funcion obtener_tabla(n) {
+    variable num = a_numero(n)
+    variable resultado = []
+    variable i = 1
+    mientras i <= 10 {
+        resultado = resultado + [num + " x " + i + " = " + (num * i)]
+        i = i + 1
+    }
+    retornar {"numero": num, "tabla": resultado}
+}
+
+variable rutas = {
+    "/": "bienvenida",
+    "/tablas/{n}": "obtener_tabla"
+}
+
+iniciar_servidor(8000, rutas)

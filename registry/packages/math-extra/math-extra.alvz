@@ -1,0 +1,52 @@
+funcion mcd(a, b) {
+    mientras b != 0 {
+        variable temp = b
+        b = a % b
+        a = temp
+    }
+    retornar a
+}
+
+funcion mcm(a, b) {
+    retornar (a * b) / mcd(a, b)
+}
+
+funcion factorial(n) {
+    si n <= 1 {
+        retornar 1
+    }
+    variable resultado = 1
+    variable i = 2
+    mientras i <= n {
+        resultado = resultado * i
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion permutaciones(n, r) {
+    retornar factorial(n) / factorial(n - r)
+}
+
+funcion es_par(n) {
+    retornar n % 2 == 0
+}
+
+funcion es_impar(n) {
+    retornar n % 2 != 0
+}
+
+funcion digitos(n) {
+    si n == 0 {
+        retornar 1
+    }
+    variable contador = 0
+    si n < 0 {
+        n = -n
+    }
+    mientras n > 0 {
+        contador = contador + 1
+        n = redondear(n / 10)
+    }
+    retornar contador
+}

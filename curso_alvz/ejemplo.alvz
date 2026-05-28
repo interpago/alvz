@@ -1,0 +1,24 @@
+# alvz ejemplo 
+imprimir("--- Sistema de Auditoria ---")
+esperar(2)
+variable marca_tiempo = tiempo()
+
+variable transacciones = [12000, 45000, 8500, 60000]
+variable transacciones_sospechosas = 0
+
+para cada monto en transacciones {
+    si monto > 30000 {
+        imprimir("[!] Alerta: Revisar transaccion por $" + monto)
+        transacciones_sospechosas = transacciones_sospechosas + 1
+    } sino {
+        imprimir("[OK] Transaccion regular: $" + monto)
+    }
+}
+
+esperar(2)
+
+variable hash_cierre = azar(1000, 9999)
+
+imprimir("--------------------------")
+imprimir("Revisiones pendientes: " + transacciones_sospechosas)
+imprimir("Firma de cierre: " + marca_tiempo + "-" + hash_cierre)

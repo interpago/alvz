@@ -1,0 +1,78 @@
+funcion agrupar_por(lista, clave) {
+    variable resultado = {}
+    cada item en lista {
+        variable grupo = item[clave]
+        si resultado[grupo] == nulo {
+            resultado[grupo] = []
+        }
+        agregar(resultado[grupo], item)
+    }
+    retornar resultado
+}
+
+funcion ordenar_por(lista, clave) {
+    variable n = longitud(lista)
+    variable i = 0
+    mientras i < n {
+        variable j = 0
+        mientras j < n - i - 1 {
+            si lista[j][clave] > lista[j + 1][clave] {
+                variable temp = lista[j]
+                lista[j] = lista[j + 1]
+                lista[j + 1] = temp
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    retornar lista
+}
+
+funcion unique(lista) {
+    variable visto = {}
+    variable resultado = []
+    cada item en lista {
+        si visto[item] == nulo {
+            visto[item] = verdadero
+            agregar(resultado, item)
+        }
+    }
+    retornar resultado
+}
+
+funcion aplanar(lista) {
+    variable resultado = []
+    cada item en lista {
+        si tipo(item) == "lista" {
+            variable anidado = aplanar(item)
+            cada x en anidado {
+                agregar(resultado, x)
+            }
+        } sino {
+            agregar(resultado, item)
+        }
+    }
+    retornar resultado
+}
+
+funcion contar_ocurrencias(lista) {
+    variable contador = {}
+    cada item en lista {
+        si contador[item] == nulo {
+            contador[item] = 1
+        } sino {
+            contador[item] = contador[item] + 1
+        }
+    }
+    retornar contador
+}
+
+funcion tomar(lista, n) {
+    variable resultado = []
+    variable i = 0
+    mientras i < n y i < longitud(lista) {
+        agregar(resultado, lista[i])
+        i = i + 1
+    }
+    retornar resultado
+}

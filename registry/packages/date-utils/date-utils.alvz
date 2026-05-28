@@ -1,0 +1,46 @@
+importar "fecha"
+importar "tiempo"
+
+funcion date_sumar_dias(anio, mes, dia, n) {
+    variable ts = timestamp_desde_fecha(anio, mes, dia)
+    ts = ts + n * 86400
+    retornar fecha_desde_timestamp(ts)
+}
+
+funcion date_diferencia_dias(anio1, mes1, dia1, anio2, mes2, dia2) {
+    variable ts1 = timestamp_desde_fecha(anio1, mes1, dia1)
+    variable ts2 = timestamp_desde_fecha(anio2, mes2, dia2)
+    variable diff = ts1 - ts2
+    si diff < 0 {
+        diff = -diff
+    }
+    retornar redondear(diff / 86400)
+}
+
+funcion timestamp_desde_fecha(anio, mes, dia) {
+    variable dias = 0
+    variable a = 1970
+    mientras a < anio {
+        si es_bisiesto(a) {
+            dias = dias + 366
+        } sino {
+            dias = dias + 365
+        }
+        a = a + 1
+    }
+    variable dias_por_mes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    si es_bisiesto(anio) {
+        dias_por_mes[1] = 29
+    }
+    variable m = 0
+    mientras m < mes - 1 {
+        dias = dias + dias_por_mes[m]
+        m = m + 1
+    }
+    dias = dias + dia - 1
+    retornar dias * 86400
+}
+
+funcion fecha_desde_timestamp(ts) {
+    retornar {"anio": timestamp_a_fecha(ts)}
+}

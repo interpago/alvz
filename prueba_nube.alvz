@@ -1,0 +1,26 @@
+imprimir("--- ALVZ CONECTADO A LA NUBE ---")
+
+imprimir("Escribe tu nombre para guardarlo en la web:")
+variable nombre = leer()
+
+imprimir("Conectando con el servidor...")
+esperar(1)
+
+# Esta es una URL de prueba (Webhook.site es genial para ver lo que envías)
+# En un caso real, aquí iría tu URL de Supabase
+variable url_servidor = "https://webhook.site/00000000-0000-0000-0000-000000000000" # Cámbiala por una real para probar
+
+imprimir("Enviando datos de " + nombre + "...")
+
+# Usamos nuestra nueva palabra mágica: enviar_web
+variable resultado = enviar_web(url_servidor, nombre)
+
+si resultado == 200 o resultado == 201 {
+    imprimir("¡ÉXITO! Supabase recibió tus datos.")
+    imprimir("Código de respuesta: " + resultado)
+} sino {
+    imprimir("No pudimos conectar con el servidor.")
+    imprimir("Consejo: Asegúrate de tener internet y una URL válida.")
+}
+
+imprimir("--- FIN DEL PROGRAMA NUBE ---")

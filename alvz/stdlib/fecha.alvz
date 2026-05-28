@@ -1,0 +1,31 @@
+funcion ahora() {
+    retornar fecha_actual("%Y-%m-%d %H:%M:%S")
+}
+
+funcion hoy() {
+    retornar fecha_actual("%Y-%m-%d")
+}
+
+funcion hora_actual() {
+    retornar fecha_actual("%H:%M:%S")
+}
+
+funcion timestamp_actual() {
+    retornar tiempo()
+}
+
+funcion formatear_fecha(formato) {
+    retornar fecha_actual(formato)
+}
+
+funcion anio_actual() {
+    retornar fecha_actual("%Y")
+}
+
+funcion mes_actual() {
+    retornar fecha_actual("%m")
+}
+
+funcion dia_actual() {
+    retornar fecha_actual("%d")
+}

@@ -1,0 +1,19 @@
+funcion regex_coincide(texto, patron) {
+    retornar longitud(regex_buscar(texto, patron)) > 0
+}
+
+funcion regex_extraer(texto, patron) {
+    variable resultados = regex_buscar(texto, patron)
+    si longitud(resultados) > 0 {
+        retornar resultados[0]
+    }
+    retornar ""
+}
+
+funcion regex_todas(texto, patron) {
+    retornar regex_buscar(texto, patron)
+}
+
+funcion regex_contar(texto, patron) {
+    retornar longitud(regex_buscar(texto, patron))
+}

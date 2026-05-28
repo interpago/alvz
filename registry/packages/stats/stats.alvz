@@ -1,0 +1,88 @@
+funcion media(numeros) {
+    si longitud(numeros) == 0 {
+        retornar 0
+    }
+    variable suma = 0
+    cada n en numeros {
+        suma = suma + n
+    }
+    retornar suma / longitud(numeros)
+}
+
+funcion mediana(numeros) {
+    variable n = longitud(numeros)
+    si n == 0 {
+        retornar 0
+    }
+    variable ordenados = numeros
+    variable i = 0
+    mientras i < n {
+        variable j = 0
+        mientras j < n - i - 1 {
+            si ordenados[j] > ordenados[j + 1] {
+                variable temp = ordenados[j]
+                ordenados[j] = ordenados[j + 1]
+                ordenados[j + 1] = temp
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    si n % 2 == 1 {
+        retornar ordenados[(n - 1) / 2]
+    }
+    retornar (ordenados[n / 2 - 1] + ordenados[n / 2]) / 2
+}
+
+funcion moda(numeros) {
+    variable freq = {}
+    cada n en numeros {
+        si freq[n] == nulo {
+            freq[n] = 1
+        } sino {
+            freq[n] = freq[n] + 1
+        }
+    }
+    variable max_freq = 0
+    variable moda_val = nulo
+    cada clave en freq {
+        si freq[clave] > max_freq {
+            max_freq = freq[clave]
+            moda_val = clave
+        }
+    }
+    retornar moda_val
+}
+
+funcion varianza(numeros) {
+    variable m = media(numeros)
+    variable suma = 0
+    cada n en numeros {
+        suma = suma + (n - m) * (n - m)
+    }
+    retornar suma / longitud(numeros)
+}
+
+funcion desviacion(numeros) {
+    retornar raiz(varianza(numeros))
+}
+
+funcion minimo(numeros) {
+    variable min = numeros[0]
+    cada n en numeros {
+        si n < min {
+            min = n
+        }
+    }
+    retornar min
+}
+
+funcion maximo(numeros) {
+    variable max = numeros[0]
+    cada n en numeros {
+        si n > max {
+            max = n
+        }
+    }
+    retornar max
+}

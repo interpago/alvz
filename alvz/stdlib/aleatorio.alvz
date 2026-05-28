@@ -1,0 +1,59 @@
+funcion aleatorio_numero(min, max) {
+    retornar azar(min, max)
+}
+
+funcion aleatorio_flotante(min, max) {
+    retornar min + azar(0, 1000000) * (max - min) / 1000000
+}
+
+funcion aleatorio_escoger(lista) {
+    variable n = longitud(lista)
+    si n == 0 { retornar nulo }
+    retornar lista[azar(0, n - 1)]
+}
+
+funcion aleatorio_mezclar(lista) {
+    variable resultado = []
+    variable n = longitud(lista)
+    variable i = 0
+    mientras i < n {
+        agregar(resultado, lista[i])
+        i = i + 1
+    }
+    variable i2 = n - 1
+    mientras i2 > 0 {
+        variable j = azar(0, i2)
+        variable temp = resultado[i2]
+        resultado[i2] = resultado[j]
+        resultado[j] = temp
+        i2 = i2 - 1
+    }
+    retornar resultado
+}
+
+funcion aleatorio_escoger_varios(lista, cantidad) {
+    variable mezclada = aleatorio_mezclar(lista)
+    variable resultado = []
+    variable i = 0
+    mientras i < cantidad {
+        si i >= longitud(mezclada) { romper }
+        agregar(resultado, mezclada[i])
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion aleatorio_cadena(longitud_cadena) {
+    variable chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud_cadena {
+        resultado = resultado + chars[azar(0, 35)]
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion aleatorio_booleano() {
+    retornar azar(0, 1) == 1
+}

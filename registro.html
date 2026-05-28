@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Alvz + Supabase</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; }
+        .form-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        h2 { color: #333; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #3ecf8e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #34b27b; }
+        .note { font-size: 12px; color: #666; margin-top: 15px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Únete a Alvz</h2>
+        <!-- Nota: En un sistema real, el formulario enviaría a un servidor. 
+             Aquí Alvz actuará como el servidor procesando estos datos. -->
+        <input type="text" id="nombre" placeholder="Tu nombre" required>
+        <input type="email" id="email" placeholder="Tu email" required>
+        <button onclick="enviarDatos()">Registrar en Supabase</button>
+        
+        <p class="note">Los datos se enviarán a través del motor Alvz.</p>
+    </div>
+
+    <script>
+        function enviarDatos() {
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            alert('¡Listo! Ahora copia estos datos en tu programa Alvz:\nNombre: ' + nombre + '\nEmail: ' + email);
+        }
+    </script>
+</body>
+</html>

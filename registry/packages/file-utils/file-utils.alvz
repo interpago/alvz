@@ -1,0 +1,36 @@
+importar "sistema"
+
+funcion archivos_glob(patron) {
+    retornar sistema_glob(patron)
+}
+
+funcion archivos_por_extension(ruta, extension) {
+    variable archivos = sistema_leer_directorio(ruta)
+    variable resultado = []
+    cada archivo en archivos {
+        variable partes = dividir(archivo, ".")
+        si longitud(partes) > 1 y partes[longitud(partes)-1] == extension {
+            agregar(resultado, archivo)
+        }
+    }
+    retornar resultado
+}
+
+funcion archivo_tamano(ruta) {
+    retornar sistema_tamano(ruta)
+}
+
+funcion archivo_mover(origen, destino) {
+    archivo_copiar(origen, destino)
+    sistema_eliminar(origen)
+}
+
+funcion archivo_temporal(prefijo) {
+    variable ts = tiempo()
+    variable ruta = sistema_temp_dir() + "/" + prefijo + "_" + ts + ".tmp"
+    retornar ruta
+}
+
+funcion directorio_crear(ruta) {
+    retornar sistema_crear_directorio(ruta)
+}

@@ -1,0 +1,71 @@
+funcion a_binario(n) {
+    si n == 0 {
+        retornar "0"
+    }
+    variable resultado = ""
+    mientras n > 0 {
+        variable digito = n % 2
+        resultado = digito + resultado
+        n = redondear(n / 2)
+    }
+    retornar resultado
+}
+
+funcion a_octal(n) {
+    si n == 0 {
+        retornar "0"
+    }
+    variable resultado = ""
+    mientras n > 0 {
+        variable digito = n % 8
+        resultado = digito + resultado
+        n = redondear(n / 8)
+    }
+    retornar resultado
+}
+
+funcion a_hexadecimal(n) {
+    variable digitos = "0123456789ABCDEF"
+    si n == 0 {
+        retornar "0"
+    }
+    variable resultado = ""
+    mientras n > 0 {
+        variable digito = n % 16
+        resultado = digitos[digito] + resultado
+        n = redondear(n / 16)
+    }
+    retornar resultado
+}
+
+funcion desde_binario(texto) {
+    variable resultado = 0
+    variable i = 0
+    mientras i < longitud(texto) {
+        resultado = resultado * 2
+        si texto[i] == "1" {
+            resultado = resultado + 1
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion desde_hexadecimal(texto) {
+    variable digitos = "0123456789ABCDEF"
+    variable resultado = 0
+    variable i = 0
+    mientras i < longitud(texto) {
+        resultado = resultado * 16
+        variable j = 0
+        mientras j < longitud(digitos) {
+            si texto[i] == digitos[j] {
+                resultado = resultado + j
+                romper
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    retornar resultado
+}

@@ -1,0 +1,39 @@
+funcion slug_generar(texto) {
+    variable mapa = {
+        "á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+        "Á": "a", "É": "e", "Í": "i", "Ó": "o", "Ú": "u",
+        "ñ": "n", "Ñ": "n", "ü": "u", "Ü": "u",
+        " ": "-", "_": "-", ".": "-", ",": "", "!": "", "?": "",
+        ":": "", ";": "", "(": "", ")": "", "[": "", "]": "",
+        "{": "", "}": "", "\"": "", "'": "", "/": "-", "\\": "-"
+    }
+    variable resultado = ""
+    cada c en texto {
+        variable reemplazo = mapa[c]
+        si reemplazo != nulo {
+            resultado = resultado + reemplazo
+        } sino {
+            resultado = resultado + minusculas(c)
+        }
+    }
+    variable limpio = ""
+    variable i = 0
+    mientras i < longitud(resultado) {
+        si resultado[i] == "-" {
+            limpio = limpio + "-"
+            mientras i < longitud(resultado) y resultado[i] == "-" {
+                i = i + 1
+            }
+        } sino {
+            limpio = limpio + resultado[i]
+            i = i + 1
+        }
+    }
+    si longitud(limpio) > 0 y limpio[0] == "-" {
+        limpio = limpio[1..]
+    }
+    si longitud(limpio) > 0 y limpio[longitud(limpio)-1] == "-" {
+        limpio = limpio[0..longitud(limpio)-2]
+    }
+    retornar limpio
+}

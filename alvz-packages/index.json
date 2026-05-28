@@ -1,0 +1,29 @@
+[
+    {
+        "name": "math",
+        "version": "1.0.0",
+        "description": "Funciones matematicas avanzadas (factorial, mcd, mcm, fibonacci, primo)",
+        "author": "Alvz",
+        "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/math/math.alvz",
+        "entry": "math.alvz",
+        "dependencies": []
+    },
+    {
+        "name": "json",
+        "version": "1.0.0",
+        "description": "Utilidades JSON (formatear, validar)",
+        "author": "Alvz",
+        "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/json/json.alvz",
+        "entry": "json.alvz",
+        "dependencies": []
+    },
+    {
+        "name": "http",
+        "version": "1.0.0",
+        "description": "Cliente HTTP simple (GET, POST, obtener JSON)",
+        "author": "Alvz",
+        "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/http/http.alvz",
+        "entry": "http.alvz",
+        "dependencies": ["json"]
+    }
+]

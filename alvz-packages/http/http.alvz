@@ -1,0 +1,16 @@
+// http.alvz - Cliente HTTP simple
+// NOTA: Requiere que enviar_web este disponible en el runtime
+
+funcion http_get(url: texto): texto {
+    retornar enviar_web(url, "GET", "")
+}
+
+funcion http_post(url: texto, datos: texto): texto {
+    retornar enviar_web(url, "POST", datos)
+}
+
+funcion http_obtener_json(url: texto): diccionario {
+    variable respuesta = http_get(url)
+    variable datos = json_decodificar(respuesta)
+    retornar datos
+}

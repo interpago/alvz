@@ -1,0 +1,73 @@
+funcion text_wrap(texto, ancho) {
+    si longitud(texto) <= ancho {
+        retornar [texto]
+    }
+    variable resultado = []
+    variable inicio = 0
+    mientras inicio < longitud(texto) {
+        variable fin = inicio + ancho
+        si fin >= longitud(texto) {
+            fin = longitud(texto)
+        }
+        agregar(resultado, texto[inicio..fin])
+        inicio = fin
+    }
+    retornar resultado
+}
+
+funcion text_indent(texto, espacios) {
+    variable prefijo = ""
+    variable i = 0
+    mientras i < espacios {
+        prefijo = prefijo + " "
+        i = i + 1
+    }
+    variable lineas = dividir(texto, "\n")
+    variable resultado = ""
+    variable j = 0
+    mientras j < longitud(lineas) {
+        si j > 0 {
+            resultado = resultado + "\n"
+        }
+        resultado = resultado + prefijo + lineas[j]
+        j = j + 1
+    }
+    retornar resultado
+}
+
+funcion text_center(texto, ancho) {
+    variable espacios = ancho - longitud(texto)
+    si espacios <= 0 {
+        retornar texto
+    }
+    variable izq = redondear(espacios / 2)
+    variable der = espacios - izq
+    variable resultado = ""
+    variable i = 0
+    mientras i < izq {
+        resultado = resultado + " "
+        i = i + 1
+    }
+    resultado = resultado + texto
+    i = 0
+    mientras i < der {
+        resultado = resultado + " "
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion text_tabular(datos, separador) {
+    si separador == nulo {
+        separador = "  "
+    }
+    variable resultado = ""
+    cada fila en datos {
+        variable celdas = []
+        cada celda en fila {
+            agregar(celdas, celda)
+        }
+        resultado = resultado + unir(celdas, separador) + "\n"
+    }
+    retornar resultado
+}

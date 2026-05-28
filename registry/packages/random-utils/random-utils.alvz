@@ -1,0 +1,50 @@
+funcion choice(lista) {
+    variable n = longitud(lista)
+    retornar lista[azar(0, n - 1)]
+}
+
+funcion shuffle(lista) {
+    variable resultado = []
+    cada item en lista {
+        agregar(resultado, item)
+    }
+    variable n = longitud(resultado)
+    variable i = 0
+    mientras i < n {
+        variable j = azar(i, n - 1)
+        variable temp = resultado[i]
+        resultado[i] = resultado[j]
+        resultado[j] = temp
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion sample(lista, k) {
+    variable mezclado = shuffle(lista)
+    variable resultado = []
+    variable i = 0
+    mientras i < k y i < longitud(mezclado) {
+        agregar(resultado, mezclado[i])
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion weighted_choice(elementos, pesos) {
+    variable total = 0
+    cada p en pesos {
+        total = total + p
+    }
+    variable r = azar(0, total - 1)
+    variable acumulado = 0
+    variable i = 0
+    mientras i < longitud(pesos) {
+        acumulado = acumulado + pesos[i]
+        si r < acumulado {
+            retornar elementos[i]
+        }
+        i = i + 1
+    }
+    retornar elementos[longitud(elementos) - 1]
+}

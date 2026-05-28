@@ -1,0 +1,35 @@
+funcion template_render(plantilla, vars) {
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud(plantilla) {
+        si plantilla[i] == "{" y i + 1 < longitud(plantilla) y plantilla[i + 1] == "{" {
+            variable fin = i + 2
+            mientras fin < longitud(plantilla) y not (plantilla[fin] == "}" y fin + 1 < longitud(plantilla) y plantilla[fin + 1] == "}") {
+                fin = fin + 1
+            }
+            variable clave = plantilla[i + 2..fin]
+            variable valor = vars[clave]
+            si valor != nulo {
+                resultado = resultado + valor
+            }
+            i = fin + 2
+        } sino {
+            resultado = resultado + plantilla[i]
+            i = i + 1
+        }
+    }
+    retornar resultado
+}
+
+funcion template_repetir(plantilla, vars_lista) {
+    variable resultado = ""
+    cada vars en vars_lista {
+        resultado = resultado + template_render(plantilla, vars) + "\n"
+    }
+    retornar resultado
+}
+
+funcion template_simple(texto, busqueda, reemplazo) {
+    variable partes = dividir(texto, busqueda)
+    retornar unir(partes, reemplazo)
+}

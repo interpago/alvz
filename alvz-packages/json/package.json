@@ -1,0 +1,1 @@
+{"name": "json", "version": "1.0.0", "description": "Utilidades JSON (formatear, validar)", "author": "Alvz", "url": "https://raw.githubusercontent.com/eralvarez/alvz-packages/main/packages/json/json.alvz", "entry": "json.alvz", "dependencies": []}

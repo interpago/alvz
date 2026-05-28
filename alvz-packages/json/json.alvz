@@ -1,0 +1,39 @@
+// json.alvz - Utilidades de JSON para Alvz
+// Proporciona funciones adicionales sobre las built-in
+
+funcion json_formatear(objeto): texto {
+    variable raw = json_codificar(objeto)
+    // Indentacion simple
+    variable resultado = ""
+    variable indentacion = 0
+    variable en_texto = falso
+    para i = 0 hasta longitud(raw) - 1 {
+        variable c = raw[i]
+        si c == '"' {
+            en_texto = no en_texto
+            resultado = resultado + c
+        } sino si en_texto {
+            resultado = resultado + c
+        } sino si c == '{' o c == '[' {
+            indentacion = indentacion + 1
+            resultado = resultado + c + "\n" + repetir("  ", indentacion)
+        } sino si c == '}' o c == ']' {
+            indentacion = indentacion - 1
+            resultado = resultado + "\n" + repetir("  ", indentacion) + c
+        } sino si c == ',' {
+            resultado = resultado + c + "\n" + repetir("  ", indentacion)
+        } sino {
+            resultado = resultado + c
+        }
+    }
+    retornar resultado
+}
+
+funcion json_validar(texto): booleano {
+    intentar {
+        variable obj = json_decodificar(texto)
+        retornar verdadero
+    } capturar {
+        retornar falso
+    }
+}

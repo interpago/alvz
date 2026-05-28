@@ -1,0 +1,87 @@
+variable _test_exitos = 0
+variable _test_fallos = 0
+
+funcion describir(nombre) {
+    imprimir("")
+    imprimir("=== " + nombre + " ===")
+}
+
+funcion probar(nombre, prueba) {
+    intentar {
+        prueba()
+        _test_exitos = _test_exitos + 1
+        imprimir("  [OK] " + nombre)
+    } capturar {
+        _test_fallos = _test_fallos + 1
+        imprimir("  [FAIL] " + nombre + ": " + error_msj())
+    }
+}
+
+funcion afirmar(condicion, mensaje) {
+    si condicion == falso {
+        lanzar(mensaje)
+    }
+}
+
+funcion afirmar_igual(esperado, actual, mensaje) {
+    si esperado != actual {
+        lanzar(mensaje + ": esperaba " + json_codificar(esperado) + " pero obtuvo " + json_codificar(actual))
+    }
+}
+
+funcion afirmar_diferente(a, b, mensaje) {
+    si a == b {
+        lanzar(mensaje + ": " + json_codificar(a) + " es igual a " + json_codificar(b))
+    }
+}
+
+funcion afirmar_verdadero(valor, mensaje) {
+    si valor != verdadero {
+        lanzar(mensaje + ": se esperaba verdadero")
+    }
+}
+
+funcion afirmar_falso(valor, mensaje) {
+    si valor != falso {
+        lanzar(mensaje + ": se esperaba falso")
+    }
+}
+
+funcion _contiene_str(texto, subcadena) {
+    variable partes = dividir(texto, subcadena)
+    retornar longitud(partes) > 1
+}
+
+funcion afirmar_error(bloque, mensaje_esperado) {
+    variable hubo_error = falso
+    intentar {
+        bloque()
+    } capturar {
+        variable msj = error_msj()
+        si mensaje_esperado != "" {
+            si _contiene_str(msj, mensaje_esperado) {
+                hubo_error = verdadero
+            } sino {
+                lanzar("Se esperaba error con '" + mensaje_esperado + "' pero se obtuvo: " + msj)
+            }
+        } sino {
+            hubo_error = verdadero
+        }
+    }
+    si hubo_error == falso {
+        lanzar("Se esperaba un error pero no ocurrio ninguno")
+    }
+}
+
+funcion resumen() {
+    variable total = _test_exitos + _test_fallos
+    imprimir("")
+    imprimir("=== RESULTADOS ===")
+    imprimir("Total: " + total + ", Exitos: " + _test_exitos + ", Fallos: " + _test_fallos)
+    si _test_fallos > 0 {
+        imprimir("HAY FALLOS")
+    } sino {
+        imprimir("Todos los tests pasaron.")
+    }
+    retornar _test_fallos == 0
+}

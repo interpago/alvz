@@ -1,0 +1,6 @@
+limpiar()
+variable ingredientes = ["Arroz", "Aceite", "Sal", "Agua"]
+
+para cada ingrediente en ingredientes {
+    imprimir("> " + ingrediente)
+}

@@ -1,0 +1,33 @@
+importar "matematicas"
+
+funcion fibonacci(n) {
+    si n <= 1 {
+        retornar n
+    }
+    variable a = 0
+    variable b = 1
+    para i de 2 a n {
+        variable temp = a + b
+        a = b
+        b = temp
+    }
+    retornar b
+}
+
+funcion es_primo(n) {
+    si n < 2 {
+        retornar falso
+    }
+    variable i = 2
+    mientras i * i <= n {
+        si n % i == 0 {
+            retornar falso
+        }
+        i = i + 1
+    }
+    retornar verdadero
+}
+
+funcion combinatoria(n, k) {
+    retornar factorial(n) / (factorial(k) * factorial(n - k))
+}

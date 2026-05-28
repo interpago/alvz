@@ -1,0 +1,28 @@
+funcion json_a_texto(datos) {
+    retornar json_codificar(datos)
+}
+
+funcion texto_a_json(texto) {
+    retornar json_decodificar(texto)
+}
+
+funcion json_leer_archivo(ruta) {
+    variable contenido = leer_archivo(ruta)
+    si contenido == falso {
+        retornar nulo
+    }
+    retornar json_decodificar(contenido)
+}
+
+funcion json_escribir_archivo(ruta, datos) {
+    retornar escribir_archivo(ruta, json_codificar(datos))
+}
+
+funcion json_valido(texto) {
+    intentar {
+        json_decodificar(texto)
+        retornar verdadero
+    } capturar {
+        retornar falso
+    }
+}

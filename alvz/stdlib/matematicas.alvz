@@ -1,0 +1,31 @@
+funcion factorial(n) {
+    si n <= 1 { retornar 1 }
+    retornar n * factorial(n - 1)
+}
+
+funcion maximo(a, b) {
+    si a > b { retornar a }
+    retornar b
+}
+
+funcion minimo(a, b) {
+    si a < b { retornar a }
+    retornar b
+}
+
+funcion promedio(lista) {
+    variable suma = 0
+    variable n = longitud(lista)
+    para cada item en lista {
+        suma = suma + item
+    }
+    retornar suma / n
+}
+
+funcion es_par(n) {
+    retornar n % 2 == 0
+}
+
+funcion es_impar(n) {
+    retornar n % 2 != 0
+}

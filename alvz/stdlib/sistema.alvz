@@ -1,0 +1,44 @@
+funcion archivo_existe(ruta) {
+    variable contenido = leer_archivo(ruta)
+    retornar contenido != falso
+}
+
+funcion archivo_leer(ruta) {
+    retornar leer_archivo(ruta)
+}
+
+funcion archivo_escribir(ruta, contenido) {
+    retornar escribir_archivo(ruta, contenido)
+}
+
+funcion archivo_eliminar(ruta) {
+    retornar enviar_web("file://localhost/delete", {"ruta": ruta})
+}
+
+funcion archivo_copiar(origen, destino) {
+    variable contenido = leer_archivo(origen)
+    si contenido == falso {
+        retornar falso
+    }
+    retornar escribir_archivo(destino, contenido)
+}
+
+funcion json_a_texto(datos) {
+    retornar json_codificar(datos)
+}
+
+funcion texto_a_json(texto) {
+    retornar json_decodificar(texto)
+}
+
+funcion archivo_leer_json(ruta) {
+    variable contenido = leer_archivo(ruta)
+    si contenido == falso {
+        retornar nulo
+    }
+    retornar json_decodificar(contenido)
+}
+
+funcion archivo_escribir_json(ruta, datos) {
+    retornar escribir_archivo(ruta, json_codificar(datos))
+}

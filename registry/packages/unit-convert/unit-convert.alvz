@@ -1,0 +1,39 @@
+funcion celsius_a_fahrenheit(c) {
+    retornar c * 9 / 5 + 32
+}
+
+funcion fahrenheit_a_celsius(f) {
+    retornar (f - 32) * 5 / 9
+}
+
+funcion km_a_millas(km) {
+    retornar km * 0.621371
+}
+
+funcion millas_a_km(millas) {
+    retornar millas / 0.621371
+}
+
+funcion kg_a_libras(kg) {
+    retornar kg * 2.20462
+}
+
+funcion libras_a_kg(libras) {
+    retornar libras / 2.20462
+}
+
+funcion metros_a_pies(m) {
+    retornar m * 3.28084
+}
+
+funcion pies_a_metros(pies) {
+    retornar pies / 3.28084
+}
+
+funcion litros_a_galones(l) {
+    retornar l * 0.264172
+}
+
+funcion galones_a_litros(gal) {
+    retornar gal / 0.264172
+}

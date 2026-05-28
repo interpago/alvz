@@ -1,0 +1,45 @@
+funcion throttle_crear(limite, ventana_ms) {
+    variable estado = {}
+    estado["limite"] = limite
+    estado["ventana"] = ventana_ms
+    estado["contador"] = 0
+    estado["inicio"] = tiempo()
+    retornar estado
+}
+
+funcion throttle_permitir(estado) {
+    variable ahora = tiempo()
+    si ahora - estado["inicio"] >= estado["ventana"] {
+        estado["contador"] = 0
+        estado["inicio"] = ahora
+    }
+    si estado["contador"] < estado["limite"] {
+        estado["contador"] = estado["contador"] + 1
+        retornar verdadero
+    }
+    retornar falso
+}
+
+funcion throttle_esperar(estado) {
+    variable ahora = tiempo()
+    variable transcurrido = ahora - estado["inicio"]
+    si estado["contador"] >= estado["limite"] y transcurrido < estado["ventana"] {
+        variable espera = estado["ventana"] - transcurrido
+        esperar(espera * 1000)
+        estado["contador"] = 0
+        estado["inicio"] = tiempo()
+    }
+}
+
+funcion rate_limiter(min_intervalo_ms) {
+    variable ultimo = 0
+    funcion estatica ejecutar() {
+        variable ahora = tiempo() * 1000
+        variable diff = ahora - ultimo
+        si diff < min_intervalo_ms {
+            esperar(min_intervalo_ms - diff)
+        }
+        ultimo = tiempo() * 1000
+    }
+    retornar ejecutar
+}

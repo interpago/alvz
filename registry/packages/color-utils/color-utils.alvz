@@ -1,0 +1,47 @@
+funcion color_rojo(texto) {
+    retornar "\033[31m" + texto + "\033[0m"
+}
+
+funcion color_verde(texto) {
+    retornar "\033[32m" + texto + "\033[0m"
+}
+
+funcion color_amarillo(texto) {
+    retornar "\033[33m" + texto + "\033[0m"
+}
+
+funcion color_azul(texto) {
+    retornar "\033[34m" + texto + "\033[0m"
+}
+
+funcion color_magenta(texto) {
+    retornar "\033[35m" + texto + "\033[0m"
+}
+
+funcion color_cian(texto) {
+    retornar "\033[36m" + texto + "\033[0m"
+}
+
+funcion color_blanco(texto) {
+    retornar "\033[37m" + texto + "\033[0m"
+}
+
+funcion color_negrita(texto) {
+    retornar "\033[1m" + texto + "\033[0m"
+}
+
+funcion color_subrayado(texto) {
+    retornar "\033[4m" + texto + "\033[0m"
+}
+
+funcion color_fondo_rojo(texto) {
+    retornar "\033[41m" + texto + "\033[0m"
+}
+
+funcion color_fondo_verde(texto) {
+    retornar "\033[42m" + texto + "\033[0m"
+}
+
+funcion color_fondo_azul(texto) {
+    retornar "\033[44m" + texto + "\033[0m"
+}

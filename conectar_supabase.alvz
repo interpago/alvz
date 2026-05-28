@@ -1,0 +1,21 @@
+# Definimos una función para mostrar nuestra lista
+funcion mostrar_lista(lista_de_compras) {
+    imprimir("--- MI LISTA DE COMPRAS ---")
+    para i de 0 a (longitud(lista_de_compras) - 1) {
+        imprimir((i + 1) + ". " + lista_de_compras[i])
+    }
+    imprimir("---------------------------")
+}
+
+# Creamos la lista
+variable mi_carrito = ["Leche", "Huevos", "Pan"]
+
+# Usamos la función
+mostrar_lista(mi_carrito)
+
+# Agregamos algo más
+imprimir("Añadiendo café...")
+agregar(mi_carrito, "Café")
+
+# Volvemos a mostrar la lista
+mostrar_lista(mi_carrito)

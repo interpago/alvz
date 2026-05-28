@@ -1,0 +1,12 @@
+funcion leer_directorio(ruta) {
+    retornar sistema_leer_directorio(ruta)
+}
+
+funcion copiar_archivo(origen, destino) {
+    retornar archivo_copiar(origen, destino)
+}
+
+funcion archivo_info(ruta) {
+    variable existe = archivo_existe(ruta)
+    retornar {"existe": existe}
+}

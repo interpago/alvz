@@ -1,0 +1,35 @@
+funcion yaml_serializar(datos, indentacion) {
+    si indentacion == nulo {
+        indentacion = 0
+    }
+    variable prefijo = ""
+    variable i = 0
+    mientras i < indentacion {
+        prefijo = prefijo + "  "
+        i = i + 1
+    }
+    variable resultado = ""
+    si tipo(datos) == "diccionario" {
+        cada clave en datos {
+            variable valor = datos[clave]
+            resultado = resultado + prefijo + clave + ": "
+            si tipo(valor) == "diccionario" o tipo(valor) == "lista" {
+                resultado = resultado + "\n" + yaml_serializar(valor, indentacion + 1)
+            } sino si tipo(valor) == "texto" {
+                resultado = resultado + "\"" + valor + "\"\n"
+            } sino {
+                resultado = resultado + valor + "\n"
+            }
+        }
+    } sino si tipo(datos) == "lista" {
+        cada item en datos {
+            resultado = resultado + prefijo + "- "
+            si tipo(item) == "diccionario" o tipo(item) == "lista" {
+                resultado = resultado + "\n" + yaml_serializar(item, indentacion + 1)
+            } sino {
+                resultado = resultado + item + "\n"
+            }
+        }
+    }
+    retornar resultado
+}

@@ -1,0 +1,54 @@
+{
+    "name": "alvz-language",
+    "publisher": "alvz-project",
+    "displayName": "Alvz Language Support",
+    "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol",
+    "version": "1.3.0",
+    "engines": { "vscode": "^1.75.0" },
+    "categories": ["Programming Languages"],
+    "activationEvents": [
+        "onLanguage:alvz"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "languages": [{
+            "id": "alvz",
+            "aliases": ["Alvz", "alvz"],
+            "extensions": [".alvz"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "alvz",
+            "scopeName": "source.alvz",
+            "path": "./syntaxes/alvz.tmLanguage.json"
+        }],
+        "snippets": [{
+            "language": "alvz",
+            "path": "./snippets/snippets.json"
+        }],
+        "semanticTokenTypes": [
+            { "id": "variable", "description": "Variable declaration or reference", "superType": "variable" },
+            { "id": "function", "description": "Function declaration or call", "superType": "function" },
+            { "id": "class", "description": "Class declaration", "superType": "class" },
+            { "id": "keyword", "description": "Language keyword", "superType": "keyword" },
+            { "id": "string", "description": "String literal", "superType": "string" },
+            { "id": "number", "description": "Numeric literal", "superType": "number" },
+            { "id": "builtinFunction", "description": "Built-in or stdlib function", "superType": "function" },
+            { "id": "property", "description": "Object property", "superType": "property" },
+            { "id": "comment", "description": "Comment", "superType": "comment" },
+            { "id": "parameter", "description": "Function parameter", "superType": "variable" },
+            { "id": "type", "description": "Type annotation", "superType": "type" }
+        ],
+        "semanticTokenScopes": [
+            { "scopes": { "variable": [["variable.other.alvz"]] } },
+            { "scopes": { "function": [["entity.name.function.alvz"]] } },
+            { "scopes": { "class": [["entity.name.type.class.alvz"]] } },
+            { "scopes": { "keyword": [["keyword.control.alvz"]] } },
+            { "scopes": { "string": [["string.quoted.double.alvz", "string.quoted.single.alvz"]] } },
+            { "scopes": { "number": [["constant.numeric.alvz"]] } },
+            { "scopes": { "builtinFunction": [["support.function.alvz"]] } },
+            { "scopes": { "property": [["variable.other.property.alvz"]] } },
+            { "scopes": { "comment": [["comment.line.number-sign.alvz"]] } }
+        ]
+    }
+}

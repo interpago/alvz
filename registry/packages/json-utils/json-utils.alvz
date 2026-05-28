@@ -1,0 +1,16 @@
+funcion json_merge(base, extra) {
+    variable resultado = base
+    cada clave en extra {
+        resultado[clave] = extra[clave]
+    }
+    retornar resultado
+}
+
+funcion json_validar(datos, esquema) {
+    cada clave en esquema {
+        si datos[clave] == nulo {
+            retornar falso
+        }
+    }
+    retornar verdadero
+}
