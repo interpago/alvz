@@ -65,6 +65,23 @@ _NOMBRES = {
 # Tokens de palabras clave que pueden usarse como identificadores
 _IDENT_KEYWORDS = {Token.A, Token.Y, Token.O, Token.EN, Token.DE, Token.OBTENER, Token.ESTABLECER, Token.PROPIEDAD}
 
+# Tokens de funciones built-in que tambien pueden usarse como nombres
+_IDENT_CALLABLE_KEYWORDS = {
+    Token.LONGITUD, Token.AGREGAR, Token.AZAR, Token.ESPERAR, Token.LIMPIAR,
+    Token.LEER, Token.LEER_NUMERO, Token.ENVIAR_WEB, Token.ESCRIBIR_ARCHIVO,
+    Token.MINUSCULAS, Token.MAYUSCULAS, Token.OBTENER_SALIDA,
+    Token.IMPRIMIR, Token.RETORNAR, Token.TIEMPO, Token.TIPO_KW,
+    Token.JSON_CODIFICAR, Token.JSON_DECODIFICAR,
+    Token.REEMPLAZAR, Token.ABSOLUTO, Token.REDONDEAR, Token.POTENCIA, Token.RAIZ,
+    Token.FECHA_ACTUAL, Token.DIVIDIR, Token.UNIR, Token.A_NUMERO,
+    Token.REGEX_BUSCAR, Token.INICIAR_SERVIDOR, Token.LEER_ARCHIVO,
+    Token.SUPABASE_CONSULTAR, Token.SUPABASE_INSERTAR,
+    Token.SOLICITUD_HTTP, Token.SQLITE_ABRIR, Token.SQLITE_EJECUTAR, Token.SQLITE_CONSULTAR,
+    Token.IMPORTAR, Token.GLOBAL, Token.LANZAR, Token.CAPTURAR,
+    Token.ROMPER, Token.CONTINUAR, Token.ESTATICO,
+    Token.INTENTAR, Token.ASYNC, Token.AGUARDAR,
+}
+
 
 class Parser:
     """Analiza tokens y genera bytecode para la VM."""
@@ -113,7 +130,7 @@ class Parser:
     def _consume_identifier(self):
         """Consume un identificador, aceptando tambien keywords que pueden ser nombres de variable."""
         token_type, value, line = self.current_token()
-        if token_type == Token.IDENTIFICADOR or token_type in _IDENT_KEYWORDS:
+        if token_type == Token.IDENTIFICADOR or token_type in _IDENT_KEYWORDS or token_type in _IDENT_CALLABLE_KEYWORDS:
             self.pos += 1
             return value
 

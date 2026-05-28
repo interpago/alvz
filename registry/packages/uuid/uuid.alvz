@@ -19,11 +19,11 @@ funcion uuid_v4() {
     retornar uuid
 }
 
-funcion uuid_aleatorio(longitud) {
+funcion uuid_aleatorio(longitud_cadena) {
     variable hex = "0123456789abcdef"
     variable resultado = ""
     variable i = 0
-    mientras i < longitud {
+    mientras i < longitud_cadena {
         resultado = resultado + hex[azar(0, 15)]
         i = i + 1
     }

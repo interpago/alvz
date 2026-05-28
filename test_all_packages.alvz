@@ -1,0 +1,37 @@
+importar "uuid"
+importar "sort"
+importar "queue"
+importar "stack"
+importar "set"
+importar "cache"
+
+variable id = uuid_v4()
+imprimir("uuid OK: " + id)
+
+variable nums = [3, 1, 4, 1, 5, 9, 2, 6]
+variable o = ordenar(nums)
+imprimir("sort OK: " + json_codificar(o))
+
+variable q = queue_crear()
+queue_encolar(q, "a")
+queue_encolar(q, "b")
+variable p = queue_desencolar(q)
+imprimir("queue OK: " + p)
+
+variable s = stack_crear()
+stack_apilar(s, 1)
+stack_apilar(s, 2)
+variable t = stack_desapilar(s)
+imprimir("stack OK: " + t)
+
+variable set1 = set_crear()
+set_agregar(set1, "x")
+set_agregar(set1, "x")
+imprimir("set OK: size=" + set_tamano(set1))
+
+variable c = cache_crear()
+cache_poner(c, "k1", 42, 60)
+variable v = cache_obtener(c, "k1")
+imprimir("cache OK: " + v)
+
+imprimir("[OK] Todos los paquetes funcionan")

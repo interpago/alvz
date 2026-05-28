@@ -1,0 +1,83 @@
+importar "uuid"
+importar "sort"
+importar "queue"
+importar "stack"
+importar "set"
+importar "cache"
+
+funcion test_uuid() {
+    variable id = uuid_v4()
+    si longitud(id) == 36 {
+        imprimir("[OK] uuid_v4() genera UUID de 36 caracteres")
+    } sino {
+        imprimir("[FAIL] uuid_v4(): " + id)
+        lanzar "Error: uuid_v4 fallo"
+    }
+}
+
+funcion test_sort() {
+    variable original = [3, 1, 4, 1, 5, 9, 2, 6]
+    variable ordenada = ordenar(original)
+    si ordenada[0] == 1 y ordenada[7] == 9 {
+        imprimir("[OK] ordenar() funciona correctamente")
+    } sino {
+        imprimir("[FAIL] ordenar(): " + json_codificar(ordenada))
+        lanzar "Error: sort fallo"
+    }
+}
+
+funcion test_queue() {
+    variable cola = queue_crear()
+    queue_encolar(cola, "a")
+    queue_encolar(cola, "b")
+    variable primero = queue_desencolar(cola)
+    si primero == "a" y queue_frente(cola) == "b" {
+        imprimir("[OK] queue FIFO funciona correctamente")
+    } sino {
+        lanzar "Error: queue fallo"
+    }
+}
+
+funcion test_stack() {
+    variable pila = stack_crear()
+    stack_apilar(pila, 1)
+    stack_apilar(pila, 2)
+    variable tope = stack_desapilar(pila)
+    si tope == 2 y stack_tope(pila) == 1 {
+        imprimir("[OK] stack LIFO funciona correctamente")
+    } sino {
+        lanzar "Error: stack fallo"
+    }
+}
+
+funcion test_set() {
+    variable s = set_crear()
+    set_agregar(s, "x")
+    set_agregar(s, "y")
+    set_agregar(s, "x")
+    si set_tamano(s) == 2 y set_tiene(s, "x") {
+        imprimir("[OK] set elimina duplicados correctamente")
+    } sino {
+        lanzar "Error: set fallo"
+    }
+}
+
+funcion test_cache() {
+    variable c = cache_crear()
+    cache_poner(c, "clave1", 42, 60)
+    variable valor = cache_obtener(c, "clave1")
+    si valor == 42 {
+        imprimir("[OK] cache TTL funciona correctamente")
+    } sino {
+        lanzar "Error: cache fallo"
+    }
+}
+
+test_uuid()
+test_sort()
+test_queue()
+test_stack()
+test_set()
+test_cache()
+
+imprimir("[OK] Todos los tests de paquetes pasaron")

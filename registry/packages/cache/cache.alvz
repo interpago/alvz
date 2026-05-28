@@ -2,9 +2,15 @@ funcion cache_crear() {
     retornar {"_datos": {}, "_tiempos": {}}
 }
 
+funcion _cache_poner_interno(datos, tiempos, clave, valor, ttl) {
+    datos[clave] = valor
+    tiempos[clave] = tiempo() + ttl
+}
+
 funcion cache_poner(cache, clave, valor, ttl) {
-    cache["_datos"][clave] = valor
-    cache["_tiempos"][clave] = tiempo() + ttl
+    variable datos = cache["_datos"]
+    variable tiempos = cache["_tiempos"]
+    _cache_poner_interno(datos, tiempos, clave, valor, ttl)
 }
 
 funcion cache_obtener(cache, clave) {
@@ -26,8 +32,10 @@ funcion cache_tiene(cache, clave) {
 }
 
 funcion cache_eliminar(cache, clave) {
-    cache["_datos"][clave] = nulo
-    cache["_tiempos"][clave] = nulo
+    variable datos = cache["_datos"]
+    variable tiempos = cache["_tiempos"]
+    datos[clave] = nulo
+    tiempos[clave] = nulo
 }
 
 funcion cache_limpiar(cache) {
@@ -39,10 +47,12 @@ funcion cache_estadisticas(cache) {
     variable total = 0
     variable activos = 0
     variable ahora = tiempo()
+    variable datos = cache["_datos"]
+    variable tiempos = cache["_tiempos"]
     para cada clave en cache["_datos"] {
-        si cache["_datos"][clave] != nulo {
+        si datos[clave] != nulo {
             total = total + 1
-            si cache["_tiempos"][clave] == nulo o ahora <= cache["_tiempos"][clave] {
+            si tiempos[clave] == nulo o ahora <= tiempos[clave] {
                 activos = activos + 1
             }
         }

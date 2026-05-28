@@ -1,0 +1,5 @@
+importar "uuid"
+variable id = uuid_v4()
+imprimir(id)
+variable c = uuid_corto()
+imprimir(c)
