@@ -242,6 +242,54 @@
       "author": "Eder Alvarez",
       "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/yaml-utils/yaml-utils.alvz",
       "entry": "yaml-utils.alvz"
+    },
+    "uuid": {
+      "name": "uuid",
+      "version": "1.0.0",
+      "description": "Generacion de UUIDs: v4, aleatorio, corto",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/uuid/uuid.alvz",
+      "entry": "uuid.alvz"
+    },
+    "sort": {
+      "name": "sort",
+      "version": "1.0.0",
+      "description": "Algoritmos de ordenamiento: quicksort, descendente, ordenar por clave",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/sort/sort.alvz",
+      "entry": "sort.alvz"
+    },
+    "queue": {
+      "name": "queue",
+      "version": "1.0.0",
+      "description": "Cola FIFO: encolar, desencolar, frente, tamano",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/queue/queue.alvz",
+      "entry": "queue.alvz"
+    },
+    "stack": {
+      "name": "stack",
+      "version": "1.0.0",
+      "description": "Pila LIFO: apilar, desapilar, tope, tamano",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/stack/stack.alvz",
+      "entry": "stack.alvz"
+    },
+    "set": {
+      "name": "set",
+      "version": "1.0.0",
+      "description": "Operaciones de conjunto: union, interseccion, diferencia, pertenencia",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/set/set.alvz",
+      "entry": "set.alvz"
+    },
+    "cache": {
+      "name": "cache",
+      "version": "1.0.0",
+      "description": "Cache con TTL (tiempo de vida): poner, obtener, estadisticas",
+      "author": "Eder Alvarez",
+      "url": "https://raw.githubusercontent.com/interpago/alvz-packages/main/packages/cache/cache.alvz",
+      "entry": "cache.alvz"
     }
   }
 }

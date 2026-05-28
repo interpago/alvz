@@ -1,0 +1,52 @@
+funcion stack_crear() {
+    retornar []
+}
+
+funcion stack_apilar(pila, elemento) {
+    agregar(pila, elemento)
+}
+
+funcion stack_desapilar(pila) {
+    variable n = longitud(pila)
+    si n == 0 { retornar nulo }
+    variable ultimo = pila[n - 1]
+    variable resultado = []
+    variable i = 0
+    mientras i < n - 1 {
+        agregar(resultado, pila[i])
+        i = i + 1
+    }
+    variable j = 0
+    mientras j < longitud(resultado) {
+        pila[j] = resultado[j]
+        j = j + 1
+    }
+    si longitud(pila) > longitud(resultado) {
+        variable temp = []
+        variable idx = 0
+        mientras idx < longitud(resultado) {
+            agregar(temp, resultado[idx])
+            idx = idx + 1
+        }
+        variable idx2 = 0
+        mientras idx2 < longitud(temp) {
+            pila[idx2] = temp[idx2]
+            idx2 = idx2 + 1
+        }
+    }
+    retornar ultimo
+}
+
+funcion stack_tope(pila) {
+    variable n = longitud(pila)
+    si n == 0 { retornar nulo }
+    retornar pila[n - 1]
+}
+
+funcion stack_tamano(pila) {
+    retornar longitud(pila)
+}
+
+funcion stack_vacio(pila) {
+    retornar longitud(pila) == 0
+}

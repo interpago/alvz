@@ -1,0 +1,92 @@
+funcion _contiene(lista, elemento) {
+    variable i = 0
+    mientras i < longitud(lista) {
+        si lista[i] == elemento { retornar verdadero }
+        i = i + 1
+    }
+    retornar falso
+}
+
+funcion set_crear() {
+    retornar []
+}
+
+funcion set_agregar(conjunto, elemento) {
+    si _contiene(conjunto, elemento) == falso {
+        agregar(conjunto, elemento)
+    }
+}
+
+funcion set_eliminar(conjunto, elemento) {
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(conjunto) {
+        si conjunto[i] != elemento {
+            agregar(resultado, conjunto[i])
+        }
+        i = i + 1
+    }
+    variable j = 0
+    mientras j < longitud(resultado) {
+        conjunto[j] = resultado[j]
+        j = j + 1
+    }
+}
+
+funcion set_tiene(conjunto, elemento) {
+    retornar _contiene(conjunto, elemento)
+}
+
+funcion set_tamano(conjunto) {
+    retornar longitud(conjunto)
+}
+
+funcion set_vacio(conjunto) {
+    retornar longitud(conjunto) == 0
+}
+
+funcion set_a_lista(conjunto) {
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(conjunto) {
+        agregar(resultado, conjunto[i])
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion set_union(a, b) {
+    variable resultado = set_a_lista(a)
+    variable i = 0
+    mientras i < longitud(b) {
+        si _contiene(resultado, b[i]) == falso {
+            agregar(resultado, b[i])
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion set_interseccion(a, b) {
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(a) {
+        si _contiene(b, a[i]) {
+            agregar(resultado, a[i])
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion set_diferencia(a, b) {
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(a) {
+        si _contiene(b, a[i]) == falso {
+            agregar(resultado, a[i])
+        }
+        i = i + 1
+    }
+    retornar resultado
+}

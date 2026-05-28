@@ -1,0 +1,37 @@
+funcion uuid_v4() {
+    variable hex = "0123456789abcdef"
+    variable uuid = ""
+    variable i = 0
+    mientras i < 36 {
+        si i == 8 o i == 13 o i == 18 o i == 23 {
+            uuid = uuid + "-"
+        } sino si i == 14 {
+            uuid = uuid + "4"
+        } sino si i == 19 {
+            variable r = azar(0, 3)
+            variable opciones = ["8", "9", "a", "b"]
+            uuid = uuid + opciones[r]
+        } sino {
+            uuid = uuid + hex[azar(0, 15)]
+        }
+        i = i + 1
+    }
+    retornar uuid
+}
+
+funcion uuid_aleatorio(longitud) {
+    variable hex = "0123456789abcdef"
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud {
+        resultado = resultado + hex[azar(0, 15)]
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion uuid_corto() {
+    variable ts = tiempo()
+    variable r = azar(10000, 99999)
+    retornar "u_" + ts + "_" + r
+}

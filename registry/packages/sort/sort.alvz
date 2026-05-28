@@ -1,0 +1,74 @@
+funcion _particion(lista, bajo, alto) {
+    variable pivote = lista[alto]
+    variable i = bajo - 1
+    variable j = bajo
+    mientras j < alto {
+        si lista[j] <= pivote {
+            i = i + 1
+            variable temp = lista[i]
+            lista[i] = lista[j]
+            lista[j] = temp
+        }
+        j = j + 1
+    }
+    variable temp2 = lista[i + 1]
+    lista[i + 1] = lista[alto]
+    lista[alto] = temp2
+    retornar i + 1
+}
+
+funcion _quicksort(lista, bajo, alto) {
+    si bajo < alto {
+        variable pi = _particion(lista, bajo, alto)
+        _quicksort(lista, bajo, pi - 1)
+        _quicksort(lista, pi + 1, alto)
+    }
+}
+
+funcion ordenar(lista) {
+    variable copia = []
+    variable i = 0
+    mientras i < longitud(lista) {
+        agregar(copia, lista[i])
+        i = i + 1
+    }
+    si longitud(copia) > 1 {
+        _quicksort(copia, 0, longitud(copia) - 1)
+    }
+    retornar copia
+}
+
+funcion ordenar_descendente(lista) {
+    variable ordenada = ordenar(lista)
+    variable resultado = []
+    variable i = longitud(ordenada) - 1
+    mientras i >= 0 {
+        agregar(resultado, ordenada[i])
+        i = i - 1
+    }
+    retornar resultado
+}
+
+funcion ordenar_por(lista, clave) {
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(lista) {
+        agregar(resultado, lista[i])
+        i = i + 1
+    }
+    variable n = longitud(resultado)
+    variable j = 0
+    mientras j < n - 1 {
+        variable k = 0
+        mientras k < n - j - 1 {
+            si resultado[k][clave] > resultado[k + 1][clave] {
+                variable temp = resultado[k]
+                resultado[k] = resultado[k + 1]
+                resultado[k + 1] = temp
+            }
+            k = k + 1
+        }
+        j = j + 1
+    }
+    retornar resultado
+}
