@@ -40,15 +40,20 @@
             { "id": "type", "description": "Type annotation", "superType": "type" }
         ],
         "semanticTokenScopes": [
-            { "scopes": { "variable": [["variable.other.alvz"]] } },
-            { "scopes": { "function": [["entity.name.function.alvz"]] } },
-            { "scopes": { "class": [["entity.name.type.class.alvz"]] } },
-            { "scopes": { "keyword": [["keyword.control.alvz"]] } },
-            { "scopes": { "string": [["string.quoted.double.alvz", "string.quoted.single.alvz"]] } },
-            { "scopes": { "number": [["constant.numeric.alvz"]] } },
-            { "scopes": { "builtinFunction": [["support.function.alvz"]] } },
-            { "scopes": { "property": [["variable.other.property.alvz"]] } },
-            { "scopes": { "comment": [["comment.line.number-sign.alvz"]] } }
+            {
+                "language": "alvz",
+                "scopes": {
+                    "variable": ["variable.other.alvz"],
+                    "function": ["entity.name.function.alvz"],
+                    "class": ["entity.name.type.class.alvz"],
+                    "keyword": ["keyword.control.alvz"],
+                    "string": ["string.quoted.double.alvz", "string.quoted.single.alvz"],
+                    "number": ["constant.numeric.alvz"],
+                    "builtinFunction": ["support.function.alvz"],
+                    "property": ["variable.other.property.alvz"],
+                    "comment": ["comment.line.number-sign.alvz"]
+                }
+            }
         ]
     }
 }
