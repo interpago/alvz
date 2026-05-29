@@ -60,3 +60,111 @@ def test_wasm_booleano():
     codigo = """imprimir(verdadero)\nimprimir(falso)"""
     wasm_bytes = _compile_and_wasm(codigo)
     assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_and():
+    codigo = """si verdadero y falso { imprimir(1) }"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_or():
+    codigo = """si falso o verdadero { imprimir(1) }"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_and_con_numeros():
+    codigo = """si 1 y 0 { imprimir(1) }"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_random():
+    codigo = """imprimir(azar(1, 10))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_input():
+    codigo = """variable x = leer()\nimprimir(x)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_string():
+    codigo = """imprimir("hola mundo")"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_string_variable():
+    codigo = """variable nombre = "Alvz"\nimprimir(nombre)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_crear():
+    codigo = """variable x = []"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_agregar():
+    codigo = """variable x = []\nagregar(x, 42)\nimprimir(longitud(x))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_indice():
+    codigo = """variable x = [10, 20, 30]\nimprimir(x[1])"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_asignar_indice():
+    codigo = """variable x = [1, 2, 3]\nx[1] = 99\nimprimir(x[1])"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_longitud():
+    codigo = """variable x = [1, 2, 3, 4, 5]\nimprimir(longitud(x))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_diccionario():
+    codigo = """variable d = {}\nimprimir(d)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_funcion_simple():
+    codigo = """funcion suma(a, b) {\n  retornar a + b\n}\nimprimir(suma(2, 3))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_funcion_sin_retorno():
+    codigo = """funcion saludar() {\n  imprimir("hola")\n}\nsaludar()"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_negacion():
+    codigo = """imprimir(-5)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_comparacion_encadenada():
+    codigo = """imprimir(1 < 2 y 2 < 3)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_lista_vacia_longitud():
+    codigo = """imprimir(longitud([]))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'

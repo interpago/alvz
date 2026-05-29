@@ -16,7 +16,7 @@
 
 ## Progress
 ### Done
-- **Compilador WASM funcional**: `wasm_compiler.py` + `wasm_encoder.py`. Traduce bytecode Alvz a WASM binario, ejecutable con wasmtime. Soporta constantes, aritmética (suma, resta, mul, div), comparaciones (==, !=, <, >, <=, >=), negación, print (num/bool), load/store de variables, saltos (incondicional y condicional), null, list, length, pop. 25 opcodes implementados. `alvz build --wasm`. 473 tests pasando.
+- **Compilador WASM avanzado**: `wasm_compiler.py` + `wasm_encoder.py`. Traduce bytecode Alvz a WASM binario (11886 bytes), ejecutable con wasmtime. 40+ opcodes: aritmética (suma, resta, mul, div, negación), comparaciones (==, !=, <, >, <=, >=), lógica (AND, OR), print (num/bool/str con punteros correctos), load/store de variables locales/globales, saltos (condicional e incondicional), null, lista (crear, agregar, obtener/establecer índice, longitud), diccionario, aleatorio, entrada, llamada/retorno con pila de llamadas, halt. `alvz build --wasm`. 498 tests pasando.
 - **Tipado estático**: `type_checker.py`. Verifica anotaciones, parámetros, retorno, llamadas. `--check-types` / `-T`. 21 tests.
 - **Async/await**: tokens `ASYNC`, `AGUARDAR`; opcodes `OP_ASYNC_CALL` (76), `OP_AWAIT` (77); event loop con `ThreadPoolExecutor` (concurrencia real).
 - **Optimizador de bytecode**: `optimizer.py` con plegado de constantes, código muerto, reasignación de saltos. `--optimize` / `-O`.

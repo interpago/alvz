@@ -247,6 +247,114 @@
         .card p { font-size: 0.85rem; }
         .card a { font-size: 0.8rem; font-weight: 600; color: var(--md-primary); text-decoration: none; }
 
+        /* Playground */
+        .playground {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .playground h3 { margin-top: 0; color: var(--md-primary); }
+        .playground select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.9rem;
+            margin: 8px 0 16px;
+            cursor: pointer;
+        }
+        #challenge-desc {
+            font-size: 0.9rem;
+            padding: 12px;
+            background: var(--admonition-bg);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--md-primary);
+        }
+        .code-editor {
+            width: 100%;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--code-bg);
+            color: var(--text);
+            resize: vertical;
+            min-height: 140px;
+            tab-size: 4;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+        .code-editor:focus { outline: 2px solid var(--md-primary); outline-offset: -1px; }
+        .playground-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+        .playground-actions button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .playground-actions button:hover { opacity: 0.85; }
+        .btn-run { background: #2e7d32; color: white; }
+        .btn-verify { background: #1565c0; color: white; }
+        .btn-hint { background: #f57f17; color: white; }
+        .btn-reset { background: #757575; color: white; }
+        #hint-box {
+            padding: 12px;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        [data-theme="dark"] #hint-box { background: #3e3520; border-color: #6d5a2e; }
+        .output-panel {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--code-bg);
+        }
+        .output-header {
+            padding: 8px 14px;
+            background: var(--tab-bg);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+        .output-content {
+            padding: 14px;
+            margin: 0;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.85rem;
+            min-height: 60px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .output-content.error { color: #e53935; }
+        .output-content.success { color: #2e7d32; }
+        .badge-challenge {
+            display: inline-block;
+            background: var(--md-primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
         /* Footer */
         footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid var(--border); color: var(--footer-text); font-size: 0.8rem; }
 
@@ -369,7 +477,7 @@
     <nav>
         <ul>
             <li><a href="#intro" class="active">Introducción</a></li>
-            <li><a href="#curso">Plan de Aprendizaje</a></li>
+            <li><a href="#curso">Plan de Aprendizaje 🚀 (20 lecciones)</a></li>
             <li><a href="#instalacion">Instalación</a></li>
             <li><a href="#hola-mundo">Hola Mundo</a></li>
         </ul>
@@ -420,39 +528,236 @@
             <div class="admonition-title">¿Por qué Alvz?</div>
             Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
             <br><br>
-            <strong>v0.16.0</strong> — Compilador WASM funcional: `alvz build --wasm` genera .wasm ejecutable con wasmtime. 25 opcodes: aritmética, comparaciones, variables, saltos, print, list, null. StdLib (8 módulos), Package Manager (36 paquetes). 473 tests.
+            <strong>v0.16.0</strong> — Compilador WASM funcional: `alvz build --wasm` genera .wasm ejecutable con wasmtime. 40+ opcodes: aritmética, comparaciones, lógica (y/o), variables, saltos, call/return, print (num/bool/str), listas, diccionarios, aleatorio, entrada. StdLib (8 módulos), Package Manager (36 paquetes). 498 tests.
         </div>
     </section>
 
     <section id="curso">
-        <h2>Plan de Aprendizaje Paso a Paso</h2>
-        <p>Domina Alvz desde cero con este camino guiado. Cada lección incluye conceptos clave y un reto práctico.</p>
-        
+        <h2>Plan de Aprendizaje Paso a Paso 🚀</h2>
+        <p>Domina Alvz desde cero con este camino guiado, sin prisa pero sin pausa. Cada lección explica <strong>qué harás</strong>, los <strong>conceptos clave</strong> que aprenderás y un <strong>reto</strong> para practicar. ¡Tú pones el ritmo!</p>
+
         <div class="card-grid">
+
             <div class="card">
-                <h3>1. Fundamentos</h3>
-                <p>Hola Mundo, variables y tipos de datos básicos.</p>
+                <span style="font-size:2rem;">🌱</span>
+                <h3>1. Primeros pasos</h3>
+                <p><strong>Qué harás:</strong> Escribir tu primer programa y entender cómo funciona Alvz.</p>
+                <p><strong>Conceptos:</strong> Instalación, terminal, <code>imprimir</code>, <code>variable</code>, números y texto.</p>
+                <p><strong>Reto:</strong> Crea un programa que imprima tu nombre y edad.</p>
                 <a href="#hola-mundo">Empezar →</a>
             </div>
+
             <div class="card">
-                <h3>2. Lógica</h3>
-                <p>Condicionales <code>si/sino</code> y bucles <code>mientras/para</code>.</p>
+                <span style="font-size:2rem;">🧠</span>
+                <h3>2. Toma decisiones</h3>
+                <p><strong>Qué harás:</strong> Hacer que tu programa reaccione según condiciones.</p>
+                <p><strong>Conceptos:</strong> <code>si</code>, <code>sino</code>, comparaciones (<code>==</code>, <code>&lt;</code>, <code>&gt;</code>), <code>verdadero</code>, <code>falso</code>.</p>
+                <p><strong>Reto:</strong> Pide una edad al usuario y dile si es mayor o menor de edad.</p>
                 <a href="#control">Ver más →</a>
             </div>
+
             <div class="card">
-                <h3>3. Estructuras</h3>
-                <p>Funciones, listas y el potente bucle <code>cada</code>.</p>
+                <span style="font-size:2rem;">🔄</span>
+                <h3>3. Repite sin aburrirte</h3>
+                <p><strong>Qué harás:</strong> Automatizar tareas repetitivas con bucles.</p>
+                <p><strong>Conceptos:</strong> <code>mientras</code>, <code>para</code>, <code>cada</code>, rangos (<code>de 1 a 10</code>).</p>
+                <p><strong>Reto:</strong> Imprime la tabla de multiplicar del 7 del 1 al 10.</p>
+                <a href="#control">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">📦</span>
+                <h3>4. Organiza tu código</h3>
+                <p><strong>Qué harás:</strong> Crear bloques reutilizables con funciones.</p>
+                <p><strong>Conceptos:</strong> <code>funcion</code>, parámetros, <code>retornar</code>, ámbito de variables.</p>
+                <p><strong>Reto:</strong> Escribe una función que reciba un número y devuelva si es par o impar.</p>
                 <a href="#funciones">Ver más →</a>
             </div>
+
             <div class="card">
-                <h3>4. Objetos</h3>
-                <p>Programación Orientada a Objetos (Clases y Herencia).</p>
+                <span style="font-size:2rem;">🗂️</span>
+                <h3>5. Colecciones de datos</h3>
+                <p><strong>Qué harás:</strong> Guardar múltiples valores en listas y diccionarios.</p>
+                <p><strong>Conceptos:</strong> <code>[]</code>, <code>{}</code>, índices, <code>longitud</code>, <code>agregar</code>, bucles <code>cada</code>.</p>
+                <p><strong>Reto:</strong> Crea una lista de compras, agrega 3 items, y muestra cada uno.</p>
+                <a href="#tipos">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🏗️</span>
+                <h3>6. Crea tus propios objetos</h3>
+                <p><strong>Qué harás:</strong> Modelar cosas del mundo real con clases.</p>
+                <p><strong>Conceptos:</strong> <code>clase</code>, <code>nuevo</code>, <code>inicializar()</code>, <code>self</code>, métodos.</p>
+                <p><strong>Reto:</strong> Crea una clase <code>Libro</code> con título, autor y un método <code>mostrar()</code>.</p>
                 <a href="#clases">Ver más →</a>
             </div>
+
             <div class="card">
-                <h3>5. Nivel Pro</h3>
-                <p>Desarrollo de APIs con FastAPI y conexión a Supabase.</p>
+                <span style="font-size:2rem;">👪</span>
+                <h3>7. Herencia y más POO</h3>
+                <p><strong>Qué harás:</strong> Reutilizar código con herencia y usar getters/setters.</p>
+                <p><strong>Conceptos:</strong> <code>clase ... de ...</code>, <code>super</code>, <code>instancia</code>, <code>propiedad</code>, <code>estatico</code>.</p>
+                <p><strong>Reto:</strong> Crea <code>Vehiculo</code> → <code>Coche</code> que herede y sobrescriba un método.</p>
+                <a href="#clases">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🔧</span>
+                <h3>8. Librería Estándar</h3>
+                <p><strong>Qué harás:</strong> Usar módulos ya hechos para ahorrar tiempo.</p>
+                <p><strong>Conceptos:</strong> <code>importar</code>, <code>matematicas</code>, <code>cadenas</code>, <code>colecciones</code>, <code>fecha</code>.</p>
+                <p><strong>Reto:</strong> Importa <code>matematicas</code> y calcula el factorial de un número.</p>
+                <a href="#stdlib">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">📂</span>
+                <h3>9. Archivos y JSON</h3>
+                <p><strong>Qué harás:</strong> Leer y escribir archivos, guardar datos en JSON.</p>
+                <p><strong>Conceptos:</strong> <code>sistema</code>, <code>archivo_leer</code>, <code>archivo_escribir</code>, <code>json</code>.</p>
+                <p><strong>Reto:</strong> Guarda una lista de tareas en un archivo JSON y luego léela.</p>
+                <a href="#stdlib">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🌐</span>
+                <h3>10. Consumir APIs</h3>
+                <p><strong>Qué harás:</strong> Obtener datos de internet con peticiones HTTP.</p>
+                <p><strong>Conceptos:</strong> <code>importar "http"</code>, <code>http_obtener</code>, <code>http_json</code>, JSON.</p>
+                <p><strong>Reto:</strong> Obtén datos del clima de una API pública y muestra la temperatura.</p>
+                <a href="#stdlib">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">⚡</span>
+                <h3>11. Async — haz varias cosas a la vez</h3>
+                <p><strong>Qué harás:</strong> Ejecutar tareas en paralelo sin bloquear tu programa.</p>
+                <p><strong>Conceptos:</strong> <code>funcion async</code>, <code>aguardar</code>, <code>esperar</code>, concurrencia real.</p>
+                <p><strong>Reto:</strong> Lanza 3 tareas async que esperen diferente tiempo y observa el orden.</p>
+                <a href="#async">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">📦</span>
+                <h3>12. Paquetes de terceros</h3>
+                <p><strong>Qué harás:</strong> Instalar y usar paquetes del registro público.</p>
+                <p><strong>Conceptos:</strong> <code>alvz install</code>, <code>alvz search</code>, registro de paquetes, dependencias.</p>
+                <p><strong>Reto:</strong> Instala el paquete <code>math</code> y usa <code>fibonacci(10)</code>.</p>
+                <a href="#packages">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🐍</span>
+                <h3>13. SQLite — base de datos local</h3>
+                <p><strong>Qué harás:</strong> Guardar datos persistentes con SQLite sin instalar nada.</p>
+                <p><strong>Conceptos:</strong> <code>sqlite</code>, <code>base_abrir</code>, <code>base_crear_tabla</code>, <code>base_insertar</code>, <code>base_consultar</code>.</p>
+                <p><strong>Reto:</strong> Crea una tabla de contactos, inserta 3 y muéstralos.</p>
+                <a href="#stdlib">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🚀</span>
+                <h3>14. Compila y distribuye</h3>
+                <p><strong>Qué harás:</strong> Convertir tu programa en un .exe o .wasm para compartirlo.</p>
+                <p><strong>Conceptos:</strong> <code>alvz build</code>, <code>--nuitka</code>, <code>--wasm</code>, ejecutable standalone.</p>
+                <p><strong>Reto:</strong> Compila tu juego de adivinanza a .exe y pásalo a un amigo.</p>
+                <a href="#native">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🌍</span>
+                <h3>15. Web con FastAPI</h3>
+                <p><strong>Qué harás:</strong> Crear un servidor web y una API REST desde Alvz.</p>
+                <p><strong>Conceptos:</strong> <code>iniciar_servidor</code>, rutas, GET/POST, parámetros de ruta, JSON.</p>
+                <p><strong>Reto:</strong> Crea una API que reciba un nombre y responda "Hola, {nombre}!".</p>
                 <a href="#fastapi">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">☁️</span>
+                <h3>16. Supabase — tu app en la nube</h3>
+                <p><strong>Qué harás:</strong> Conectar tu app a una base de datos en la nube real.</p>
+                <p><strong>Conceptos:</strong> <code>supabase_insertar</code>, <code>supabase_consultar</code>, PostgreSQL, API key.</p>
+                <p><strong>Reto:</strong> Crea un contador de visitas que se guarde en Supabase.</p>
+                <a href="#supabase">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">💎</span>
+                <h3>17. Tipado estático</h3>
+                <p><strong>Qué harás:</strong> Hacer tu código más seguro y predecible con tipos.</p>
+                <p><strong>Conceptos:</strong> <code>: numero</code>, <code>: texto</code>, <code>: booleano</code>, <code>--check-types</code>, type checker.</p>
+                <p><strong>Reto:</strong> Anota tipos en una función suma y verifica que funcione.</p>
+                <a href="#tipado">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🧪</span>
+                <h3>18. Pruebas unitarias</h3>
+                <p><strong>Qué harás:</strong> Asegurarte de que tu código funciona con tests automáticos.</p>
+                <p><strong>Conceptos:</strong> <code>importar "testing"</code>, <code>describir</code>, <code>probar</code>, <code>afirmar_igual</code>, <code>alvz test</code>.</p>
+                <p><strong>Reto:</strong> Escribe tests para una función que valide emails.</p>
+                <a href="#cli">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🎯</span>
+                <h3>19. Lambda y funcional</h3>
+                <p><strong>Qué harás:</strong> Escribir funciones anónimas y operar listas al estilo funcional.</p>
+                <p><strong>Conceptos:</strong> <code>funcion() {}</code> como expresión, <code>.mapear()</code>, <code>.filtrar()</code>, callbacks.</p>
+                <p><strong>Reto:</strong> Toma [1,2,3,4,5], filtra los pares y duplícalos con una lambda.</p>
+                <a href="#lambdas">Ver más →</a>
+            </div>
+
+            <div class="card">
+                <span style="font-size:2rem;">🛠️</span>
+                <h3>20. Herramientas CLI</h3>
+                <p><strong>Qué harás:</strong> Usar el formateador, fixer, benchmarks y scaffolding de Alvz.</p>
+                <p><strong>Conceptos:</strong> <code>alvz fmt</code>, <code>alvz fix</code>, <code>alvz bench</code>, <code>alvz nuevo</code>, <code>alvz debug</code>.</p>
+                <p><strong>Reto:</strong> Genera un proyecto completo con <code>alvz nuevo proyecto mi_app</code>.</p>
+                <a href="#cli">Ver más →</a>
+            </div>
+
+        </div>
+
+        <div class="admonition" style="margin-top: 2rem;">
+            <div class="admonition-title">💡 Consejo</div>
+            <p>No necesitas seguir el orden al pie de la letra. Si algo te aburre, salta al siguiente tema y vuelve después. Lo importante es <strong>escribir código todos los días</strong>, aunque sean 10 minutos. ¡La práctica hace al maestro!</p>
+        </div>
+
+        <div class="playground">
+            <h3>🧪 Practica cada lección</h3>
+            <p>Selecciona un reto, escribe tu solución en Alvz y presiona <strong>Ejecutar</strong> para ver el resultado. Cuando creas que está bien, presiona <strong>Verificar</strong>.</p>
+
+            <select id="challenge-select">
+                <option value="1">1. Primeros pasos — Imprime tu nombre</option>
+                <option value="2">2. Toma decisiones — ¿Eres mayor de edad?</option>
+                <option value="3">3. Repite sin aburrirte — Tabla de multiplicar</option>
+                <option value="4">4. Organiza tu código — Par o impar</option>
+                <option value="5">5. Colecciones de datos — Lista de compras</option>
+                <option value="6">6. Crea tus propios objetos — Clase Libro</option>
+                <option value="7">7. Herencia y más POO — Vehículo → Coche</option>
+                <option value="8">8. Librería Estándar — Factorial</option>
+                <option value="12">12. Paquetes de terceros — Fibonacci</option>
+                <option value="14">14. Compila y distribuye — Juego de adivinanza</option>
+            </select>
+
+            <div id="challenge-desc">Selecciona un reto para ver su descripción.</div>
+
+            <textarea id="code-editor" class="code-editor" rows="8" spellcheck="false"></textarea>
+
+            <div class="playground-actions">
+                <button class="btn-run" id="btn-run">▶ Ejecutar</button>
+                <button class="btn-verify" id="btn-verify">✓ Verificar</button>
+                <button class="btn-hint" id="btn-hint">💡 Pista</button>
+                <button class="btn-reset" id="btn-reset">↺ Reiniciar</button>
+            </div>
+
+            <div id="hint-box" style="display:none"></div>
+
+            <div class="output-panel">
+                <div class="output-header">Salida</div>
+                <pre id="output-content" class="output-content">Presiona "Ejecutar" para ver el resultado aquí.</pre>
             </div>
         </div>
     </section>
@@ -1810,16 +2115,20 @@ $ ./programa</pre>
 $ wasmtime programa.wasm</pre>
         </div>
 
-        <h3>Opcodes Soportados (25/82)</h3>
+        <h3>Opcodes Soportados (40+/82)</h3>
         <table>
             <thead><tr><th>Categoría</th><th>Opcodes</th></tr></thead>
             <tbody>
-                <tr><td>Aritmética</td><td><code>+ - * /</code></td></tr>
+                <tr><td>Aritmética</td><td><code>+ - * /</code>, negación unaria</td></tr>
                 <tr><td>Comparaciones</td><td><code>== != &lt; &gt; &lt;= &gt;=</code></td></tr>
+                <tr><td>Lógica</td><td><code>y</code> (AND), <code>o</code> (OR)</td></tr>
                 <tr><td>Variables</td><td>load, store, load_global, store_global</td></tr>
-                <tr><td>Control</td><td>jump, jump_if_false, halt</td></tr>
-                <tr><td>IO</td><td>print (numérico, booleano)</td></tr>
-                <tr><td>Valores</td><td>constante, null, list, length, pop, negación</td></tr>
+                <tr><td>Control</td><td>jump, jump_if_false, call, return, halt</td></tr>
+                <tr><td>IO</td><td>print (numérico, booleano, string), <code>leer()</code></td></tr>
+                <tr><td>Aleatorio</td><td><code>azar(min, max)</code></td></tr>
+                <tr><td>Listas</td><td>crear, agregar, obtener índice, establecer índice, longitud</td></tr>
+                <tr><td>Diccionarios</td><td>crear (placeholder)</td></tr>
+                <tr><td>Valores</td><td>constante, null, pop</td></tr>
             </tbody>
         </table>
 
@@ -2055,6 +2364,229 @@ alvz> <span class="keyword">imprimir</span>(a + b)
         });
     }
     window.addEventListener('scroll', updateActiveLink);
+
+    // ─── Alvz Playground ──────────────────────────────────────────
+    const challenges = [
+        { id: 1,
+          title: "1. Primeros pasos — Imprime tu nombre",
+          desc: "Crea un programa que guarde tu nombre y tu edad en variables, y luego los imprima.",
+          hint: 'Usa <code>variable nombre = "..."</code> para guardar texto y <code>imprimir(...)</code> para mostrarlo.',
+          starter: 'variable nombre = "Tu nombre"\nvariable edad = 25\nimprimir("Me llamo " + nombre)\nimprimir("Tengo " + edad + " anios")',
+          verify: out => out.some(l => l.includes("llamo")) || out.some(l => l.includes("nombre")) },
+        { id: 2,
+          title: "2. Toma decisiones — ¿Eres mayor de edad?",
+          desc: 'Pide la edad al usuario con <code>leer()</code> y dile si es mayor o menor de edad (mayor o igual a 18).',
+          hint: 'Usa <code>si edad >= 18 { ... } sino { ... }</code>. <code>leer()</code> devuelve texto, conviértelo a número con la resta: <code>variable edad = leer() - 0</code>.',
+          starter: 'variable edad = leer() - 0\nsi edad >= 18 {\n    imprimir("Eres mayor de edad")\n} sino {\n    imprimir("Eres menor de edad")\n}',
+          verify: out => out.some(l => l.includes("mayor") || l.includes("menor")) },
+        { id: 3,
+          title: "3. Repite sin aburrirte — Tabla de multiplicar",
+          desc: "Imprime la tabla de multiplicar del 7, del 1 al 10. Cada línea debe mostrar '7 x N = resultado'.",
+          hint: 'Usa <code>para i de 1 a 10 { ... }</code> para repetir, y <code>imprimir(7 + " x " + i + " = " + (7 * i))</code>.',
+          starter: 'para i de 1 a 10 {\n    imprimir("7 x " + i + " = " + (7 * i))\n}',
+          verify: out => out.length === 10 && out.some(l => l.includes("7 x")) },
+        { id: 4,
+          title: "4. Organiza tu código — Par o impar",
+          desc: "Escribe una función que reciba un número y devuelva si es par o impar. Luego pruébala con el número 7.",
+          hint: 'Usa <code>funcion es_par(n) { retornar n % 2 == 0 }</code>. El operador <code>%</code> da el resto de la división.',
+          starter: 'funcion es_par(n) {\n    retornar n % 2 == 0\n}\n\nvariable num = 7\nsi es_par(num) {\n    imprimir(num + " es par")\n} sino {\n    imprimir(num + " es impar")\n}',
+          verify: out => out.some(l => l.includes("impar")) },
+        { id: 5,
+          title: "5. Colecciones de datos — Lista de compras",
+          desc: "Crea una lista de compras con 3 items, agrega uno más, y luego muestra cada item con un bucle.",
+          hint: 'Usa <code>variable lista = ["pan", "leche"]</code>, <code>agregar(lista, "huevos")</code>, y <code>para cada item en lista { imprimir(item) }</code>.',
+          starter: 'variable compras = ["pan", "leche", "huevos"]\nagregar(compras, "fruta")\nimprimir("Mi lista de compras:")\npara cada item en compras {\n    imprimir("- " + item)\n}',
+          verify: out => out.length >= 4 },
+        { id: 6,
+          title: "6. Crea tus propios objetos — Clase Libro",
+          desc: "Crea una función <code>crear_libro(titulo, autor)</code> que devuelva un diccionario representando un libro, y una función <code>mostrar(libro)</code> que imprima sus datos.",
+          hint: 'Usa diccionarios: <code>variable libro = {"titulo": titulo, "autor": autor}</code>. Accede con <code>libro["titulo"]</code>.',
+          starter: 'funcion crear_libro(titulo, autor) {\n    retornar {"titulo": titulo, "autor": autor}\n}\n\nfuncion mostrar(libro) {\n    imprimir(libro["titulo"] + " por " + libro["autor"])\n}\n\nvariable libro = crear_libro("Cien anios de soledad", "Gabriel Garcia Marquez")\nmostrar(libro)',
+          verify: out => out.some(l => l.includes("soledad") || l.includes("Garcia")) },
+        { id: 7,
+          title: "7. Herencia y más POO — Vehículo → Coche",
+          desc: "Crea una función <code>crear_vehiculo()</code> que devuelva un diccionario con método <code>sonido</code>, y otra <code>crear_coche()</code> que sobrescriba el sonido.",
+          hint: 'Usa diccionarios con funciones: <code>{"sonido": funcion() { retornar "..." }}</code>.',
+          starter: 'funcion crear_vehiculo() {\n    retornar {"sonido": funcion() { retornar "Hace ruido" }}\n}\n\nfuncion crear_coche() {\n    retornar {"sonido": funcion() { retornar "Brum brum" }}\n}\n\nvariable v = crear_vehiculo()\nvariable c = crear_coche()\nimprimir("Vehículo: " + v["sonido"]())\nimprimir("Coche: " + c["sonido"]())',
+          verify: out => out.some(l => l.includes("Brum")) },
+        { id: 8,
+          title: "8. Librería Estándar — Factorial",
+          desc: 'Importa el módulo <code>matematicas</code> y usa la función <code>factorial()</code> para calcular el factorial de 5.',
+          hint: 'Usa <code>importar "matematicas"</code> al inicio y luego <code>imprimir(factorial(5))</code>.',
+          starter: 'importar "matematicas"\n\nvariable resultado = factorial(5)\nimprimir("El factorial de 5 es " + resultado)',
+          verify: out => out.some(l => l.includes("120")) },
+        { id: 12,
+          title: "12. Paquetes de terceros — Fibonacci",
+          desc: 'Instala el paquete <code>math</code> (con <code>alvz install math</code>) y usa <code>fibonacci(10)</code>. Como esto es un simulador, usaremos la función incorporada.',
+          hint: 'El paquete <code>math</code> provee <code>fibonacci(n)</code> que devuelve el n-ésimo número de Fibonacci.',
+          starter: 'importar "matematicas"\n\nfuncion fibonacci(n) {\n    si n <= 1 { retornar n }\n    variable a = 0, b = 1\n    para i de 1 a n-1 {\n        variable temp = a + b\n        a = b\n        b = temp\n    }\n    retornar b\n}\n\nimprimir("fibonacci(10) = " + fibonacci(10))',
+          verify: out => out.some(l => l.includes("55")) },
+        { id: 14,
+          title: "14. Compila y distribuye — Juego de adivinanza",
+          desc: "Crea un juego donde el programa elige un número al azar entre 1 y 10, y el usuario debe adivinarlo. Usa un bucle hasta que acierte.",
+          hint: 'Usa <code>azar(1, 10)</code> para generar el número, <code>mientras</code> para el bucle, y <code>leer() - 0</code> para la entrada del usuario.',
+          starter: 'variable secreto = azar(1, 10)\nvariable intento = 0\nimprimir("Adivina el numero (1-10):")\nmientras intento != secreto {\n    intento = leer() - 0\n    si intento < secreto {\n        imprimir("Muy bajo. Intenta de nuevo:")\n    } sino si intento > secreto {\n        imprimir("Muy alto. Intenta de nuevo:")\n    }\n}\nimprimir("!Correcto! El numero era " + secreto)',
+          verify: out => out.some(l => l.includes("Correcto") || l.includes("adivina")) },
+    ];
+
+    // ─── Alvz → JS transpiler ──
+    function transpileAlvz(code) {
+        let js = code;
+        // Comments
+        js = js.replace(/#[^\n]*/g, '//');
+        // Multi-word constructs first
+        js = js.replace(/funcion\s+estatico\b/g, 'static ');
+        js = js.replace(/para\s+cada\s+(\w+)\s+en\s+(.+?)\s*\{/g, 'for (const $1 of $2) {');
+        js = js.replace(/para\s+(\w+)\s+de\s+(.+?)\s+a\s+(.+?)\s*\{/g, 'for (let $1 = $2; $1 <= $3; $1++) {');
+        // Keywords
+        const kw = [
+            [/\bimprimir\b/g, '__p'],
+            [/\bvariable\b/g, 'let'],
+            [/\bverdadero\b/g, 'true'],
+            [/\bfalso\b/g, 'false'],
+            [/\bnulo\b/g, 'null'],
+            [/\bsi\b/g, 'if'],
+            [/\bsino\b/g, 'else'],
+            [/\bmientras\b/g, 'while'],
+            [/\bretornar\b/g, 'return'],
+            [/\bclase\b/g, 'class'],
+            [/\bnuevo\b/g, 'new'],
+            [/\bself\b/g, 'this'],
+            [/\bsuper\b/g, 'super'],
+            [/\binstancia\b/g, 'instanceof'],
+            [/\bintentar\b/g, 'try'],
+            [/\bcapturar\b/g, 'catch'],
+            [/\blanzar\b/g, 'throw'],
+            [/\by\b/g, '&&'],
+            [/\bo\b/g, '||'],
+            [/\bleer\b/g, 'prompt'],
+            [/\bleer_numero\b/g, 'Number(prompt())'],
+            [/\bazar\b/g, '__rand'],
+            [/\blongitud\b/g, '__len'],
+            [/\bagregar\b/g, '__push'],
+            [/\btipo\b/g, '__typeof'],
+            [/\babsoluto\b/g, 'Math.abs'],
+            [/\bredondear\b/g, 'Math.round'],
+            [/\bpotencia\b/g, 'Math.pow'],
+            [/\braiz\b/g, 'Math.sqrt'],
+            [/\bmayusculas\b/g, '__upper'],
+            [/\bminusculas\b/g, '__lower'],
+            [/\btiempo\b/g, '__time'],
+            [/\breemplazar\b/g, '__replace'],
+            [/\berror_msj\b/g, '__errorMsg'],
+            [/\bjson_codificar\b/g, 'JSON.stringify'],
+            [/\bjson_decodificar\b/g, 'JSON.parse'],
+            [/\bjson_a_texto\b/g, 'JSON.stringify'],
+            [/\btexto_a_json\b/g, 'JSON.parse'],
+            [/\bfuncion\b/g, 'function'],
+            [/\bimportar\s+"(\w+)"/g, '// import "$1"'],
+        ];
+        for (const [re, sub] of kw) js = js.replace(re, sub);
+        // Add parens around conditions: if/while in JS require (cond)
+        js = js.replace(/\bif\s+([\s\S]+?)\s*\{/g, 'if ($1) {');
+        js = js.replace(/\bwhile\s+([\s\S]+?)\s*\{/g, 'while ($1) {');
+        return js;
+    }
+
+    // ─── Playground UI ──
+    const $ = id => document.getElementById(id);
+    const sel = $('challenge-select');
+    const editor = $('code-editor');
+    const output = $('output-content');
+    const desc = $('challenge-desc');
+    const hintBox = $('hint-box');
+
+    function getChallenge(id) { return challenges.find(c => c.id === +id); }
+
+    function loadChallenge(id) {
+        const ch = getChallenge(id);
+        if (!ch) return;
+        desc.innerHTML = `<strong>${ch.title}</strong><br>${ch.desc}`;
+        editor.value = ch.starter;
+        hintBox.style.display = 'none';
+        output.textContent = 'Presiona "Ejecutar" para ver el resultado aquí.';
+        output.className = 'output-content';
+    }
+
+    function runCode() {
+        const code = editor.value;
+        const lines = [];
+        const __p = (...args) => { lines.push(args.map(a => a === undefined || a === null ? 'nulo' : String(a)).join(' ')); };
+        const __rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const __len = x => x.length;
+        const __push = (arr, item) => arr.push(item);
+        const __typeof = x => typeof x;
+        const __upper = x => String(x).toUpperCase();
+        const __lower = x => String(x).toLowerCase();
+        const __time = () => Date.now() / 1000;
+        const __replace = (s, a, b) => String(s).split(a).join(b);
+        const __errorMsg = () => window.__lastError || '';
+        const factorial = n => n <= 1 ? 1 : n * factorial(n - 1);
+        try {
+            const js = transpileAlvz(code);
+            const fn = new Function('__p','__rand','__len','__push','__typeof','__upper','__lower','__time','__replace','__errorMsg','factorial', js);
+            fn(__p, __rand, __len, __push, __typeof, __upper, __lower, __time, __replace, __errorMsg, factorial);
+            output.textContent = lines.join('\n') || '(sin salida)';
+            output.className = 'output-content';
+        } catch (e) {
+            output.textContent = 'Error: ' + e.message;
+            output.className = 'output-content error';
+        }
+    }
+
+    function verifyCode() {
+        const ch = getChallenge(sel.value);
+        if (!ch) return;
+        const code = editor.value;
+        const lines = [];
+        const __p = (...args) => { lines.push(args.map(a => a === undefined || a === null ? 'nulo' : String(a)).join(' ')); };
+        const __rand = (min, max) => 5;
+        const __len = x => x.length;
+        const __push = (arr, item) => arr.push(item);
+        const __typeof = x => typeof x;
+        const __upper = x => String(x).toUpperCase();
+        const __lower = x => String(x).toLowerCase();
+        const __time = () => 1000000;
+        const __replace = (s, a, b) => String(s).split(a).join(b);
+        const __errorMsg = () => '';
+        const factorial = n => n <= 1 ? 1 : n * factorial(n - 1);
+        try {
+            const js = transpileAlvz(code);
+            const fn = new Function('__p','__rand','__len','__push','__typeof','__upper','__lower','__time','__replace','__errorMsg','factorial', js);
+            fn(__p, __rand, __len, __push, __typeof, __upper, __lower, __time, __replace, __errorMsg, factorial);
+            if (ch.verify(lines)) {
+                output.textContent = lines.join('\n') + '\n\n✅ ¡Correcto! Bien hecho.';
+                output.className = 'output-content success';
+            } else {
+                output.textContent = lines.join('\n') + '\n\n❌ Todavía no. Revisa el reto e intenta de nuevo.';
+                output.className = 'output-content error';
+            }
+        } catch (e) {
+            output.textContent = 'Error: ' + e.message;
+            output.className = 'output-content error';
+        }
+    }
+
+    sel.addEventListener('change', () => loadChallenge(sel.value));
+    $('btn-run').addEventListener('click', runCode);
+    $('btn-verify').addEventListener('click', verifyCode);
+    $('btn-hint').addEventListener('click', () => {
+        const ch = getChallenge(sel.value);
+        if (!ch) return;
+        hintBox.style.display = hintBox.style.display === 'none' ? 'block' : 'none';
+        hintBox.innerHTML = '💡 <strong>Pista:</strong> ' + ch.hint;
+    });
+    $('btn-reset').addEventListener('click', () => {
+        const ch = getChallenge(sel.value);
+        if (!ch) return;
+        editor.value = ch.starter;
+        hintBox.style.display = 'none';
+        output.textContent = 'Código reiniciado.';
+        output.className = 'output-content';
+    });
+
+    // Load first challenge
+    loadChallenge(sel.value);
 </script>
 
 </body>
