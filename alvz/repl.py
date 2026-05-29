@@ -6,6 +6,8 @@ import sys
 import os
 import json
 
+VERSION = "0.17.0"
+
 from .core.lexer import Lexer
 from .core.parser import Parser
 from .core.vm import VM
@@ -407,6 +409,9 @@ def main():
             optimize_flag = True
         elif arg in ('--no-check-types', '-NT'):
             check_types_flag = False
+        elif arg in ('--version', '-V'):
+            print(f"Alvz v{VERSION}")
+            sys.exit(0)
         elif arg.startswith('-'):
             print(f"Error: Opcion desconocida '{arg}'")
             sys.exit(1)

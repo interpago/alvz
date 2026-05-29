@@ -502,6 +502,13 @@ class VM:
                     if not condition:
                         self.ip = target
 
+                elif op == OpCode.OP_JUMP_IF_TRUE:
+                    target = self.bytecode[self.ip]
+                    self.ip += 1
+                    condition = self.stack.pop()
+                    if condition:
+                        self.ip = target
+
                 elif op == OpCode.OP_INPUT:
                     user_input = input("> ")
                     try:
@@ -688,6 +695,21 @@ class VM:
                         self.stack.append(response.status_code)
                     except Exception:
                         self.stack.append(0)
+
+                elif op == OpCode.OP_SUPABASE_SELECT:
+                    tabla = self.stack.pop()
+                    key = self.stack.pop()
+                    url = self.stack.pop()
+                    full_url = f"{url}/rest/v1/{tabla}"
+                    headers = {
+                        "apikey": key,
+                        "Authorization": f"Bearer {key}",
+                    }
+                    try:
+                        response = requests.get(full_url, headers=headers, timeout=10)
+                        self.stack.append(response.json())
+                    except Exception:
+                        self.stack.append([])
 
                 elif op == OpCode.OP_ROUND:
                     val = self.stack.pop()

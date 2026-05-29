@@ -14,6 +14,7 @@ import platform
 from .bytecode import OpCode
 from .lexer import Lexer
 from .parser import Parser
+from .wasm_compiler import compile_wasm
 
 # Map opcode enum values to human-readable names for the embedded comment
 _OP_NAMES = {v: k for k, v in vars(OpCode).items() if k.startswith('OP_')}
@@ -122,7 +123,9 @@ def build(source_file, output_file=None, opts=None):
 
     out_dir = os.path.join(tmp_dir, 'dist')
 
-    if opts.get('backend') == 'nuitka':
+    if opts.get('backend') == 'wasm':
+        return _build_wasm(bytecode, constants, functions, line_map, source_file, output_file)
+    elif opts.get('backend') == 'nuitka':
         return _build_nuitka(gen_py, output_file, tmp_dir, out_dir)
     else:
         return _build_pyinstaller(gen_py, output_file, tmp_dir, out_dir)
@@ -218,6 +221,25 @@ def _build_nuitka(gen_py, output_file, tmp_dir, out_dir):
     return success
 
 
+def _build_wasm(bytecode, constants, functions, line_map, source_file, output_file):
+    """Compile Alvz bytecode to a standalone .wasm module."""
+    if output_file is None:
+        base = os.path.splitext(os.path.basename(source_file))[0]
+        output_file = base + '.wasm'
+    elif not output_file.endswith('.wasm'):
+        output_file += '.wasm'
+    print(f"Generando modulo WASM...")
+    wasm_bytes = compile_wasm(bytecode, constants, functions, line_map)
+    with open(output_file, 'wb') as f:
+        f.write(wasm_bytes)
+    size = len(wasm_bytes)
+    print(f"[OK] Modulo WASM generado: {os.path.abspath(output_file)}")
+    print(f"     Tamano: {size} bytes ({size / 1024:.1f} KB)")
+    print(f"")
+    print(f"Ejecutar con: wasmtime {output_file}")
+    return True
+
+
 def cli():
     """CLI handler for 'alvz build'."""
     args = sys.argv[2:]  # skip 'build'
@@ -230,15 +252,19 @@ def cli():
             output_file = args[i + 1]
         elif arg == '--nuitka':
             opts['backend'] = 'nuitka'
+        elif arg == '--wasm':
+            opts['backend'] = 'wasm'
         elif not arg.startswith('-'):
             source_file = arg
 
     if source_file is None:
         ext = '.exe' if platform.system() == 'Windows' else ''
-        print(f"Uso: alvz build archivo.alvz [-o salida{ext}] [--nuitka]")
+        print(f"Uso: alvz build archivo.alvz [-o salida{ext}] [--nuitka] [--wasm]")
         print(f"")
         print(f"Opciones:")
-        print(f"  --nuitka    Compila a nativo real via Nuitka (Python→C++→nativo)")
+        print(f"  --wasm      Compila a modulo WASM (WebAssembly)")
+        print(f"              Ejecutar con: wasmtime <archivo.wasm>")
+        print(f"  --nuitka    Compila a nativo real via Nuitka (Python->C++->nativo)")
         print(f"              Requiere: pip install nuitka y un compilador C")
         print(f"  -o ARCHIVO  Nombre del ejecutable de salida")
         sys.exit(1)

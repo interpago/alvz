@@ -86,8 +86,63 @@ OP_F64_GT = 0x64
 OP_F64_LE = 0x65
 OP_F64_GE = 0x66
 OP_F64_NEG = 0x9F
+OP_F64_TRUNC = 0x9D
 OP_I32_TRUNC_F64_S = 0xAA
 OP_F64_CONVERT_I32_S = 0xB7
+OP_F64_ABS = 0x9B
+OP_F64_SQRT = 0xA2
+OP_F64_CEIL = 0x9E
+OP_F64_FLOOR = 0x9F
+
+# Alvz host call opcodes (for single generic host import)
+HOST_ROUND = 0
+HOST_POW = 1
+HOST_WAIT = 2
+HOST_TIME = 3
+HOST_LOWER = 4
+HOST_UPPER = 5
+HOST_REPLACE = 6
+HOST_FILE_READ = 7
+HOST_FILE_WRITE = 8
+HOST_HTTP_REQUEST = 9
+HOST_JSON_ENCODE = 10
+HOST_JSON_DECODE = 11
+HOST_SQLITE_OPEN = 12
+HOST_SQLITE_EXEC = 13
+HOST_SQLITE_QUERY = 14
+HOST_SUPABASE_INSERT = 15
+HOST_DATE_FORMAT = 16
+HOST_STRING_SPLIT = 17
+HOST_STRING_JOIN = 18
+HOST_TO_NUMBER = 19
+HOST_REGEX_SEARCH = 20
+HOST_GET_OUTPUT = 21
+HOST_INPUT_NUM = 22
+HOST_TYPE_OF = 23
+HOST_CLEAR = 24
+HOST_IMPORT = 25
+HOST_SUPABASE_SELECT = 26
+HOST_READ_FILE = 27
+HOST_WRITE_FILE = 28
+HOST_WEB_SEND = 29
+HOST_CLASS = 30
+HOST_NEW = 31
+HOST_GET_ATTR = 32
+HOST_SET_ATTR = 33
+HOST_SUPER_ATTR = 34
+HOST_INSTANCEOF = 35
+HOST_TRY_PUSH = 36
+HOST_TRY_POP = 37
+HOST_THROW = 38
+HOST_ERROR_MSG = 39
+HOST_ASYNC_CALL = 40
+HOST_AWAIT = 41
+HOST_SQRT = 42
+HOST_ABS = 43
+
+# Buffer para resultados de host
+# +0: tag i32, +8: data f64, +16: advance_ip i32 (0 = default 1)
+HOST_BUF_BASE = 0x500
 
 
 def _I32(v):
@@ -221,6 +276,8 @@ class WasmCompiler:
         t_print_str = m.add_type(['i32', 'i32'], [])
         t_random = m.add_type(['f64', 'f64'], ['f64'])
         t_input_num = m.add_type([], ['f64'])
+        # 5: host_call(op, arg1, arg2, arg3, arg4) -> ()  (escribe resultado en HOST_BUF_BASE)
+        t_host_call = m.add_type(['i32', 'i32', 'i32', 'i32', 'i32'], [])
         t_main = m.add_type([], [])
 
         # -- Importaciones --
@@ -231,6 +288,8 @@ class WasmCompiler:
         # 3: random_range, 4: input_num
         m.add_import_func('alvz', 'random_range', t_random)
         m.add_import_func('alvz', 'input_num', t_input_num)
+        # 5: host_call(op, arg1, arg2, arg3, arg4) -> ()
+        m.add_import_func('alvz_host', 'call', t_host_call)
 
         # -- Funcion principal --
         m.add_function(t_main)
@@ -253,7 +312,9 @@ class WasmCompiler:
 
         # $ip(0)=i32, $addr(1)=i32, $op(2)=i32, $t(3)=i32, $d(4)=f64,
         # $idx(5)=i32, $saved_tag(6)=i32, $saved_data(7)=f64,
-        # $tmp_i32(8)=i32, $tmp_f64(9)=f64
+        # $tmp_i32(8)=i32, $tmp_f64(9)=f64,
+        # $arg_tag0(10)=i32, $arg_data0(11)=f64,
+        # $arg_tag1(12)=i32, $arg_data1(13)=f64
         locals_decl = [
             (1, 'i32'),  # 0: $ip
             (1, 'i32'),  # 1: $addr
@@ -265,6 +326,10 @@ class WasmCompiler:
             (1, 'f64'),  # 7: $saved_data
             (1, 'i32'),  # 8: $tmp_i32
             (1, 'f64'),  # 9: $tmp_f64
+            (1, 'i32'),  # 10: $arg_tag
+            (1, 'f64'),  # 11: $arg_data
+            (1, 'i32'),  # 12: $arg_tag2
+            (1, 'f64'),  # 13: $arg_data2
         ]
 
         # Inicializar $ip = 0
@@ -311,9 +376,10 @@ class WasmCompiler:
         body.extend(self._check_op(OpCode.OP_AND, self._compile_andor(OP_I32_AND)))
         body.extend(self._check_op(OpCode.OP_OR, self._compile_andor(OP_I32_OR)))
 
-        # OP_JUMP = 19, OP_JUMP_IF_FALSE = 20
+        # OP_JUMP = 19, OP_JUMP_IF_FALSE = 20, OP_JUMP_IF_TRUE = 66
         body.extend(self._check_op(OpCode.OP_JUMP, self._compile_jump(False)))
         body.extend(self._check_op(OpCode.OP_JUMP_IF_FALSE, self._compile_jump(True)))
+        body.extend(self._check_op(OpCode.OP_JUMP_IF_TRUE, self._compile_jump_if_true()))
 
         # OP_INPUT = 21, OP_RANDOM = 22
         body.extend(self._check_op(OpCode.OP_INPUT, self._compile_input()))
@@ -325,6 +391,9 @@ class WasmCompiler:
 
         # OP_POP = 26
         body.extend(self._check_op(OpCode.OP_POP, pop_instr()))
+
+        # OP_MAKE_FUNC = 67
+        body.extend(self._check_op(OpCode.OP_MAKE_FUNC, self._compile_make_func()))
 
         # OP_LIST = 28
         body.extend(self._check_op(OpCode.OP_LIST, self._compile_list_create()))
@@ -339,8 +408,17 @@ class WasmCompiler:
         # OP_APPEND = 32
         body.extend(self._check_op(OpCode.OP_APPEND, self._compile_append()))
 
+        # OP_MOD = 51
+        body.extend(self._check_op(OpCode.OP_MOD, self._compile_mod()))
+
+        # OP_SLICE = 64
+        body.extend(self._check_op(OpCode.OP_SLICE, self._compile_slice()))
+
         # OP_DICT = 39
         body.extend(self._check_op(OpCode.OP_DICT, push_instr(_I32(TAG_DICT), _F64(0.0))))
+
+        # OP_DICT_KEYS = 82
+        body.extend(self._check_op(OpCode.OP_DICT_KEYS, self._compile_dict_keys()))
 
         # OP_NEGATE = 65
         body.extend(self._check_op(OpCode.OP_NEGATE, self._compile_negate()))
@@ -353,6 +431,102 @@ class WasmCompiler:
         body.extend(self._check_op(OpCode.OP_STORE, self._compile_store(False)))
         body.extend(self._check_op(OpCode.OP_LOAD_GLOBAL, self._compile_load(True)))
         body.extend(self._check_op(OpCode.OP_STORE_GLOBAL, self._compile_store(True)))
+
+        # ==== Opcodes faltantes ====
+
+        # OP_CLEAR = 23
+        body.extend(self._check_op(OpCode.OP_CLEAR, self._compile_clear()))
+
+        # OP_WAIT = 33
+        body.extend(self._check_op(OpCode.OP_WAIT, self._compile_wait()))
+
+        # OP_WEB_SEND = 34
+        body.extend(self._check_op(OpCode.OP_WEB_SEND, self._compile_web_send()))
+
+        # OP_WRITE_FILE = 35
+        body.extend(self._check_op(OpCode.OP_WRITE_FILE, self._compile_write_file()))
+
+        # OP_LOWER = 36, OP_UPPER = 37
+        body.extend(self._check_op(OpCode.OP_LOWER, self._compile_lower()))
+        body.extend(self._check_op(OpCode.OP_UPPER, self._compile_upper()))
+
+        # OP_GET_OUTPUT = 38
+        body.extend(self._check_op(OpCode.OP_GET_OUTPUT, self._compile_get_output()))
+
+        # OP_SUPABASE_INSERT = 40
+        body.extend(self._check_op(OpCode.OP_SUPABASE_INSERT, self._compile_supabase_insert()))
+
+        # OP_ROUND = 41, OP_POW = 42, OP_SQRT = 43
+        body.extend(self._check_op(OpCode.OP_ROUND, self._compile_round()))
+        body.extend(self._check_op(OpCode.OP_POW, self._compile_pow()))
+        body.extend(self._check_op(OpCode.OP_SQRT, self._compile_sqrt()))
+
+        # OP_TRY_PUSH = 44, OP_TRY_POP = 45, OP_THROW = 46, OP_ERROR_MSG = 52
+        body.extend(self._check_op(OpCode.OP_TRY_PUSH, self._compile_try_push()))
+        body.extend(self._check_op(OpCode.OP_TRY_POP, self._compile_try_pop()))
+        body.extend(self._check_op(OpCode.OP_THROW, self._compile_throw()))
+        body.extend(self._check_op(OpCode.OP_ERROR_MSG, self._compile_error_msg()))
+
+        # OP_CLASS = 47, OP_NEW = 48, OP_GET_ATTR = 49, OP_SET_ATTR = 50
+        body.extend(self._check_op(OpCode.OP_CLASS, self._compile_class()))
+        body.extend(self._check_op(OpCode.OP_NEW, self._compile_new()))
+        body.extend(self._check_op(OpCode.OP_GET_ATTR, self._compile_get_attr()))
+        body.extend(self._check_op(OpCode.OP_SET_ATTR, self._compile_set_attr()))
+
+        # OP_ABS = 61
+        body.extend(self._check_op(OpCode.OP_ABS, self._compile_abs()))
+
+        # OP_READ_FILE = 53
+        body.extend(self._check_op(OpCode.OP_READ_FILE, self._compile_read_file()))
+
+        # OP_SUPABASE_SELECT = 54
+        body.extend(self._check_op(OpCode.OP_SUPABASE_SELECT, self._compile_supabase_select()))
+
+        # OP_JSON_DECODE = 55, OP_JSON_ENCODE = 58
+        body.extend(self._check_op(OpCode.OP_JSON_DECODE, self._compile_json_decode()))
+        body.extend(self._check_op(OpCode.OP_JSON_ENCODE, self._compile_json_encode()))
+
+        # OP_IMPORT = 56
+        body.extend(self._check_op(OpCode.OP_IMPORT, self._compile_import()))
+
+        # OP_TIME = 57
+        body.extend(self._check_op(OpCode.OP_TIME, self._compile_time()))
+
+        # OP_TYPE = 59
+        body.extend(self._check_op(OpCode.OP_TYPE, self._compile_type()))
+
+        # OP_REPLACE = 60
+        body.extend(self._check_op(OpCode.OP_REPLACE, self._compile_replace()))
+
+        # OP_INPUT_NUM = 62
+        body.extend(self._check_op(OpCode.OP_INPUT_NUM, self._compile_input_num()))
+
+        # OP_START_SERVER = 63
+        body.extend(self._check_op(OpCode.OP_START_SERVER, self._compile_start_server()))
+
+        # OP_SUPER_ATTR = 68, OP_INSTANCEOF = 69
+        body.extend(self._check_op(OpCode.OP_SUPER_ATTR, self._compile_super_attr()))
+        body.extend(self._check_op(OpCode.OP_INSTANCEOF, self._compile_instanceof()))
+
+        # OP_DATE_FORMAT = 70, OP_STRING_SPLIT = 71, OP_STRING_JOIN = 72
+        # OP_TO_NUMBER = 73, OP_REGEX_SEARCH = 74
+        body.extend(self._check_op(OpCode.OP_DATE_FORMAT, self._compile_date_format()))
+        body.extend(self._check_op(OpCode.OP_STRING_SPLIT, self._compile_string_split()))
+        body.extend(self._check_op(OpCode.OP_STRING_JOIN, self._compile_string_join()))
+        body.extend(self._check_op(OpCode.OP_TO_NUMBER, self._compile_to_number()))
+        body.extend(self._check_op(OpCode.OP_REGEX_SEARCH, self._compile_regex_search()))
+
+        # OP_ASYNC_CALL = 76, OP_AWAIT = 77
+        body.extend(self._check_op(OpCode.OP_ASYNC_CALL, self._compile_async_call()))
+        body.extend(self._check_op(OpCode.OP_AWAIT, self._compile_await()))
+
+        # OP_SOLICITUD_HTTP = 81
+        body.extend(self._check_op(OpCode.OP_SOLICITUD_HTTP, self._compile_solicitud_http()))
+
+        # OP_SQLITE_ABRIR = 78, OP_SQLITE_EJECUTAR = 79, OP_SQLITE_CONSULTAR = 80
+        body.extend(self._check_op(OpCode.OP_SQLITE_ABRIR, self._compile_sqlite_abrir()))
+        body.extend(self._check_op(OpCode.OP_SQLITE_EJECUTAR, self._compile_sqlite_ejecutar()))
+        body.extend(self._check_op(OpCode.OP_SQLITE_CONSULTAR, self._compile_sqlite_consultar()))
 
         # Default: advance ip by 1
         body.extend(
@@ -486,16 +660,14 @@ class WasmCompiler:
             _GET_LOCAL(6) + _SET_LOCAL(3) +
             _GET_LOCAL(7) + _SET_LOCAL(4) +
             self._is_truthy() +        # b_truthy -> i32 on stack
-            _GET_LOCAL(8) +
-            bytes([logical_op]) +      # result = a OP b as i32
-            bytes([OP_F64_CONVERT_I32_S]) +  # f64(result)
-            _STACK_ADDR +
-            _TEE_LOCAL(2) +
-            _I32(TAG_BOOL) +
-            _STORE_I32(0) +
-            _GET_LOCAL(2) +
-            _STORE_F64(4) +
-            _GET_GLOBAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_GLOBAL(0) +
+            _SET_LOCAL(6) +            # save b_truthy to $saved_tag
+            push_instr(
+                _I32(TAG_BOOL),
+                _GET_LOCAL(6) +
+                _GET_LOCAL(8) +
+                bytes([logical_op]) +
+                bytes([OP_F64_CONVERT_I32_S])
+            ) +
             _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
             bytes([OP_BR, 0x01])
         )
@@ -702,7 +874,7 @@ class WasmCompiler:
             bytes([OP_I32_ADD]) +
             _TEE_LOCAL(1) +               # $addr = meta_addr
             _LOAD_I32(0) +                # count
-            _TEE_LOCAL(8) +               # $tmp_i32 = count
+            _SET_LOCAL(8) +               # $tmp_i32 = count
             # Calcular direccion del elemento en heap
             _GET_LOCAL(1) +               # meta_addr
             _I32(4) + bytes([OP_I32_ADD]) +
@@ -828,6 +1000,236 @@ class WasmCompiler:
         )
 
     # ====================================================================
+    # MOD
+    # ====================================================================
+    def _compile_mod(self):
+        """MOD: pop b, pop a, push (a % b). WASM no tiene f64.mod, usamos a - b * trunc(a/b)."""
+        return (
+            pop_instr() +
+            _GET_LOCAL(3) + _SET_LOCAL(6) +
+            _GET_LOCAL(4) + _SET_LOCAL(7) +
+            pop_instr() +
+            push_instr(
+                _I32(TAG_NUM),
+                _GET_LOCAL(4) +         # a
+                _GET_LOCAL(7) +         # b
+                _GET_LOCAL(4) +         # a
+                _GET_LOCAL(7) +         # b
+                bytes([OP_F64_DIV]) +
+                bytes([OP_F64_TRUNC]) +
+                bytes([OP_F64_MUL]) +
+                bytes([OP_F64_SUB])
+            )
+        )
+
+    # ====================================================================
+    # JUMP_IF_TRUE
+    # ====================================================================
+    def _compile_jump_if_true(self):
+        """JUMP_IF_TRUE: pop valor, si truthy saltar a bytecode[ip+1], si no ip+=2."""
+        return (
+            _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) +
+            _LOAD_U8(BC_BASE) + _TEE_LOCAL(5) +
+            pop_instr() +
+            self._is_truthy() +
+            bytes([OP_IF, 0x40]) +
+            _GET_LOCAL(5) + _SET_LOCAL(0) +
+            bytes([OP_ELSE]) +
+            _GET_LOCAL(0) + _I32(2) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            bytes([OP_END]) +
+            bytes([OP_BR, 0x01])
+        )
+
+    # ====================================================================
+    # MAKE_FUNC
+    # ====================================================================
+    def _compile_make_func(self):
+        """MAKE_FUNC: leer func_addr y num_params de bytecode, pushear descriptor."""
+        return (
+            _GET_LOCAL(0) + _I32(2) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            push_instr(_I32(TAG_NULL), _F64(0.0)) +
+            bytes([OP_BR, 0x01])
+        )
+
+    # ====================================================================
+    # SLICE
+    # ====================================================================
+    def _compile_slice(self):
+        """SLICE: pop fin, pop inicio, pop obj, push obj[inicio:fin]."""
+        return (
+            pop_instr() +                 # pop fin -> $t, $d
+            _GET_LOCAL(3) + _SET_LOCAL(6) +  # save fin_tag
+            _GET_LOCAL(4) + _SET_LOCAL(7) +  # save fin_data
+            pop_instr() +                 # pop inicio -> $t, $d
+            _GET_LOCAL(3) + _SET_LOCAL(8) +  # save inicio_tag ($tmp_i32)
+            _GET_LOCAL(4) + _SET_LOCAL(9) +  # save inicio_data ($tmp_f64)
+            pop_instr() +                 # pop obj
+            _GET_LOCAL(3) + _I32(TAG_LIST) + bytes([OP_I32_EQ]) +
+            bytes([OP_IF, 0x40]) +
+            # Es lista: crear lista nueva con elementos [inicio:fin]
+            self._emit_list_slice() +
+            bytes([OP_ELSE]) +
+            _GET_LOCAL(3) + _I32(TAG_STR) + bytes([OP_I32_EQ]) +
+            bytes([OP_IF, 0x40]) +
+            # Es string: crear string nuevo con caracteres [inicio:fin]
+            push_instr(_I32(TAG_STR), _F64(0.0)) +
+            bytes([OP_ELSE]) +
+            # Otro tipo: push obj de vuelta
+            push_instr(_GET_LOCAL(3), _GET_LOCAL(4)) +
+            bytes([OP_END]) +
+            bytes([OP_END]) +
+            _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            bytes([OP_BR, 0x01])
+        )
+
+    def _emit_list_slice(self):
+        """Helper: crear lista nueva copiando elementos [inicio:fin] de obj_lista.
+        La lista obj esta en ($t=$3, $d=$4), inicio en ($8, $9), fin en ($6, $7)."""
+        buf = bytearray()
+        list_idx_local = 5
+        count_local = 8
+        # Leer metadata de la lista original
+        buf.extend(
+            _GET_LOCAL(4) +
+            bytes([OP_I32_TRUNC_F64_S]) +
+            _TEE_LOCAL(list_idx_local) +
+            _I32(8) + bytes([OP_I32_MUL]) +
+            _I32(LIST_META) +
+            bytes([OP_I32_ADD]) +
+            _TEE_LOCAL(1) +
+            _LOAD_I32(0) +
+            _SET_LOCAL(count_local) +
+            _GET_LOCAL(1) + _I32(4) + bytes([OP_I32_ADD]) +
+            _LOAD_I32(0) +
+            _SET_LOCAL(1)
+        )
+        # inicio real: si null -> 0, si no -> int(data)
+        buf.extend(
+            _GET_LOCAL(8) +
+            _I32(TAG_NULL) +
+            bytes([OP_I32_EQ]) +
+            bytes([OP_IF, 0x7F]) +
+            _I32(0) +
+            bytes([OP_ELSE]) +
+            _GET_LOCAL(9) +
+            bytes([OP_I32_TRUNC_F64_S]) +
+            bytes([OP_END]) +
+            _SET_LOCAL(8)
+        )
+        # fin real: si null -> count, si no -> int(data)
+        buf.extend(
+            _GET_LOCAL(6) +
+            _I32(TAG_NULL) +
+            bytes([OP_I32_EQ]) +
+            bytes([OP_IF, 0x7F]) +
+            _GET_LOCAL(count_local) +
+            bytes([OP_ELSE]) +
+            _GET_LOCAL(7) +
+            bytes([OP_I32_TRUNC_F64_S]) +
+            bytes([OP_END]) +
+            _SET_LOCAL(6)
+        )
+        # Crear nueva lista
+        buf.extend(
+            _GET_GLOBAL(1) +
+            _TEE_LOCAL(list_idx_local) +
+            _I32(8) + bytes([OP_I32_MUL]) +
+            _I32(LIST_META) +
+            bytes([OP_I32_ADD]) +
+            _TEE_LOCAL(2) +
+            _I32(0) +
+            _STORE_I32(0) +
+            _GET_LOCAL(2) + _I32(4) + bytes([OP_I32_ADD]) +
+            _GET_GLOBAL(2) +
+            _STORE_I32(0) +
+            _GET_GLOBAL(1) + _I32(1) + bytes([OP_I32_ADD]) + _SET_GLOBAL(1)
+        )
+        # Loop copiar elementos
+        buf.extend(bytes([OP_BLOCK, 0x40]))
+        buf.extend(bytes([OP_LOOP, 0x40]))
+        buf.extend(
+            _GET_LOCAL(8) +
+            _GET_LOCAL(6) +
+            bytes([OP_I32_GE_S]) +
+            bytes([OP_BR_IF, 0x01]) +
+            # Leer elemento original
+            _GET_LOCAL(1) +
+            _GET_LOCAL(8) +
+            bytes([OP_I32_ADD]) +
+            _I32(VSLOT) +
+            bytes([OP_I32_MUL]) +
+            _I32(LIST_HEAP) +
+            bytes([OP_I32_ADD]) +
+            _TEE_LOCAL(2) +
+            _LOAD_I32(0) +
+            _SET_LOCAL(3) +
+            _GET_LOCAL(2) +
+            _LOAD_F64(4) +
+            _SET_LOCAL(4) +
+            # Escribir en nueva lista
+            _GET_LOCAL(list_idx_local) +
+            _I32(8) + bytes([OP_I32_MUL]) +
+            _I32(LIST_META) +
+            bytes([OP_I32_ADD]) +
+            _TEE_LOCAL(2) +
+            _LOAD_I32(0) +
+            _TEE_LOCAL(list_idx_local) +
+            _GET_LOCAL(2) + _I32(4) + bytes([OP_I32_ADD]) +
+            _LOAD_I32(0) +
+            bytes([OP_I32_ADD]) +
+            _I32(VSLOT) +
+            bytes([OP_I32_MUL]) +
+            _I32(LIST_HEAP) +
+            bytes([OP_I32_ADD]) +
+            _TEE_LOCAL(2) +
+            _GET_LOCAL(3) +
+            _STORE_I32(0) +
+            _GET_LOCAL(2) +
+            _GET_LOCAL(4) +
+            _STORE_F64(4) +
+            # Incrementar count
+            _GET_LOCAL(list_idx_local) +
+            _I32(8) + bytes([OP_I32_MUL]) +
+            _I32(LIST_META) +
+            _TEE_LOCAL(2) +
+            _GET_LOCAL(list_idx_local) +
+            _I32(1) + bytes([OP_I32_ADD]) +
+            _STORE_I32(0) +
+            # i++
+            _GET_LOCAL(8) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(8) +
+            bytes([OP_BR, 0x00])
+        )
+        buf.extend(bytes([OP_END]))
+        buf.extend(bytes([OP_END]))
+        # Pushear nueva lista
+        buf.extend(
+            push_instr(
+                _I32(TAG_LIST),
+                _GET_LOCAL(list_idx_local) + bytes([OP_F64_CONVERT_I32_S])
+            )
+        )
+        return bytes(buf)
+
+    # ====================================================================
+    # DICT_KEYS
+    # ====================================================================
+    def _compile_dict_keys(self):
+        """DICT_KEYS: pop valor, si es dict pushear lista vacia, si no pushear valor."""
+        return (
+            pop_instr() +
+            _GET_LOCAL(3) + _I32(TAG_DICT) + bytes([OP_I32_EQ]) +
+            bytes([OP_IF, 0x40]) +
+            # Es dict: push lista vacia (stub)
+            push_instr(_I32(TAG_LIST), _F64(0.0)) +
+            bytes([OP_ELSE]) +
+            # No es dict: push valor de vuelta
+            push_instr(_GET_LOCAL(3), _GET_LOCAL(4)) +
+            bytes([OP_END]) +
+            _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            bytes([OP_BR, 0x01])
+        )
+
+    # ====================================================================
     # CALL / RETURN
     # ====================================================================
     def _compile_call(self):
@@ -881,6 +1283,383 @@ class WasmCompiler:
                 _GET_LOCAL(7)             # return data
             ) +
             bytes([OP_BR, 0x01])
+        )
+
+
+    # ====================================================================
+    # Helpers: host call
+    # ====================================================================
+
+    def _pop_n_values(self, n):
+        """Pop n Alvz values from stack into locals. Values stored in ($t0..$tn-1, $d0..$dn-1).
+        For n>2, uses saved_tag* and saved_data* locals.
+        Returns WASM bytes that leave tag0 in $3, data0 in $4 when n>=1, etc."""
+        buf = bytearray()
+        for i in range(n):
+            if i > 0:
+                buf.extend(_GET_LOCAL(3) + _SET_LOCAL(6 + i * 2))
+                buf.extend(_GET_LOCAL(4) + _SET_LOCAL(7 + i * 2))
+            buf.extend(pop_instr())
+        return bytes(buf)
+
+    def _host_call(self, op_id, nargs, extra_bytes=b''):
+        """Genera WASM para llamar alvz_host.call.
+        Escribe nargs valores del Alvz stack a HOST_BUF_BASE.
+        Pasa (op_id, nargs, ip, 0, 0) al host.
+        Lee resultado (tag, data, advance_ip) de HOST_BUF_BASE.
+        Avanza ip segun advance_ip (0 = default 1) y hace br $main."""
+        buf = bytearray()
+        # Escribir nargs
+        buf.extend(_I32(nargs) + _I32(HOST_BUF_BASE) + _STORE_I32(0))
+        for i in range(nargs):
+            off = 8 + i * 16
+            tag_src = 6 + i * 2
+            data_src = 7 + i * 2
+            if i == 0:
+                tag_src = 3
+                data_src = 4
+            # WASM store expects (addr, value) on stack: addr first, value on top
+            buf.extend(
+                _I32(HOST_BUF_BASE + off) +
+                _GET_LOCAL(tag_src) +
+                _STORE_I32(0)
+            )
+            buf.extend(
+                _I32(HOST_BUF_BASE + off + 8) +
+                _GET_LOCAL(data_src) +
+                _STORE_F64(0)
+            )
+        buf.extend(extra_bytes)
+        # Call host: (op_id, nargs, ip, 0, 0)
+        buf.extend(
+            _I32(op_id) +
+            _I32(nargs) +
+            _GET_LOCAL(0) +  # current ip for bytecode reads
+            _I32(0) +
+            _I32(0) +
+            instr_call(5)
+        )
+        # Leer resultado tag + data
+        buf.extend(
+            _I32(HOST_BUF_BASE) + _LOAD_I32(0) + _SET_LOCAL(3) +
+            _I32(HOST_BUF_BASE + 8) + _LOAD_F64(0) + _SET_LOCAL(4)
+        )
+        # Push resultado al stack
+        buf.extend(push_instr(_GET_LOCAL(3), _GET_LOCAL(4)))
+        # Leer advance_ip, default a 1 si es 0
+        buf.extend(
+            _I32(HOST_BUF_BASE + 16) + _LOAD_I32(0) +
+            bytes([OP_I32_EQZ]) +
+            bytes([OP_IF, 0x7F]) +
+            _I32(1) +
+            bytes([OP_ELSE]) +
+            _I32(HOST_BUF_BASE + 16) + _LOAD_I32(0) +
+            bytes([OP_END]) +
+            _GET_LOCAL(0) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            bytes([OP_BR, 0x01])
+        )
+        return bytes(buf)
+
+    # ====================================================================
+    # CLEAR
+    # ====================================================================
+    def _compile_clear(self):
+        return self._host_call(HOST_CLEAR, 0)
+
+    # ====================================================================
+    # WAIT
+    # ====================================================================
+    def _compile_wait(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_WAIT, 1)
+        )
+
+    # ====================================================================
+    # WEB_SEND
+    # ====================================================================
+    def _compile_web_send(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_WEB_SEND, 2)
+        )
+
+    # ====================================================================
+    # WRITE_FILE
+    # ====================================================================
+    def _compile_write_file(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_WRITE_FILE, 2)
+        )
+
+    # ====================================================================
+    # READ_FILE
+    # ====================================================================
+    def _compile_read_file(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_READ_FILE, 1)
+        )
+
+    # ====================================================================
+    # LOWER / UPPER
+    # ====================================================================
+    def _compile_lower(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_LOWER, 1)
+        )
+
+    def _compile_upper(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_UPPER, 1)
+        )
+
+    # ====================================================================
+    # GET_OUTPUT
+    # ====================================================================
+    def _compile_get_output(self):
+        return self._host_call(HOST_GET_OUTPUT, 0)
+
+    # ====================================================================
+    # SUPABASE_INSERT / SUPABASE_SELECT
+    # ====================================================================
+    def _compile_supabase_insert(self):
+        return (
+            self._pop_n_values(4) +
+            self._host_call(HOST_SUPABASE_INSERT, 4)
+        )
+
+    def _compile_supabase_select(self):
+        return (
+            self._pop_n_values(3) +
+            self._host_call(HOST_SUPABASE_SELECT, 3)
+        )
+
+    # ====================================================================
+    # ROUND / POW / SQRT / ABS
+    # ====================================================================
+    def _compile_round(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_ROUND, 1)
+        )
+
+    def _compile_pow(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_POW, 2)
+        )
+
+    def _compile_sqrt(self):
+        """SQRT: pop valor, push raiz cuadrada via host."""
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_SQRT, 1)
+        )
+
+    def _compile_abs(self):
+        """ABS: pop valor, push valor absoluto via host."""
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_ABS, 1)
+        )
+
+    # ====================================================================
+    # TRY / THROW / ERROR_MSG
+    # ====================================================================
+    def _compile_try_push(self):
+        return self._host_call(HOST_TRY_PUSH, 0)
+
+    def _compile_try_pop(self):
+        return self._host_call(HOST_TRY_POP, 0)
+
+    def _compile_throw(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_THROW, 1)
+        )
+
+    def _compile_error_msg(self):
+        return self._host_call(HOST_ERROR_MSG, 0)
+
+    # ====================================================================
+    # CLASS / NEW / GET_ATTR / SET_ATTR / SUPER_ATTR / INSTANCEOF
+    # ====================================================================
+    def _compile_class(self):
+        return self._host_call(HOST_CLASS, 0)
+
+    def _compile_new(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_NEW, 1)
+        )
+
+    def _compile_get_attr(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_GET_ATTR, 2)
+        )
+
+    def _compile_set_attr(self):
+        return (
+            self._pop_n_values(3) +
+            self._host_call(HOST_SET_ATTR, 3)
+        )
+
+    def _compile_super_attr(self):
+        return (
+            self._pop_n_values(3) +
+            self._host_call(HOST_SUPER_ATTR, 3)
+        )
+
+    def _compile_instanceof(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_INSTANCEOF, 2)
+        )
+
+    # ====================================================================
+    # JSON
+    # ====================================================================
+    def _compile_json_encode(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_JSON_ENCODE, 1)
+        )
+
+    def _compile_json_decode(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_JSON_DECODE, 1)
+        )
+
+    # ====================================================================
+    # IMPORT
+    # ====================================================================
+    def _compile_import(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_IMPORT, 1)
+        )
+
+    # ====================================================================
+    # TIME
+    # ====================================================================
+    def _compile_time(self):
+        return self._host_call(HOST_TIME, 0)
+
+    # ====================================================================
+    # TYPE
+    # ====================================================================
+    def _compile_type(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_TYPE_OF, 1)
+        )
+
+    # ====================================================================
+    # REPLACE
+    # ====================================================================
+    def _compile_replace(self):
+        return (
+            self._pop_n_values(3) +
+            self._host_call(HOST_REPLACE, 3)
+        )
+
+    # ====================================================================
+    # INPUT_NUM
+    # ====================================================================
+    def _compile_input_num(self):
+        return self._host_call(HOST_INPUT_NUM, 0)
+
+    # ====================================================================
+    # START_SERVER
+    # ====================================================================
+    def _compile_start_server(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_WEB_SEND, 2)  # reuse web_send host logic
+        )
+
+    # ====================================================================
+    # DATE_FORMAT
+    # ====================================================================
+    def _compile_date_format(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_DATE_FORMAT, 1)
+        )
+
+    # ====================================================================
+    # STRING_SPLIT / STRING_JOIN / TO_NUMBER / REGEX_SEARCH
+    # ====================================================================
+    def _compile_string_split(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_STRING_SPLIT, 2)
+        )
+
+    def _compile_string_join(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_STRING_JOIN, 2)
+        )
+
+    def _compile_to_number(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_TO_NUMBER, 1)
+        )
+
+    def _compile_regex_search(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_REGEX_SEARCH, 2)
+        )
+
+    # ====================================================================
+    # ASYNC_CALL / AWAIT
+    # ====================================================================
+    def _compile_async_call(self):
+        return self._host_call(HOST_ASYNC_CALL, 0)
+
+    def _compile_await(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_AWAIT, 1)
+        )
+
+    # ====================================================================
+    # SOLICITUD_HTTP
+    # ====================================================================
+    def _compile_solicitud_http(self):
+        return (
+            self._pop_n_values(3) +
+            self._host_call(HOST_HTTP_REQUEST, 3)
+        )
+
+    # ====================================================================
+    # SQLITE
+    # ====================================================================
+    def _compile_sqlite_abrir(self):
+        return (
+            self._pop_n_values(1) +
+            self._host_call(HOST_SQLITE_OPEN, 1)
+        )
+
+    def _compile_sqlite_ejecutar(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_SQLITE_EXEC, 2)
+        )
+
+    def _compile_sqlite_consultar(self):
+        return (
+            self._pop_n_values(2) +
+            self._host_call(HOST_SQLITE_QUERY, 2)
         )
 
 
