@@ -22,9 +22,9 @@
 - **Optimizador de bytecode**: `optimizer.py` con plegado de constantes, código muerto, reasignación de saltos. `--optimize` / `-O`.
 - **Compilación nativa**: `compiler.py` — PyInstaller (bytecode embebido) + Nuitka (Python→C++→nativo). `alvz build` y `alvz build --nuitka`. Todos los 82 opcodes funcionan.
 - **Instalador Windows**: `setup.py`, `alvz.spec`. Reconstruidos `dist/alvz.exe` e `Instalador_Alvz.exe`.
-- **VS Code extension v1.3.0**: resaltado semántico (SemanticTokensProvider) + autocompletado real (CompletionItemProvider). Empaquetada como `.vsix` (12.34 KB).
+- **VS Code extension v1.5.0**: resaltado semántico (SemanticTokensProvider) + autocompletado real (CompletionItemProvider). Empaquetada como `.vsix` (12.34 KB).
 - **Documentación**: `public/index.html` con docs completos, ejemplos, favicon. Deploy a Firebase (https://alvzes.web.app).
-- **ZIP de distribución**: `public/alvz_v0.15.0.zip` con alvz.exe, Instalador, VSIX y StdLib.
+- **ZIP de distribución**: `public/alvz_v0.17.0.zip` con alvz.exe, Instalador, VSIX y StdLib.
 - **Package manager**: 30 paquetes en `github.com/interpago/alvz-packages`. Soportan `install`, `uninstall`, `search`, `list-packages`, `info`.
 - **Importar desde paquetes**: `_import_file` busca en `~/.alvz/packages/<name>/`.
 - **StdLib (8 módulos)**: matematicas, cadenas, colecciones, http, fecha, testing, sistema, sqlite.
