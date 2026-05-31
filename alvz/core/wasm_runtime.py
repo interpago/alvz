@@ -35,6 +35,7 @@ TAG_STR = 2
 TAG_NULL = 3
 TAG_LIST = 4
 TAG_DICT = 5
+TAG_FUNC = 6
 
 # Host opcodes (deben coincidir con wasm_compiler.py)
 HOST_ROUND = 0

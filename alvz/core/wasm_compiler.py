@@ -38,6 +38,7 @@ TAG_STR = 2
 TAG_NULL = 3
 TAG_LIST = 4
 TAG_DICT = 5
+TAG_FUNC = 6
 
 # Opcodes WASM utilitarios
 OP_BLOCK = 0x02
@@ -719,7 +720,7 @@ class WasmCompiler:
     # LOAD / STORE (variables)
     # ====================================================================
     def _compile_load(self, is_global):
-        var_base = 0x8000
+        var_base = 0x9000 if is_global else 0x8000
         return (
             _GET_LOCAL(0) +
             _I32(1) +
@@ -742,7 +743,7 @@ class WasmCompiler:
         )
 
     def _compile_store(self, is_global):
-        var_base = 0x8000
+        var_base = 0x9000 if is_global else 0x8000
         return (
             pop_instr() +
             _GET_LOCAL(0) +
@@ -1046,8 +1047,21 @@ class WasmCompiler:
     def _compile_make_func(self):
         """MAKE_FUNC: leer func_addr y num_params de bytecode, pushear descriptor."""
         return (
-            _GET_LOCAL(0) + _I32(2) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
-            push_instr(_I32(TAG_NULL), _F64(0.0)) +
+            # Leer func_addr (bytecode[ip+1])
+            _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) +
+            _LOAD_U8(BC_BASE) +
+            _SET_LOCAL(5) +              # $tmp_i32 = func_addr
+            # Leer num_params (bytecode[ip+2])
+            _GET_LOCAL(0) + _I32(2) + bytes([OP_I32_ADD]) +
+            _LOAD_U8(BC_BASE) +
+            _SET_LOCAL(6) +              # $tmp_i32_2 = num_params
+            # Avanzar ip en 3 (opcode + addr + nparams)
+            _GET_LOCAL(0) + _I32(3) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            # Pushear descriptor (TAG_FUNC, func_addr como f64)
+            push_instr(
+                _I32(TAG_FUNC),
+                _GET_LOCAL(5) + bytes([OP_F64_CONVERT_I32_S])
+            ) +
             bytes([OP_BR, 0x01])
         )
 
@@ -1234,11 +1248,25 @@ class WasmCompiler:
     # ====================================================================
     def _compile_call(self):
         """CALL: leer func_addr de bytecode[ip+1], guardar frame, saltar."""
+        VAL_I32 = 0x7F
         return (
-            # Leer func_addr (bytecode[ip+1] contiene la direccion absoluta)
+            # Leer func_addr (bytecode[ip+1])
             _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) +
             _LOAD_U8(BC_BASE) +           # func_addr
+            _TEE_LOCAL(8) +               # $tmp_i32 = func_addr
+            # Si func_addr == 0, obtener desde descriptor en pila
+            bytes([OP_IF, VAL_I32]) +     # if i32 produce i32
+            # func_addr != 0: usar directamente
+            _GET_LOCAL(8) +
+            bytes([OP_ELSE]) +
+            # func_addr == 0: pop descriptor de la pila de valores
+            pop_instr() +
+            _GET_LOCAL(4) +               # data (func_addr como f64)
+            bytes([OP_I32_TRUNC_F64_S]) + # convertir a i32
             _SET_LOCAL(8) +               # $tmp_i32 = func_addr
+            _GET_LOCAL(8) +
+            bytes([OP_END]) +
+            _SET_LOCAL(8) +               # asegurar $tmp_i32
             # Guardar frame en call stack
             _GET_GLOBAL(3) +              # $call_sp
             _I32(8) + bytes([OP_I32_MUL]) +
@@ -1579,9 +1607,10 @@ class WasmCompiler:
     # START_SERVER
     # ====================================================================
     def _compile_start_server(self):
+        """START_SERVER: no-op en WASM (no soporta servidores HTTP)."""
         return (
             self._pop_n_values(2) +
-            self._host_call(HOST_WEB_SEND, 2)  # reuse web_send host logic
+            push_instr(_I32(TAG_NULL), _F64(0.0))
         )
 
     # ====================================================================

@@ -1,3 +1,4 @@
+import sys
 import re
 from .lexer import Lexer, Token
 
