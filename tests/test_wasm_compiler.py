@@ -1,5 +1,6 @@
 """Test: compilar Alvz a WASM y ejecutar con wasmtime."""
-import sys, os
+import sys
+import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
@@ -490,3 +491,18 @@ def test_wasm_execute_list(tmp_path):
     result = run(str(wasm_path), output_buffer=output)
     assert result is True
     assert len(output) >= 1
+
+
+@pytest.mark.skipif('wasmtime' not in sys.modules, reason="wasmtime no instalado")
+def test_wasm_execute_string(tmp_path):
+    """Compila y ejecuta WASM con strings, verifica output."""
+    codigo = """imprimir("hola mundo")"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    wasm_path = tmp_path / "test_str.wasm"
+    wasm_path.write_bytes(wasm_bytes)
+
+    from alvz.core.wasm_runtime import run
+    output = []
+    result = run(str(wasm_path), output_buffer=output)
+    assert result is True
+    assert any("hola mundo" in s for s in output)

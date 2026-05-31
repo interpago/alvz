@@ -485,7 +485,7 @@
     <h4 style="margin-top: 30px;">Referencia</h4>
     <nav>
         <ul>
-            <li><a href="#vscode">VS Code v1.3.0 (Semántico + Autocompletado)</a></li>
+            <li><a href="#vscode">VS Code v1.6.0 (Semántico + Autocompletado)</a></li>
             <li><a href="#glosario">Glosario de Palabras</a></li>
             <li><a href="#variables">Variables y Tipos</a></li>
             <li><a href="#tipado">Tipado Estático</a></li>
@@ -504,9 +504,10 @@
             <li><a href="#stdlib">Librería Estándar</a></li>
             <li><a href="#async-await">Async / Await</a></li>
             <li><a href="#optimizer">Optimizador</a></li>
-            <li><a href="#package-manager">Package Manager (36 paquetes)</a></li>
+            <li><a href="#package-manager">Package Manager (30 paquetes)</a></li>
             <li><a href="#native">Compilación Nativa &amp; Multiplataforma</a></li>
             <li><a href="#wasm">Compilación WASM</a></li>
+            <li><a href="#arquitectura">Arquitectura Interna</a></li>
             <li><a href="#cli">CLI: test, fmt, nuevo</a></li>
             <li><a href="#lsp">LSP (Editor)</a></li>
             <li><a href="#dap">Depurador DAP</a></li>
@@ -528,7 +529,7 @@
             <div class="admonition-title">¿Por qué Alvz?</div>
             Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
             <br><br>
-            <strong>v0.18.0</strong> — Compilador WASM funcional: `alvz build --wasm` genera .wasm ejecutable con wasmtime. 40+ opcodes: aritmética, comparaciones, lógica (y/o), variables, saltos, call/return, print (num/bool/str), listas, diccionarios, aleatorio, entrada. StdLib (8 módulos), Package Manager (36 paquetes). 498 tests.
+            <strong>v0.18.0</strong> — Compilador WASM con 40+ opcodes nativos + 42 host calls. Compatible con wasmtime 45. Memoria compartida entre módulo y host functions. StdLib (13 módulos: matematicas, cadenas, http, sqlite, json, csv, etc.), Package Manager (30 paquetes), LSP + DAP reales, 82 opcodes en VM. <strong>549 tests, 0 fallos.</strong>
         </div>
     </section>
 
@@ -815,7 +816,7 @@ Alvz v0.18.0</pre>
             <li>Ve a la sección de Extensiones (<kbd>Ctrl+Shift+X</kbd>)</li>
             <li>Haz clic en el menú <strong>"..."</strong> (esquina superior derecha)</li>
             <li>Selecciona <strong>"Instalar desde VSIX..."</strong></li>
-            <li>Elige el archivo <code>alvz-language-1.5.0.vsix</code></li>
+            <li>Elige el archivo <code>alvz-language-1.6.0.vsix</code></li>
         </ol>
 
         <h3>Características</h3>
@@ -1979,7 +1980,7 @@ csv_escribir(<span class="string">"usuarios.csv"</span>, usuarios)
         <p>Alvz incluye un gestor de paquetes para instalar y compartir librerías. Los paquetes se obtienen del <strong>registro público</strong> en <a href="https://github.com/interpago/alvz-packages" target="_blank">github.com/interpago/alvz-packages</a>.</p>
 
         <h3>Paquetes disponibles</h3>
-        <p>Actualmente hay <strong>36 paquetes</strong> en el registro:</p>
+        <p>Actualmente hay <strong>30 paquetes</strong> en el registro:</p>
         <table>
             <tr><th>Paquete</th><th>Versión</th><th>Descripción</th></tr>
             <tr><td><code>base-convert</code></td><td>1.0.0</td><td>Conversión de bases: binario, octal, hexadecimal</td></tr>
@@ -2153,6 +2154,175 @@ $ wasmtime programa.wasm</pre>
 $ wasmtime programa.wasm
 <span class="comment"># 30</span></pre>
         </div>
+    </section>
+
+    <section id="arquitectura">
+        <h2>Arquitectura Interna de Alvz</h2>
+        <p>Alvz está construido sobre una arquitectura modular de 6 capas que transforman código fuente en ejecución. A continuación se explica cada componente clave del lenguaje.</p>
+
+        <h3>Pipeline de Compilación</h3>
+        <div class="admonition">
+            <div class="admonition-title">Código fuente → Ejecución</div>
+            <pre style="font-family:'Fira Code',monospace;font-size:0.85rem;background:var(--code-bg);padding:16px;border-radius:4px;">
+<span class="comment"># 1. Lexer</span>   Código .alvz → Tokens (Lexer)
+<span class="comment"># 2. Parser</span>   Tokens → Árbol + Bytecode (ParserBase + Parser)
+<span class="comment"># 3. Opt.</span>     Bytecode → Bytecode optimizado (Optimizer)
+<span class="comment"># 4. Type</span>     Bytecode → Verificación de tipos (TypeChecker)
+<span class="comment"># 5. VM</span>       Bytecode → Ejecución (VM con 82 opcodes)
+<span class="comment"># 6. Backends</span> Bytecode → WASM / Nativo (wasm_compiler / compiler)</pre>
+        </div>
+
+        <h3>1. Lexer (Lexer)</h3>
+        <p>El lexer (<code>alvz/core/lexer.py</code>, 262 líneas) tokeniza el código fuente usando expresiones regulares en un solo paso. Reconoce <strong>30+ tipos de tokens</strong> incluyendo palabras clave en español (<code>funcion</code>, <code>clase</code>, <code>mientras</code>, <code>importar</code>, etc.), identificadores, números, strings, operadores y símbolos. Soporta strings con escape de comillas y comentarios de línea con <code>#</code>.</p>
+
+        <h3>2. Parser (ParserBase + Parser)</h3>
+        <p>El parser (<code>parser_base.py</code> + <code>parser.py</code>, ~2100 líneas) es un compilador de una sola pasada que genera bytecode directamente sin AST intermedio. Características clave:</p>
+        <ul>
+            <li><strong>Forward references:</strong> Pre-scan de funciones para permitir llamadas antes de la definición.</li>
+            <li><strong>Clases y herencia:</strong> Compila <code>clase Hijo de Padre</code> con cadena de prototipos.</li>
+            <li><strong>Async/await:</strong> Compila <code>funcion async</code> y <code>aguardar</code> a opcodes especializados.</li>
+            <li><strong>Funciones anónimas:</strong> Lambdas como expresiones con naming interno <code>__anon_N</code>.</li>
+            <li><strong>Acceso encadenado:</strong> <code>a.b.c()</code> se compila como llamadas anidadas.</li>
+            <li><strong>global keyword:</strong> Declaración de variables globales dentro de funciones.</li>
+        </ul>
+
+        <h3>3. Bytecode (82 opcodes)</h3>
+        <p>El bytecode Alvz (<code>alvz/core/bytecode.py</code>) es una representación intermedia basada en pila con <strong>82 opcodes</strong>. Cada instrucción es un byte (0-81) seguido de 0-2 bytes de operandos. Categorías:</p>
+        <table>
+            <thead><tr><th>Categoría</th><th>Opcodes</th><th>Rango</th></tr></thead>
+            <tbody>
+                <tr><td>Aritmética</td><td>OP_SUMA, OP_RESTA, OP_MUL, OP_DIV, OP_NEG</td><td>0-4, 22</td></tr>
+                <tr><td>Comparación</td><td>OP_EQ, OP_NEQ, OP_LT, OP_GT, OP_LTE, OP_GTE</td><td>5-10</td></tr>
+                <tr><td>Lógica</td><td>OP_AND, OP_OR, OP_NOT</td><td>11-13</td></tr>
+                <tr><td>Variables</td><td>OP_LOAD, OP_STORE, OP_LOAD_GLOBAL, OP_STORE_GLOBAL</td><td>14-17</td></tr>
+                <tr><td>Control</td><td>OP_JUMP, OP_JUMP_IF_FALSE, OP_CALL, OP_RETURN, OP_HALT</td><td>18-21, 23, 25</td></tr>
+                <tr><td>Constantes</td><td>OP_CONSTANT, OP_NULL</td><td>24, 26</td></tr>
+                <tr><td>Listas/Dicts</td><td>OP_NEW_LIST, OP_ADD_ITEM, OP_INDEX, OP_INDEX_ASSIGN, OP_LIST_LEN, OP_NEW_DICT, OP_DICT_KEYS</td><td>27-32, 82</td></tr>
+                <tr><td>POO</td><td>OP_NEW_OBJECT, OP_GET_ATTR, OP_SET_ATTR, OP_CALL_METHOD, OP_SUPER, OP_INSTANCEOF, OP_MAKE_FUNC</td><td>33-40</td></tr>
+                <tr><td>IO/Util</td><td>OP_PRINT, OP_READ, OP_RANDOM, OP_TIME, OP_TYPE, OP_SLICE, OP_ERROR_MSG</td><td>41-47, 75</td></tr>
+                <tr><td>Async</td><td>OP_ASYNC_CALL, OP_AWAIT</td><td>76-77</td></tr>
+                <tr><td>SQLite</td><td>OP_SQLITE_ABRIR, OP_SQLITE_EJECUTAR, OP_SQLITE_CONSULTAR, OP_SQLITE_CERRAR</td><td>78-81</td></tr>
+                <tr><td>HTTP</td><td>OP_SOLICITUD_HTTP (HTTP request)</td><td>69</td></tr>
+                <tr><td>Try/Catch</td><td>OP_TRY_SETUP, OP_TRY_POP, OP_THROW</td><td>48-50</td></tr>
+                <tr><td>Propiedades</td><td>OP_GETTER, OP_SETTER (getter/setter dispatch)</td><td>51-52</td></tr>
+                <tr><td>Llamada rápida</td><td>OP_FAST_CALL, OP_FAST_CALL2</td><td>53-54</td></tr>
+                <tr><td>Diccionario</td><td>OP_DICT_MERGE, OP_DICT_CONTAINS</td><td>55-56</td></tr>
+                <tr><td>Strings</td><td>OP_STR_ADD, OP_STR_MUL, OP_STR_LEN, OP_STR_CONTAINS, OP_MAYUSCULAS, OP_MINUSCULAS</td><td>57-62</td></tr>
+                <tr><td>Iteración</td><td>OP_ITER, OP_NEXT, OP_FOR_LOOP</td><td>63-65</td></tr>
+                <tr><td>Lambda</td><td>OP_MAKE_FUNC = 70 (descriptor de función)</td><td>70</td></tr>
+            </tbody>
+        </table>
+
+        <h3>4. Máquina Virtual (VM)</h3>
+        <p>El VM (<code>alvz/core/vm.py</code>, ~1127 líneas) es un intérprete de bytecode basado en pila implementado en Python puro. Características:</p>
+        <ul>
+            <li><strong>Pila de valores:</strong> Enteros como flotantes (precisión de 64 bits), strings, listas, diccionarios, objetos, null.</li>
+            <li><strong>Pila de llamadas:</strong> Soporta recursión y llamadas anidadas.</li>
+            <li><strong>POO completa:</strong> Clases, herencia, getters/setters, métodos estáticos, <code>super</code>, <code>instanceof</code>.</li>
+            <li><strong>Async/event loop:</strong> <code>ThreadPoolExecutor</code> para concurrencia real con futuros.</li>
+            <li><strong>SQLite:</strong> Opcodes directos para operaciones de base de datos.</li>
+            <li><strong>HTTP:</strong> Peticiones web vía opcode dedicado.</li>
+            <li><strong>Stack traces:</strong> Muestra la línea de código fuente ofensiva con el contexto de llamadas.</li>
+        </ul>
+
+        <h3>5. Optimizador de Bytecode</h3>
+        <p>El optimizador (<code>alvz/core/optimizer.py</code>, ~230 líneas) mejora el bytecode antes de ejecución:</p>
+        <ul>
+            <li><strong>Plegado de constantes:</strong> <code>2 + 3</code> → <code>5</code> en compilación.</li>
+            <li><strong>Eliminación de código muerto:</strong> Instrucciones después de <code>OP_HALT</code>.</li>
+            <li><strong>Reasignación de saltos:</strong> Actualiza offsets tras optimizaciones.</li>
+        </ul>
+        <p>Se activa con <code>--optimize</code> / <code>-O</code>.</p>
+
+        <h3>6. Type Checker (Tipado Estático)</h3>
+        <p>El verificador de tipos (<code>alvz/core/type_checker.py</code>, ~457 líneas) analiza el bytecode post-compilación:</p>
+        <ul>
+            <li>Verifica anotaciones de tipo en variables, parámetros y retorno.</li>
+            <li>Inferencia automática desde literales (<code>5</code> → <code>numero</code>).</li>
+            <li>Validación en llamadas a funciones con tipos anotados.</li>
+            <li>Se activa con <code>--check-types</code> / <code>-T</code>; activado por defecto.</li>
+        </ul>
+
+        <h3>7. Backend WASM</h3>
+        <p>El compilador WASM (<code>wasm_compiler.py</code> + <code>wasm_encoder.py</code>, ~2300 líneas) traduce bytecode Alvz a módulos WebAssembly binarios:</p>
+        <ul>
+            <li><strong>Arquitectura:</strong> VM de bytecode dentro del módulo WASM. Pila de valores en memoria lineal (tag i32 + data f64 = 16 bytes/entry).</li>
+            <li><strong>Memoria compartida:</strong> El módulo importa memoria del host (<code>add_import_memory</code>) en vez de crearla propia, compartiendo el espacio de direcciones con host functions.</li>
+            <li><strong>40+ opcodes nativos</strong> implementados en WASM + <strong>42 host calls</strong> para operaciones complejas (print, string ops, list/dict, SQLite, HTTP, random, etc.).</li>
+            <li><strong>Compatibilidad:</strong> wasmtime 45 con <code>access_caller=False</code>, sin <code>memory64</code>.</li>
+            <li><strong>Uso:</strong> <code>alvz build --wasm programa.alvz</code> → <code>wasmtime programa.wasm</code>.</li>
+            <li><strong>Datos:</strong> Bytecode y constantes como data segments en memoria WASM.</li>
+        </ul>
+
+        <h3>8. Backend Nativo (PyInstaller / Nuitka)</h3>
+        <p>El compilador nativo (<code>alvz/core/compiler.py</code>, ~227 líneas) genera ejecutables standalone:</p>
+        <ul>
+            <li><strong>PyInstaller:</strong> Empaqueta bytecode + VM Python en un solo .exe. Rápido y confiable.</li>
+            <li><strong>Nuitka:</strong> Compila Python → C++ → binario nativo. Mayor rendimiento pero más lento.</li>
+            <li><strong>Flags:</strong> <code>alvz build</code> (PyInstaller), <code>alvz build --nuitka</code> (Nuitka), <code>alvz build --wasm</code> (WASM).</li>
+        </ul>
+
+        <h3>9. LSP (Language Server Protocol)</h3>
+        <p>El servidor LSP (<code>alvz/lsp/</code>, ~880 líneas) se comunica vía JSON-RPC sobre stdin/stdout:</p>
+        <ul>
+            <li><strong>Diagnóstico real:</strong> Ejecuta el parser completo para errores de sintaxis y semántica.</li>
+            <li><strong>Autocompletado:</strong> Keywords, StdLib, funciones, variables, snippets.</li>
+            <li><strong>Ir a definición:</strong> Navega a la definición de símbolos.</li>
+            <li><strong>Hover info:</strong> Muestra tipo y documentación.</li>
+            <li><strong>Símbolos del documento:</strong> Lista estructurada de funciones/clases/variables.</li>
+        </ul>
+
+        <h3>10. DAP (Debug Adapter Protocol)</h3>
+        <p>El depurador DAP (<code>alvz/lsp/dap.py</code>) permite depuración interactiva:</p>
+        <ul>
+            <li><strong>Breakpoints</strong> en líneas específicas.</li>
+            <li><strong>Step over/into/out</strong> para ejecución paso a paso.</li>
+            <li><strong>Inspección de variables</strong> locales y globales.</li>
+            <li><strong>Stack trace</strong> con cadena de llamadas completa.</li>
+            <li><strong>Evaluación</strong> de expresiones en contexto.</li>
+        </ul>
+        <p>Se ejecuta con <code>alvz-dap</code> o <code>alvz debug</code>.</p>
+
+        <h3>11. StdLib (Librería Estándar)</h3>
+        <p>13 módulos en <code>alvz/stdlib/</code> escritos en Alvz puro:</p>
+        <table>
+            <thead><tr><th>Módulo</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><code>matematicas</code></td><td>Factorial, máximo, mínimo, promedio, par/impar</td></tr>
+                <tr><td><code>cadenas</code></td><td>Reversa, capitalizar, contiene, recortar</td></tr>
+                <tr><td><code>colecciones</code></td><td>Vacío, primero, último, sin_duplicados, invertir</td></tr>
+                <tr><td><code>http</code></td><td>GET, POST, PUT, DELETE con parseo JSON</td></tr>
+                <tr><td><code>fecha</code></td><td>Ahora, hoy, timestamp, formatear fecha</td></tr>
+                <tr><td><code>testing</code></td><td>Describir, probar, afirmar_igual, resumen</td></tr>
+                <tr><td><code>sistema</code></td><td>Archivos, JSON, rutas, copiar</td></tr>
+                <tr><td><code>sqlite</code></td><td>Base de datos SQLite embebida</td></tr>
+                <tr><td><code>aleatorio</code></td><td>Números aleatorios, escoger, mezclar, cadena</td></tr>
+                <tr><td><code>csv</code></td><td>Lectura/escritura de CSV</td></tr>
+                <tr><td><code>json</code></td><td>Codificar, decodificar, leer/escribir archivos</td></tr>
+                <tr><td><code>expresiones_regulares</code></td><td>Coincidir, extraer, contar con regex</td></tr>
+                <tr><td><code>consola</code></td><td>Menús, colores, confirmaciones, progreso</td></tr>
+            </tbody>
+        </table>
+
+        <h3>12. Package Manager</h3>
+        <p><strong>30 paquetes</strong> disponibles en <a href="https://github.com/interpago/alvz-packages" target="_blank">github.com/interpago/alvz-packages</a>. El registro se obtiene de <code>index.json</code> vía GitHub raw. Los paquetes se instalan en <code>~/.alvz/packages/</code> y se importan con <code>importar "nombre"</code>. Soporta dependencias entre paquetes.</p>
+        <p>Comandos: <code>alvz install</code>, <code>alvz uninstall</code>, <code>alvz search</code>, <code>alvz list-packages</code>, <code>alvz info</code>.</p>
+
+        <h3>Estadísticas del Proyecto</h3>
+        <table>
+            <thead><tr><th>Métrica</th><th>Valor</th></tr></thead>
+            <tbody>
+                <tr><td>Tests</td><td><strong>549</strong> (0 fallos, 0 errores)</td></tr>
+                <tr><td>Opcodes VM</td><td>82</td></tr>
+                <tr><td>Opcodes WASM nativos</td><td>40+</td></tr>
+                <tr><td>Host calls WASM</td><td>42</td></tr>
+                <tr><td>Módulos StdLib</td><td>13</td></tr>
+                <tr><td>Paquetes en registro</td><td>30</td></tr>
+                <tr><td>Líneas de código Python</td><td>~12,000</td></tr>
+                <tr><td>Líneas de código Alvz (StdLib)</td><td>~1,200</td></tr>
+                <tr><td>VS Code Extension</td><td>v1.6.0</td></tr>
+            </tbody>
+        </table>
     </section>
 
     <section id="cli">

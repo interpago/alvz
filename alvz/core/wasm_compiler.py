@@ -12,11 +12,7 @@ import struct
 from .bytecode import OpCode
 from .wasm_encoder import (
     WasmModule, _uleb128, _sleb128,
-    instr_i32_const, instr_f64_const,
-    instr_local_get, instr_local_set, instr_local_tee,
-    instr_global_get, instr_global_set,
-    instr_call, instr_return, instr_drop,
-    VALTYPE
+    instr_call
 )
 
 # Constantes de layout memoria lineal
@@ -140,6 +136,7 @@ HOST_ASYNC_CALL = 40
 HOST_AWAIT = 41
 HOST_SQRT = 42
 HOST_ABS = 43
+HOST_SLICE = 44
 
 # Buffer para resultados de host
 # +0: tag i32, +8: data f64, +16: advance_ip i32 (0 = default 1)
@@ -295,8 +292,8 @@ class WasmCompiler:
         # -- Funcion principal --
         m.add_function(t_main)
 
-        # -- Memoria --
-        m.add_memory(MEM_PAGES)
+        # -- Memoria (importada del host) --
+        m.add_import_memory('alvz', 'memory', MEM_PAGES)
 
         # -- Globales --
         m.add_global('i32', True, _I32(0))  # 0: $sp
@@ -306,7 +303,8 @@ class WasmCompiler:
 
         # -- Exportaciones --
         m.add_export('memory', 'mem', 0)
-        m.add_export('main', 'func', len(m._imports))
+        num_imported_funcs = sum(1 for imp in m._imports if imp[0] == 'func')
+        m.add_export('main', 'func', num_imported_funcs)
 
         # ========== Cuerpo de la funcion main ==========
         body = bytearray()
@@ -1069,31 +1067,37 @@ class WasmCompiler:
     # SLICE
     # ====================================================================
     def _compile_slice(self):
-        """SLICE: pop fin, pop inicio, pop obj, push obj[inicio:fin]."""
+        """SLICE: pop fin, pop inicio, pop obj, push obj[inicio:fin].
+        Los valores salvados deben coincidir con las posiciones que _host_call
+        espera: $3/4=obj, $8/9=inicio, $10/11=fin.
+        BR depths: TAG_LIST if está a depth 3 desde el loop, TAG_STR if a depth 4.
+        BR 0x02 desde TAG_LIST, BR 0x03 desde TAG_STR/other llegan al loop."""
         return (
             pop_instr() +                 # pop fin -> $t, $d
-            _GET_LOCAL(3) + _SET_LOCAL(6) +  # save fin_tag
-            _GET_LOCAL(4) + _SET_LOCAL(7) +  # save fin_data
+            _GET_LOCAL(3) + _SET_LOCAL(10) + # save fin_tag a $10
+            _GET_LOCAL(4) + _SET_LOCAL(11) + # save fin_data a $11
             pop_instr() +                 # pop inicio -> $t, $d
-            _GET_LOCAL(3) + _SET_LOCAL(8) +  # save inicio_tag ($tmp_i32)
-            _GET_LOCAL(4) + _SET_LOCAL(9) +  # save inicio_data ($tmp_f64)
+            _GET_LOCAL(3) + _SET_LOCAL(8) +  # save inicio_tag a $8
+            _GET_LOCAL(4) + _SET_LOCAL(9) +  # save inicio_data a $9
             pop_instr() +                 # pop obj
             _GET_LOCAL(3) + _I32(TAG_LIST) + bytes([OP_I32_EQ]) +
             bytes([OP_IF, 0x40]) +
             # Es lista: crear lista nueva con elementos [inicio:fin]
             self._emit_list_slice() +
+            _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
+            bytes([OP_BR, 0x02]) +
             bytes([OP_ELSE]) +
             _GET_LOCAL(3) + _I32(TAG_STR) + bytes([OP_I32_EQ]) +
             bytes([OP_IF, 0x40]) +
-            # Es string: crear string nuevo con caracteres [inicio:fin]
-            push_instr(_I32(TAG_STR), _F64(0.0)) +
+            # Es string: delegar a host_call(HOST_SLICE, 3, br_depth=3)
+            self._host_call(HOST_SLICE, 3, br_depth=3) +
             bytes([OP_ELSE]) +
             # Otro tipo: push obj de vuelta
             push_instr(_GET_LOCAL(3), _GET_LOCAL(4)) +
-            bytes([OP_END]) +
-            bytes([OP_END]) +
             _GET_LOCAL(0) + _I32(1) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
-            bytes([OP_BR, 0x01])
+            bytes([OP_BR, 0x03]) +
+            bytes([OP_END]) +
+            bytes([OP_END])
         )
 
     def _emit_list_slice(self):
@@ -1330,12 +1334,12 @@ class WasmCompiler:
             buf.extend(pop_instr())
         return bytes(buf)
 
-    def _host_call(self, op_id, nargs, extra_bytes=b''):
+    def _host_call(self, op_id, nargs, extra_bytes=b'', br_depth=1):
         """Genera WASM para llamar alvz_host.call.
         Escribe nargs valores del Alvz stack a HOST_BUF_BASE.
         Pasa (op_id, nargs, ip, 0, 0) al host.
         Lee resultado (tag, data, advance_ip) de HOST_BUF_BASE.
-        Avanza ip segun advance_ip (0 = default 1) y hace br $main."""
+        Avanza ip segun advance_ip (0 = default 1) y hace br al loop."""
         buf = bytearray()
         # Escribir nargs
         buf.extend(_I32(nargs) + _I32(HOST_BUF_BASE) + _STORE_I32(0))
@@ -1384,7 +1388,7 @@ class WasmCompiler:
             _I32(HOST_BUF_BASE + 16) + _LOAD_I32(0) +
             bytes([OP_END]) +
             _GET_LOCAL(0) + bytes([OP_I32_ADD]) + _SET_LOCAL(0) +
-            bytes([OP_BR, 0x01])
+            bytes([OP_BR, br_depth])
         )
         return bytes(buf)
 

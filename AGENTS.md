@@ -1,47 +1,25 @@
 # AGENTS.md - Alvz Language
 
 ## Goal
-- Profesionalizar Alvz a lenguaje avanzado: POO, LSP, DAP, módulos, StdLib, tipado estático, async/await con event loop real, compilación nativa, package manager.
+- Revisar, limpiar y profesionalizar el proyecto Alvz (lenguaje en español) — linting con Ruff, docs actualizadas, deploy a Firebase, push a GitHub.
 
 ## Constraints & Preferences
 - pytest para tests.
 - Lenguaje completo en español (keywords, mensajes de error).
-- Herencia vía `clase Hijo de Padre`.
-- Constructor por convención: `funcion inicializar()`.
-- `self` automático como primer parámetro en métodos de instancia.
-- Métodos estáticos con `funcion estatico nombre(args)`.
-- Getter/setter con `propiedad nombre { obtener { } establecer(valor) { } }`.
-- LSP y DAP manuales vía JSON-RPC sobre stdin/stdout.
-- `obtener`, `establecer`, `propiedad` en `_IDENT_KEYWORDS`.
+- Ruff como linter (line-length=120, select E/F/W).
+- Compilación WASM compatible con wasmtime 45 (memoria importada, host calls sin `caller`).
+- Deploy en Firebase Hosting (alvzes.web.app).
 
 ## Progress
 ### Done
-- **Compilador WASM avanzado**: `wasm_compiler.py` + `wasm_encoder.py`. Traduce bytecode Alvz a WASM binario (11886 bytes), ejecutable con wasmtime. 40+ opcodes: aritmética (suma, resta, mul, div, negación), comparaciones (==, !=, <, >, <=, >=), lógica (AND, OR), print (num/bool/str con punteros correctos), load/store de variables locales/globales, saltos (condicional e incondicional), null, lista (crear, agregar, obtener/establecer índice, longitud), diccionario, aleatorio, entrada, llamada/retorno con pila de llamadas, halt. `alvz build --wasm`. 498 tests pasando.
-- **Tipado estático**: `type_checker.py`. Verifica anotaciones, parámetros, retorno, llamadas. `--check-types` / `-T`. 21 tests.
-- **Async/await**: tokens `ASYNC`, `AGUARDAR`; opcodes `OP_ASYNC_CALL` (76), `OP_AWAIT` (77); event loop con `ThreadPoolExecutor` (concurrencia real).
-- **Optimizador de bytecode**: `optimizer.py` con plegado de constantes, código muerto, reasignación de saltos. `--optimize` / `-O`.
-- **Compilación nativa**: `compiler.py` — PyInstaller (bytecode embebido) + Nuitka (Python→C++→nativo). `alvz build` y `alvz build --nuitka`. Todos los 82 opcodes funcionan.
-- **Instalador Windows**: `setup.py`, `alvz.spec`. Reconstruidos `dist/alvz.exe` e `Instalador_Alvz.exe`.
-- **VS Code extension v1.5.0**: resaltado semántico (SemanticTokensProvider) + autocompletado real (CompletionItemProvider). Empaquetada como `.vsix` (12.34 KB).
-- **Documentación**: `public/index.html` con docs completos, ejemplos, favicon. Deploy a Firebase (https://alvzes.web.app).
-- **ZIP de distribución**: `public/alvz_v0.17.0.zip` con alvz.exe, Instalador, VSIX y StdLib.
-- **Package manager**: 30 paquetes en `github.com/interpago/alvz-packages`. Soportan `install`, `uninstall`, `search`, `list-packages`, `info`.
-- **Importar desde paquetes**: `_import_file` busca en `~/.alvz/packages/<name>/`.
-- **StdLib (8 módulos)**: matematicas, cadenas, colecciones, http, fecha, testing, sistema, sqlite.
-- **Test runner**: `alvz test <archivo/directorio>` — descubre y ejecuta tests `.alvz` automáticamente.
-- **Formateador**: `alvz fmt <archivo>` — formatea código (indentación de llaves). `--check` para solo verificar.
-- **Scaffolding**: `alvz nuevo <tipo> [nombre]` — genera proyectos (proyecto, api, cli, lib, test).
-- **450 tests pasando**.
-- **Funciones anónimas (lambdas)**, **`global` keyword**, **`cada` standalone**, **acceso encadenado**, **iteración diccionarios**, **keyword-identifiers** corregidos.
-- **LSP con parser real**: `Analyzer._analyze()` ejecuta `Parser.compile()` para errores reales de sintaxis/semántica.
-- **Stack traces mejorados**: `_build_stack_trace()` muestra la línea de código fuente ofensiva. VM acepta `source_lines`.
-- **Type checking automático**: `check_types=True` por defecto. Flag `--no-check-types` / `-NT`.
-- **DAP CLI**: `alvz debug` ejecuta el servidor DAP.
-- **GitHub Actions CI/CD**: `.github/workflows/tests.yml` — Python 3.10-3.12 en push/PR.
-- **REPL mejorado**: historial (readline), colores ANSI, autocompletado con Tab, prompt multinea.
-- **Benchmarks**: `alvz bench` ejecuta y mide velocidad de bytecode (fibonacci, bucles, listas, etc.).
-- **Fixer**: `alvz fix [--dry-run]` detecta imports faltantes, variables no usadas, globals duplicados.
-- **Compilación nativa vía Nuitka**: `alvz build --nuitka` compila Python→C++→nativo.
+- **Ruff configurado**: `pyproject.toml` con line-length=120, select E/F/W. Pre-commit hooks con ruff --fix y ruff-format.
+- **133 errores de lint corregidos**: F401 (imports no usados), F541 (f-strings sin placeholders), F841 (variables asignadas no usadas), W293 (espacios en líneas en blanco), E741 (nombres ambiguos), E402 (imports no al inicio), E401 (múltiples imports en una línea), F811 (redefinición de import).
+- **Documentación web actualizada**: `public/index.html` con nueva sección "Arquitectura Interna de Alvz" que documenta las 12 capas del lenguaje (Lexer, Parser, Bytecode/82 opcodes, VM, Optimizador, Type Checker, WASM, Nativo, LSP, DAP, StdLib/13 módulos, Package Manager/30 paquetes). Estadísticas del proyecto (549 tests, ~12,000 líneas Python).
+- **Deploy a Firebase**: https://alvzes.web.app — deploy exitoso (2 archivos, 151 KB).
+- **Compatibilidad wasmtime 45**: memoria compartida entre módulo y host, host functions sin `caller`, `_MemWrapper` con ctypes.
+- **WASM strings corruptos**: fix con import memory del host en vez de memoria interna.
+- **OP_SLICE para strings**: implementado vía host function HOST_SLICE = 44.
+- **549 tests, 0 fallos, 0 errores**.
 
 ### In Progress
 - N/A
@@ -50,46 +28,35 @@
 - N/A
 
 ## Key Decisions
-- Event loop real vía `ThreadPoolExecutor` + futuros: concurrencia real para `esperar()` en paralelo.
-- Package manager: registro JSON vía GitHub raw. Index URL: `https://raw.githubusercontent.com/interpago/alvz-packages/main/index.json`.
-- `run()` acepta `output_buffer=None` — si se pasa, usa ese buffer sin resetear.
-- Forward references para funciones: pre-scan recolecta nombres de funciones antes de compilar.
-- StdLib ampliada usa funciones del VM via opcodes, no implementación Python directa.
+- **Import memory en WASM**: módulo importa `'alvz', 'memory'` del host compartiendo espacio de direcciones.
+- **WASM: global vars en 0x9000**, locals en 0x8000.
+- **Ruff --unsafe-fixes** usado para limpiar E401 (múltiples imports en una línea).
 
 ## Next Steps
-- Arreglar ejecución WASM con strings (print_str recibe datos corruptos).
-- Compilar cada función Alvz a función WASM separada (no inline en dispatch loop).
-- Fix `OP_SLICE` para strings (actualmente pushea stub vacío).
-- Agregar pre-commit hooks al CI (ruff check).
-- Fix `_trace*.py` / debug files persistentes (investigar por qué se recrean).
 - Benchmarks en CI para detectar regresiones de rendimiento.
+- Compilar cada función Alvz a función WASM separada (no inline en dispatch loop).
 
 ## Critical Context
-- `run(output_buffer=None)` en VM: si se pasa buffer, lo usa sin resetear.
-- `package_manager.py` usa `ALVZ_DIR = ~/.alvz` y `PACKAGES_DIR = ~/.alvz/packages/`.
-- `_import_file()` busca en: ruta literal, +.alvz, stdlib/, stdlib/ +.alvz, `~/.alvz/packages/<name>/<name>.alvz`.
-- Comandos CLI: `alvz test`, `alvz fmt`, `alvz nuevo`, `alvz install`, `alvz build`, `alvz debug`, `alvz bench`, `alvz fix`.
-- `alvz.spec` con `datas=[('alvz/stdlib/*.alvz', 'alvz/stdlib')]`.
-- WASM: `wasm_memory64=False` en Config para wasmtime; funciones host sin `caller` (wasmtime v45 `access_caller=False`).
-- Opcodes WASM correctos: f64.store=0x39, f64.neg=0x9F, i32.trunc_f64_s=0xAA, f64.convert_i32_s=0xB7.
-- Bytecode Alvz se almacena como bytes individuales en WASM; se lee con `i32.load8_u`.
+- **549 tests, 0 fallos, 0 errores** en ~2.2s.
+- `ruff check --fix --unsafe-fixes alvz/ tests/` → 0 errores.
+- `firebase deploy --only hosting` → https://alvzes.web.app
+- Firebase project: `alvz-56156`, site: `alvzes`.
 
 ## Relevant Files
-- `alvz/core/vm.py`: Coroutine, EventLoop, opcodes HTTP/SQLite, run(output_buffer=None), _import_file(), source_lines.
-- `alvz/core/compiler.py`: build() con PyInstaller y Nuitka. `--nuitka` flag.
-- `alvz/core/benchmarks.py`: Benchmarks de VM. `alvz bench`.
-- `alvz/core/fixer.py`: Corrector automático. `alvz fix`.
-- `alvz/core/package_manager.py`: Package, fetch_registry, install/uninstall/search/list/info. 30 paquetes.
-- `alvz/core/bytecode.py`: OP_DICT_KEYS=82, OP_SOLICITUD_HTTP=81, OP_SQLITE_ABRIR=78, etc.
-- `alvz/core/lexer.py`: tokens SQLITE_ABRIR, SQLITE_EJECUTAR, SQLITE_CONSULTAR, SOLICITUD_HTTP, GLOBAL.
-- `alvz/core/parser_base.py`: compile() con _pre_scan_functions() para forward references. compile_global().
-- `alvz/core/parser.py`: _compile_anonymous_function(), _compile_chained_access(), factor() con FUNCION.
-- `alvz/lsp/analyzer.py`, `server.py`, `dap.py`, `protocol.py`: LSP + DAP real.
-- `alvz/repl.py`: main() con todos los subcomandos. REPL con colores, historial, autocompletado.
-- `alvz/core/wasm_compiler.py`: compila bytecode Alvz a WASM (25 opcodes).
-- `alvz/core/wasm_encoder.py`: encoder binario WASM genérico.
-- `alvz/stdlib/`: 8 módulos (matematicas, cadenas, colecciones, http, fecha, testing, sistema, sqlite).
-- `alvz-extension/`: VS Code extension v1.3.0 con semántico + autocompletado.
-- `registry/`: index.json + 30 paquetes en packages/.
-- `.github/workflows/tests.yml`: CI/CD.
-- `public/index.html`: Documentación completa desplegada en Firebase.
+- `public/index.html`: Documentación web completa con 12 secciones técnicas (2763 líneas).
+- `alvz/core/vm.py`: VM principal (1127 líneas), 82 opcodes, async/event loop, OOP, HTTP, SQLite.
+- `alvz/core/parser.py` + `parser_base.py`: Parser/compiler (~2100 líneas).
+- `alvz/core/wasm_compiler.py` + `wasm_encoder.py`: Compilador WASM (~2300 líneas).
+- `alvz/core/wasm_runtime.py`: Runtime WASM (~713 líneas).
+- `alvz/core/bytecode.py`: 82 opcodes.
+- `alvz/core/type_checker.py`: Tipado estático (457 líneas).
+- `alvz/core/optimizer.py`: Optimizador bytecode (230 líneas).
+- `alvz/core/fixer.py`: Auto-fix (144 líneas).
+- `alvz/core/compiler.py`: PyInstaller/Nuitka build (227 líneas).
+- `alvz/core/package_manager.py`: 30 paquetes (224 líneas).
+- `alvz/lsp/`: LSP + DAP (~880 líneas).
+- `alvz/stdlib/`: 13 módulos `.alvz`.
+- `alvz/repl.py`: REPL/CLI, VERSION = "0.18.0".
+- `alvz-extension/package.json`: Extension VS Code v1.6.0.
+- `firebase.json`, `.firebaserc`: Config Firebase.
+- `AGENTS.md`: Este archivo.

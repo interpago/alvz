@@ -379,7 +379,7 @@ class Parser(_Parser):
                 loop_var = self._consume_identifier()
                 self.consume(Token.EN)
 
-                source_idx = len(self.bytecode)
+                len(self.bytecode)
 
                 self.expression()
 
@@ -422,7 +422,7 @@ class Parser(_Parser):
                 self.emit(OpCode.OP_LENGTH)
                 self.emit(OpCode.OP_LT)
 
-                exit_jump = self.emit(OpCode.OP_JUMP_IF_FALSE)
+                self.emit(OpCode.OP_JUMP_IF_FALSE)
                 exit_offset = self.emit(0)
 
                 self.emit(load_opc)
@@ -823,7 +823,7 @@ class Parser(_Parser):
 
         func_name = self._consume_identifier()
 
-        jump_op_idx = self.emit(OpCode.OP_JUMP)
+        self.emit(OpCode.OP_JUMP)
         jump_offset_idx = self.emit(0)
         func_start_addr = len(self.bytecode)
 
@@ -906,7 +906,7 @@ class Parser(_Parser):
         self._anon_counter = anon_id
         func_name = f'__anon_{anon_id}'
 
-        jump_op_idx = self.emit(OpCode.OP_JUMP)
+        self.emit(OpCode.OP_JUMP)
         jump_offset_idx = self.emit(0)
         func_start_addr = len(self.bytecode)
 
@@ -1001,7 +1001,7 @@ class Parser(_Parser):
         if tiene_parentesis:
             self.consume(Token.PAREN_DER)
 
-        jump_if_false_op_idx = self.emit(OpCode.OP_JUMP_IF_FALSE)
+        self.emit(OpCode.OP_JUMP_IF_FALSE)
         jump_if_false_offset_idx = self.emit(0)
 
         self.consume(Token.LLAVE_IZQ)
@@ -1009,17 +1009,16 @@ class Parser(_Parser):
         self.consume(Token.LLAVE_DER)
 
         if self.current_token()[0] == Token.SINO:
-            sino_pos = self.pos
             self.pos += 1
             if self.current_token()[0] == Token.SI:
                 # sino si ... { ... } -> patch false jump, compile new if
-                jump_sino_si_idx = self.emit(OpCode.OP_JUMP)
+                self.emit(OpCode.OP_JUMP)
                 jump_sino_si_offset_idx = self.emit(0)
                 self.patch(jump_if_false_offset_idx, len(self.bytecode))
                 self.compile_if()
                 self.patch(jump_sino_si_offset_idx, len(self.bytecode))
             else:
-                jump_op_idx = self.emit(OpCode.OP_JUMP)
+                self.emit(OpCode.OP_JUMP)
                 jump_offset_idx = self.emit(0)
                 self.patch(jump_if_false_offset_idx, len(self.bytecode))
                 self.consume(Token.LLAVE_IZQ)
@@ -1043,7 +1042,7 @@ class Parser(_Parser):
         if tiene_parentesis:
             self.consume(Token.PAREN_DER)
 
-        exit_jump_op_idx = self.emit(OpCode.OP_JUMP_IF_FALSE)
+        self.emit(OpCode.OP_JUMP_IF_FALSE)
         exit_jump_offset_idx = self.emit(0)
 
         loop_info = {'breaks': [], 'continues': [], 'continue_target': loop_start_idx}
@@ -1092,7 +1091,7 @@ class Parser(_Parser):
         self.expression()
         self.emit(OpCode.OP_LTE)
 
-        exit_jump_op_idx = self.emit(OpCode.OP_JUMP_IF_FALSE)
+        self.emit(OpCode.OP_JUMP_IF_FALSE)
         exit_jump_offset_idx = self.emit(0)
 
         self.consume(Token.LLAVE_IZQ)
@@ -1166,7 +1165,7 @@ class Parser(_Parser):
         self.emit(OpCode.OP_LENGTH)
         self.emit(OpCode.OP_LT)
 
-        exit_jump_op_idx = self.emit(OpCode.OP_JUMP_IF_FALSE)
+        self.emit(OpCode.OP_JUMP_IF_FALSE)
         exit_jump_offset_idx = self.emit(0)
 
         self.emit(load_opc)
@@ -1228,7 +1227,7 @@ class Parser(_Parser):
         self.consume(Token.LLAVE_DER)
 
         self.emit(OpCode.OP_TRY_POP)
-        jump_over_catch_idx = self.emit(OpCode.OP_JUMP)
+        self.emit(OpCode.OP_JUMP)
         jump_over_catch_offset_idx = self.emit(0)
 
         handler_addr = len(self.bytecode)
@@ -1271,8 +1270,7 @@ class Parser(_Parser):
         while self.pos < len(self.tokens) and self.current_token()[0] == Token.PUNTO:
             self.consume(Token.PUNTO)
             method_name = self._consume_identifier()
-            class_info = self.defined_classes[class_name]
-            parent_backup = class_name
+            self.defined_classes[class_name]
 
             # Walk inheritance chain to find the static method
             found = None
@@ -1364,7 +1362,7 @@ class Parser(_Parser):
                     is_static = True
                 method_name = self._consume_identifier()
 
-                jump_idx = self.emit(OpCode.OP_JUMP)
+                self.emit(OpCode.OP_JUMP)
                 jump_offset_idx = self.emit(0)
                 method_start = len(self.bytecode)
 
@@ -1436,7 +1434,7 @@ class Parser(_Parser):
                         p = ['self']
                         self.symbols = {n: i for i, n in enumerate(p)}
 
-                        jump_idx = self.emit(OpCode.OP_JUMP)
+                        self.emit(OpCode.OP_JUMP)
                         jump_off = self.emit(0)
                         gaddr = len(self.bytecode)
 
@@ -1461,7 +1459,7 @@ class Parser(_Parser):
                         p = ['self', param_name]
                         self.symbols = {n: i for i, n in enumerate(p)}
 
-                        jump_idx = self.emit(OpCode.OP_JUMP)
+                        self.emit(OpCode.OP_JUMP)
                         jump_off = self.emit(0)
                         sadd = len(self.bytecode)
 
@@ -1485,7 +1483,7 @@ class Parser(_Parser):
             saved_pos = self.pos
             saved_symbols = self.symbols
 
-            jump_idx = self.emit(OpCode.OP_JUMP)
+            self.emit(OpCode.OP_JUMP)
             jump_offset_idx = self.emit(0)
             method_start = len(self.bytecode)
 

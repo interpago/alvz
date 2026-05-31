@@ -1,4 +1,3 @@
-import pytest
 from alvz.core.lexer import Lexer
 from alvz.core.parser import Parser
 from alvz.core.vm import VM

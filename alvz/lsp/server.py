@@ -11,7 +11,6 @@ import traceback
 
 from .protocol import (
     JSONRPC, read_message,
-    Diagnostic, Range, Position, CompletionItem, Location,
 )
 from .analyzer import Analyzer
 
@@ -32,7 +31,7 @@ class AlvzLanguageServer:
                 self._handle(msg)
             except EOFError:
                 break
-            except Exception as e:
+            except Exception:
                 traceback.print_exc(file=sys.stderr)
 
     def _handle(self, msg):

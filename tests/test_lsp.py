@@ -1,5 +1,4 @@
-import pytest
-from alvz.lsp.analyzer import Analyzer, _KEYWORDS
+from alvz.lsp.analyzer import Analyzer
 
 
 class TestAnalyzer:

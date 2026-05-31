@@ -6,7 +6,6 @@ Uso: wasm_runtime.run("archivo.wasm")
 import struct
 import math
 import time
-import os
 import json
 import re
 import sqlite3
@@ -82,6 +81,7 @@ HOST_ASYNC_CALL = 40
 HOST_AWAIT = 41
 HOST_SQRT = 42
 HOST_ABS = 43
+HOST_SLICE = 44
 
 
 def _read_tag(mem, addr):
@@ -376,7 +376,7 @@ def make_host_call(memory, output_buffer, store=None):
                     conn.commit()
                     result_tag = TAG_NUM
                     result_data = float(cursor.rowcount)
-                except Exception as e:
+                except Exception:
                     result_tag = TAG_NUM
                     result_data = 0.0
             advance_ip = 1
@@ -632,6 +632,16 @@ def make_host_call(memory, output_buffer, store=None):
             result_data = abs(args[0][1])
             advance_ip = 1
 
+        elif op_id == HOST_SLICE:
+            s = _read_str(mem, args[0][1])
+            start = int(args[1][1])
+            end = int(args[2][1])
+            sliced = s[start:end]
+            offset = _write_str(mem, sliced)
+            result_tag = TAG_STR
+            result_data = offset
+            advance_ip = 1
+
         # Escribir resultado al buffer
         _write_tag(mem, HOST_BUF_BASE, result_tag)
         _write_f64(mem, HOST_BUF_BASE + 8, result_data)
@@ -642,11 +652,11 @@ def make_host_call(memory, output_buffer, store=None):
 
 def run(wasm_path, output_buffer=None):
     """Ejecuta un modulo .wasm de Alvz con wasmtime.
-    
+
     Args:
         wasm_path: Ruta al archivo .wasm
         output_buffer: Lista opcional para capturar salida de print
-    
+
     Returns: True si la ejecucion fue exitosa
     """
     if wasmtime is None:

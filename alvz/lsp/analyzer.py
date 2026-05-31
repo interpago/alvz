@@ -1,6 +1,4 @@
-import traceback
 from alvz.core.lexer import Lexer, Token
-from alvz.core.errors import obtener_sugerencia, KEYWORDS_ALVZ
 from alvz.core.parser import Parser
 from .protocol import SymbolKind
 
@@ -156,7 +154,6 @@ class Analyzer:
         depth_paren = 0
         depth_brace = 0
         depth_bracket = 0
-        last_token = None
 
         for t in tokens:
             t_type, t_val, t_line = t
@@ -197,7 +194,6 @@ class Analyzer:
                     })
                     depth_bracket = 0
 
-            last_token = t
 
         if depth_paren > 0:
             errors.append({
@@ -229,7 +225,6 @@ class Analyzer:
             t_type, t_val, t_line = tokens[i]
             if t_type == Token.FUNCION:
                 i += 1
-                kind = SymbolKind.FUNCTION
                 if i < len(tokens) and tokens[i][0] == Token.ESTATICO:
                     i += 1
                 if i < len(tokens) and tokens[i][0] == Token.IDENTIFICADOR:

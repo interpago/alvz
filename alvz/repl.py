@@ -4,14 +4,11 @@ Modulo interactivo REPL y punto de entrada principal para Alvz Language.
 
 import sys
 import os
-import json
-
-VERSION = "0.18.0"
-
 from .core.lexer import Lexer
 from .core.parser import Parser
 from .core.vm import VM
-from .core.bytecode import OpCode
+
+VERSION = "0.18.0"
 
 
 class _Terminal:
@@ -186,7 +183,7 @@ def _cmd_test(args):
     """Comando 'alvz test': ejecuta tests."""
     if not args:
         args = ["tests/"]
-    
+
     test_files = []
     for arg in args:
         path = arg
@@ -199,11 +196,11 @@ def _cmd_test(args):
             test_files.append(path)
         elif os.path.isfile(path + '.alvz'):
             test_files.append(path + '.alvz')
-    
+
     if not test_files:
         print("No se encontraron archivos de test.")
         return
-    
+
     exito = _run_test_files(test_files)
     sys.exit(0 if exito else 1)
 
@@ -213,59 +210,59 @@ def _cmd_fmt(args):
     if not args:
         print("Uso: alvz fmt <archivo.alvz> [--check]")
         sys.exit(1)
-    
+
     check_only = '--check' in args
     args = [a for a in args if a != '--check']
-    
+
     for filename in args:
         if not os.path.isfile(filename):
             print(f"Error: archivo '{filename}' no encontrado")
             sys.exit(1)
-        
+
         with open(filename, 'r', encoding='utf-8-sig') as f:
             codigo = f.read()
-        
+
         try:
             lexer = Lexer(codigo)
-            tokens = lexer.tokenize()
+            lexer.tokenize()
         except Exception as e:
             print(f"Error lexico en {filename}: {e}")
             continue
-        
+
         lineas = codigo.split('\n')
         indentado = 0
         output = []
-        
+
         for linea in lineas:
             stripped = linea.strip()
             if not stripped:
                 output.append('')
                 continue
-            
+
             if stripped.startswith('#'):
                 output.append(stripped)
                 continue
-            
+
             dedent = 0
             for ch in stripped:
                 if ch == '}':
                     dedent += 1
                 else:
                     break
-            
+
             nivel = indentado - dedent
             if nivel < 0:
                 nivel = 0
-            
+
             indent_str = '\t' * nivel
             output.append(indent_str + stripped)
-            
+
             indentado += stripped.count('{') - stripped.count('}')
             if indentado < 0:
                 indentado = 0
-        
+
         formatted = '\n'.join(output)
-        
+
         if check_only:
             if codigo != formatted:
                 print(f"{filename}: necesita formateo")
@@ -288,17 +285,17 @@ def _cmd_nuevo(args):
         print("  lib         Crea una libreria Alvz")
         print("  test        Crea un archivo de test")
         sys.exit(1)
-    
+
     tipo = args[0]
     nombre = args[1] if len(args) > 1 else "mi_proyecto"
-    
+
     PLANTILLAS = {
         "proyecto": {
             "descripcion": "Proyecto Alvz completo",
             "archivos": {
-                f"{nombre}/main.alvz": 
+                f"{nombre}/main.alvz":
                     'importar "matematicas"\nimportar "cadenas"\nimportar "colecciones"\nimportar "testing"\n\nfuncion main() {\n\timprimir("Iniciando ' + nombre + '")\n}\n\nmain()\n',
-                f"{nombre}/README.md": 
+                f"{nombre}/README.md":
                     f"# {nombre}\n\nProyecto creado con Alvz.\n",
                 f"{nombre}/.gitignore":
                     "__pycache__/\n*.pyc\ndist/\n",
@@ -307,7 +304,7 @@ def _cmd_nuevo(args):
         "api": {
             "descripcion": "API REST con FastAPI",
             "archivos": {
-                f"{nombre}/main.alvz": 
+                f"{nombre}/main.alvz":
                     'funcion bienvenida() {\n\tretornar {"mensaje": "' + nombre + ' API funcionando"}\n}\n\nfuncion listar_items() {\n\tretornar {"items": []}\n}\n\nfuncion crear_item(nombre, precio) {\n\tretornar {"creado": verdadero, "nombre": nombre, "precio": precio}\n}\n\nvariable rutas = {\n\t"/": "bienvenida",\n\t"/items": "listar_items",\n\t"/items": {"funcion": "crear_item", "metodo": "POST"}\n}\n\niniciar_servidor(8000, rutas)\n',
                 f"{nombre}/README.md":
                     f"# {nombre}\n\nAPI REST creada con Alvz.\n",
@@ -339,15 +336,15 @@ def _cmd_nuevo(args):
             }
         }
     }
-    
+
     if tipo not in PLANTILLAS:
         print(f"Error: tipo '{tipo}' no reconocido.")
         print("Tipos disponibles: proyecto, api, cli, lib, test")
         sys.exit(1)
-    
+
     plantilla = PLANTILLAS[tipo]
     archivos = plantilla["archivos"]
-    
+
     for ruta, contenido in archivos.items():
         dir_name = os.path.dirname(ruta)
         if dir_name:
@@ -355,31 +352,31 @@ def _cmd_nuevo(args):
         with open(ruta, 'w', encoding='utf-8') as f:
             f.write(contenido)
         print(f"  Creado: {ruta}")
-    
+
     print(f"\n[OK] Proyecto '{nombre}' de tipo '{tipo}' creado.")
 
 
 def main():
     if len(sys.argv) > 1:
         cmd = sys.argv[1]
-        
+
         if cmd == "test":
             _cmd_test(sys.argv[2:])
             return
-        
+
         if cmd == "fmt":
             _cmd_fmt(sys.argv[2:])
             return
-        
+
         if cmd == "nuevo":
             _cmd_nuevo(sys.argv[2:])
             return
-        
+
         if cmd in ("install", "uninstall", "search", "list-packages"):
             from .core.package_manager import cli as pkg_cli
             pkg_cli()
             return
-        
+
         if cmd == "build":
             from .core.compiler import cli as build_cli
             build_cli()

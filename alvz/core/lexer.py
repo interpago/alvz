@@ -37,7 +37,7 @@ class Token(enum.Enum):
     VERDADERO = "VERDADERO"
     FALSO = "FALSO"
     Y = "Y"
-    O = "O"
+    O = "O"  # noqa: E741
     PAREN_IZQ = "PAREN_IZQ"
     PAREN_DER = "PAREN_DER"
     LLAVE_IZQ = "LLAVE_IZQ"

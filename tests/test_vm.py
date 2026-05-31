@@ -693,18 +693,6 @@ class TestVMMakeFunc:
 
     def test_call_through_func_descriptor(self):
         make_vm = VM  # Use raw VM contructor to avoid alias shadowing
-        bc = [
-            OpCode.OP_MAKE_FUNC, 12, 2,   # 0: create func desc for addr 12, 2 params
-            OpCode.OP_CONSTANT, 0,         # 3: push 3
-            OpCode.OP_CONSTANT, 1,         # 4: push 4
-            OpCode.OP_CALL, 0, 2, 0,      # 5: call (desc on stack), 2 args
-            OpCode.OP_HALT,                # 9
-            # Funcion interna:
-            OpCode.OP_LOAD, 0,             # 12: load param 0
-            OpCode.OP_LOAD, 1,             # 13: load param 1
-            OpCode.OP_ADD,                 # 14: add
-            OpCode.OP_RETURN,              # 15: return
-        ]
         # 16: ADD                  3+4=7
         # 17: RETURN               return 7
         vm = make_vm(

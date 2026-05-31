@@ -97,6 +97,11 @@ class WasmModule:
         self._imports.append(('func', module_name, field_name, type_idx))
         return idx
 
+    def add_import_memory(self, module_name, field_name, min_pages, max_pages=0):
+        idx = len(self._imports)
+        self._imports.append(('mem', module_name, field_name, (min_pages, max_pages)))
+        return idx
+
     def add_function(self, type_idx):
         idx = len(self._functions)
         self._functions.append(type_idx)
@@ -148,7 +153,7 @@ class WasmModule:
 
     def _encode_import(self):
         items = []
-        for kind, mod, field, type_idx in self._imports:
+        for kind, mod, field, extra in self._imports:
             mbytes = mod.encode('utf-8')
             fbytes = field.encode('utf-8')
             item = bytearray()
@@ -156,7 +161,16 @@ class WasmModule:
             item.extend(_uleb128(len(fbytes)) + fbytes)
             item.append(EXTERN_KIND[kind])
             if kind == 'func':
-                item.extend(_uleb128(type_idx))
+                item.extend(_uleb128(extra))
+            elif kind == 'mem':
+                min_p, max_p = extra
+                if max_p:
+                    item.append(0x01)
+                    item.extend(_uleb128(min_p))
+                    item.extend(_uleb128(max_p))
+                else:
+                    item.append(0x00)
+                    item.extend(_uleb128(min_p))
             items.append(bytes(item))
         return _section(2, _vec(items))
 

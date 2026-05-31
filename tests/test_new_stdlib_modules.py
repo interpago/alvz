@@ -127,7 +127,8 @@ imprimir(texto)
         assert "Bob" in result
 
     def test_csv_leer_archivo(self):
-        import tempfile, os
+        import tempfile
+        import os
         tmp = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
         tmp.write("x,y\\n1,2\\n3,4")
         tmp.close()
@@ -252,7 +253,9 @@ imprimir(no_ok)
         assert result[1] == "False"
 
     def test_json_leer_archivo(self):
-        import tempfile, os, json as pyjson
+        import tempfile
+        import os
+        import json as pyjson
         data = {"nombre": "Alice", "edad": 30}
         tmp = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
         pyjson.dump(data, tmp)

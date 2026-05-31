@@ -863,7 +863,7 @@ class VM:
                         args_values.append(self.stack.pop())
                     args_values.reverse()
 
-                    class_info = self.classes[class_name]
+                    self.classes[class_name]
                     all_props = {}
 
                     def collect_props(c_name):

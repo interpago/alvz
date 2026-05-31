@@ -80,7 +80,7 @@ vm.run()
 
 def build(source_file, output_file=None, opts=None):
     """Compile an .alvz file to standalone executable.
-    
+
     Args:
         source_file: Path to .alvz file
         output_file: Output executable path (optional)
@@ -140,7 +140,7 @@ def _build_pyinstaller(gen_py, output_file, tmp_dir, out_dir):
         shutil.rmtree(tmp_dir)
         return False
 
-    print(f"Generando ejecutable via PyInstaller...")
+    print("Generando ejecutable via PyInstaller...")
     PyInstaller.__main__.run([
         '--onefile',
         '--distpath', out_dir,
@@ -184,8 +184,8 @@ def _build_nuitka(gen_py, output_file, tmp_dir, out_dir):
         gen_py,
     ]
 
-    print(f"Generando ejecutable nativo via Nuitka (C++ → nativo)...")
-    print(f"  Esto puede tomar varios minutos la primera vez.")
+    print("Generando ejecutable nativo via Nuitka (C++ → nativo)...")
+    print("  Esto puede tomar varios minutos la primera vez.")
     try:
         result = subprocess.run(nuitka_cmd, capture_output=True, text=True, timeout=600)
         if result.returncode != 0:
@@ -228,14 +228,14 @@ def _build_wasm(bytecode, constants, functions, line_map, source_file, output_fi
         output_file = base + '.wasm'
     elif not output_file.endswith('.wasm'):
         output_file += '.wasm'
-    print(f"Generando modulo WASM...")
+    print("Generando modulo WASM...")
     wasm_bytes = compile_wasm(bytecode, constants, functions, line_map)
     with open(output_file, 'wb') as f:
         f.write(wasm_bytes)
     size = len(wasm_bytes)
     print(f"[OK] Modulo WASM generado: {os.path.abspath(output_file)}")
     print(f"     Tamano: {size} bytes ({size / 1024:.1f} KB)")
-    print(f"")
+    print("")
     print(f"Ejecutar con: wasmtime {output_file}")
     return True
 
@@ -260,13 +260,13 @@ def cli():
     if source_file is None:
         ext = '.exe' if platform.system() == 'Windows' else ''
         print(f"Uso: alvz build archivo.alvz [-o salida{ext}] [--nuitka] [--wasm]")
-        print(f"")
-        print(f"Opciones:")
-        print(f"  --wasm      Compila a modulo WASM (WebAssembly)")
-        print(f"              Ejecutar con: wasmtime <archivo.wasm>")
-        print(f"  --nuitka    Compila a nativo real via Nuitka (Python->C++->nativo)")
-        print(f"              Requiere: pip install nuitka y un compilador C")
-        print(f"  -o ARCHIVO  Nombre del ejecutable de salida")
+        print("")
+        print("Opciones:")
+        print("  --wasm      Compila a modulo WASM (WebAssembly)")
+        print("              Ejecutar con: wasmtime <archivo.wasm>")
+        print("  --nuitka    Compila a nativo real via Nuitka (Python->C++->nativo)")
+        print("              Requiere: pip install nuitka y un compilador C")
+        print("  -o ARCHIVO  Nombre del ejecutable de salida")
         sys.exit(1)
 
     success = build(source_file, output_file, opts)

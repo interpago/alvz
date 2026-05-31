@@ -139,7 +139,7 @@ class DAPServer:
         lines = [b.get('line', 0) for b in bps]
         self._breakpoints[path] = lines
         self._reply(req, {
-            'breakpoints': [{'verified': True, 'line': l, 'source': source} for l in lines]
+            'breakpoints': [{'verified': True, 'line': line_num, 'source': source} for line_num in lines]
         })
 
     def _handle_continue(self, req):
@@ -264,7 +264,7 @@ class DAPServer:
                         handler(msg)
             except EOFError:
                 break
-            except Exception as e:
+            except Exception:
                 traceback.print_exc(file=sys.stderr)
 
 

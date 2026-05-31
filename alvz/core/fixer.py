@@ -1,6 +1,5 @@
 import sys
 import re
-from .lexer import Lexer, Token
 
 
 def _sugerir_import(comando):

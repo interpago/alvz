@@ -587,12 +587,10 @@ class Parser:
             pass
 
         imported_code = None
-        opened_path = None
         for p in paths_to_try:
             try:
                 with open(p, 'r', encoding='utf-8-sig') as f:
                     imported_code = f.read()
-                    opened_path = p
                     break
             except Exception:
                 continue

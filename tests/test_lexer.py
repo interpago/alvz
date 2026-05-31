@@ -1,5 +1,5 @@
 import pytest
-from alvz.core.lexer import Lexer, Token
+from alvz.core.lexer import Token
 
 
 class TestTokenize:

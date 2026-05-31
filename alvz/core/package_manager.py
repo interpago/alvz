@@ -13,7 +13,6 @@ import urllib.error
 import zipfile
 import io
 import shutil
-from pathlib import Path
 
 
 REGISTRY_URL = "https://raw.githubusercontent.com/interpago/alvz-packages/main/index.json"
@@ -225,7 +224,7 @@ def info_package(name):
             if p.dependencies:
                 print(f"  Dependencias: {', '.join(p.dependencies)}")
             else:
-                print(f"  Dependencias: ninguna")
+                print("  Dependencias: ninguna")
             print(f"{'-'*50}")
             return
     print(f"Paquete '{name}' no encontrado en el registro.")

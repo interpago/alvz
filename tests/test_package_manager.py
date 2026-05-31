@@ -1,17 +1,13 @@
 """Tests para el gestor de paquetes de Alvz."""
 
 import os
-import sys
-import json
 import tempfile
 import shutil
-from pathlib import Path
 
 import pytest
 
 from alvz.core.package_manager import (
     Package,
-    fetch_registry,
     search_packages,
     install_package,
     uninstall_package,
@@ -20,7 +16,6 @@ from alvz.core.package_manager import (
     _load_local_db,
     _save_local_db,
     _ensure_dirs,
-    ALVZ_DIR,
 )
 
 

@@ -479,7 +479,7 @@ class TypeChecker:
         if name and name in self.var_types:
             expected = _tipo_desde_nombre(self.var_types[name])
             if not tipo_compatible(val_type, expected):
-                line = self.line_map.get(ip, '?')
+                self.line_map.get(ip, '?')
                 raise TypeErrorAlvz(
                     f"Se esperaba tipo '{self.var_types[name]}' para variable "
                     f"'{name}', pero se encontro '{self._nombre_tipo(val_type)}'"
@@ -492,7 +492,7 @@ class TypeChecker:
             if pname in self.var_types:
                 expected = _tipo_desde_nombre(self.var_types[pname])
                 if not tipo_compatible(val_type, expected):
-                    line = self.line_map.get(ip, '?')
+                    self.line_map.get(ip, '?')
                     raise TypeErrorAlvz(
                         f"Se esperaba tipo '{self.var_types[pname]}' para "
                         f"parametro '{pname}', pero se encontro "
@@ -518,7 +518,7 @@ class TypeChecker:
             expected_return = _tipo_desde_nombre(return_type) if return_type else Tipo.CUALQUIERA
             self.type_stack[-1] = expected_return
 
-            line = self.line_map.get(ip, '?')
+            self.line_map.get(ip, '?')
             if len(arg_types) != len(param_types):
                 raise TypeErrorAlvz(
                     f"La funcion '{func_name}' esperaba {len(param_types)} argumentos, "
@@ -539,7 +539,7 @@ class TypeChecker:
             return
         expected = _tipo_desde_nombre(return_type_name)
         if not tipo_compatible(actual, expected):
-            line = self.line_map.get(ip, '?')
+            self.line_map.get(ip, '?')
             raise TypeErrorAlvz(
                 f"La funcion '{func_name}' debe retornar tipo '{return_type_name}', "
                 f"pero se encontro '{self._nombre_tipo(actual)}'"

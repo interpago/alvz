@@ -623,7 +623,6 @@ class TestIntegrationClasses:
         assert vm.output_buffer == ["20"]
 
     def test_class_error_not_found(self):
-        import pytest
         with pytest.raises(RuntimeError, match="La clase 'NoExiste' no existe"):
             run_code('variable x = nuevo NoExiste()\n')
 
@@ -1251,7 +1250,8 @@ class TestIntegrationConcurrentAsync:
 
 class TestIntegrationSQLite:
     def test_sqlite_create_and_select(self):
-        import os, tempfile
+        import os
+        import tempfile
         db = tempfile.mktemp(suffix='.db')
         try:
             codigo = (
@@ -1274,7 +1274,8 @@ class TestIntegrationSQLite:
                 pass
 
     def test_sqlite_crear_tabla_e_insertar(self):
-        import os, tempfile
+        import os
+        import tempfile
         db = tempfile.mktemp(suffix='.db')
         try:
             codigo = (
@@ -1297,7 +1298,8 @@ class TestIntegrationSQLite:
                 pass
 
     def test_sqlite_empty_result(self):
-        import os, tempfile
+        import os
+        import tempfile
         db = tempfile.mktemp(suffix='.db')
         try:
             codigo = (
@@ -1435,10 +1437,11 @@ class TestIntegrationGlobalKeyword:
 
 class TestIntegrationPackageInstall:
     def test_install_and_import_package(self, monkeypatch):
-        import os, tempfile, shutil
+        import os
+        import tempfile
+        import shutil
         from alvz.core.package_manager import (
-            install_package, _save_local_db, _load_local_db,
-            PACKAGES_DIR, ALVZ_DIR
+            _save_local_db
         )
         tmpdir = tempfile.mkdtemp()
         monkeypatch.setattr("alvz.core.package_manager.ALVZ_DIR", tmpdir)
@@ -1464,9 +1467,11 @@ class TestIntegrationPackageInstall:
             shutil.rmtree(tmpdir)
 
     def test_install_package_dependency_chain(self, monkeypatch):
-        import os, tempfile, shutil
+        import os
+        import tempfile
+        import shutil
         from alvz.core.package_manager import (
-            _save_local_db, _load_local_db, PACKAGES_DIR, ALVZ_DIR
+            _save_local_db
         )
         tmpdir = tempfile.mkdtemp()
         monkeypatch.setattr("alvz.core.package_manager.ALVZ_DIR", tmpdir)
