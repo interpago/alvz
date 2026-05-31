@@ -57,9 +57,12 @@
 - StdLib ampliada usa funciones del VM via opcodes, no implementación Python directa.
 
 ## Next Steps
-- Completar opcodes que faltan (AND, OR, INPUT, RANDOM, CALL, RETURN, LIST_APPEND, GET/SET_INDEX, DICT).
-- Soportar funciones Alvz (compilar cada función a función WASM separada con `call`).
-- Soportar strings (tabla de strings + host functions `print_str(ptr, len)`).
+- Arreglar ejecución WASM con strings (print_str recibe datos corruptos).
+- Compilar cada función Alvz a función WASM separada (no inline en dispatch loop).
+- Fix `OP_SLICE` para strings (actualmente pushea stub vacío).
+- Agregar pre-commit hooks al CI (ruff check).
+- Fix `_trace*.py` / debug files persistentes (investigar por qué se recrean).
+- Benchmarks en CI para detectar regresiones de rendimiento.
 
 ## Critical Context
 - `run(output_buffer=None)` en VM: si se pasa buffer, lo usa sin resetear.
