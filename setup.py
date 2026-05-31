@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="alvz-lang",
-    version="0.13.0",
+    version="0.18.0",
     packages=find_packages(),
     entry_points={
         "console_scripts": [

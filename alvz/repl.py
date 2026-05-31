@@ -6,7 +6,7 @@ import sys
 import os
 import json
 
-VERSION = "0.17.0"
+VERSION = "0.18.0"
 
 from .core.lexer import Lexer
 from .core.parser import Parser
