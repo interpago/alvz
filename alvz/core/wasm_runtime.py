@@ -10,6 +10,7 @@ import os
 import json
 import re
 import sqlite3
+import ctypes
 from datetime import datetime
 
 try:
@@ -129,9 +130,35 @@ def _tag_name(tag):
     return {0: 'numero', 1: 'booleano', 2: 'texto', 3: 'nulo', 4: 'lista', 5: 'diccionario'}.get(tag, 'desconocido')
 
 
-def make_host_call(memory, output_buffer):
+class _MemWrapper:
+    """Wrapper que hace que un array ctypes se comporte como bytearray (lectura)."""
+    def __init__(self, arr):
+        self._arr = arr
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return bytes(self._arr[idx])
+        return self._arr[idx]
+    def __setitem__(self, idx, val):
+        if isinstance(idx, slice):
+            self._arr[idx] = val
+        else:
+            self._arr[idx] = val
+
+
+def _get_mem(memory, store):
+    """Retorna un wrapper sobre la memoria WASM."""
+    if store is None:
+        ptr = memory.data_ptr()
+    else:
+        ptr = memory.data_ptr(store)
+    addr = ctypes.cast(ptr, ctypes.c_void_p).value
+    arr = (ctypes.c_ubyte * 0x20000).from_address(addr)
+    return _MemWrapper(arr)
+
+
+def make_host_call(memory, output_buffer, store=None):
     """Retorna funcion host_call(i32, i32, i32, i32, i32) -> None"""
-    buf = memory.data_ptr() + HOST_BUF_BASE
+    mem = _get_mem(memory, store)
 
     _output = output_buffer
 
@@ -141,11 +168,10 @@ def make_host_call(memory, output_buffer):
     next_inst_id = 0
 
     def read_mem(addr, size):
-        return bytes(memory.data_ptr()[addr:addr+size])
+        return bytes(mem[addr:addr+size])
 
     def host_call(op_id, nargs, ip, _a3, _a4):
         nonlocal next_inst_id
-        mem = memory.data_ptr()
 
         # Leer valores de argumento desde HOST_BUF_BASE
         args = []
@@ -498,13 +524,11 @@ def make_host_call(memory, output_buffer):
 
         elif op_id == HOST_CLASS:
             # Leer constantes del bytecode
-            bc = memory.data_ptr()
-            const_name_idx = _read_i32(bc, BC_BASE + raw_ip + 1)
-            const_data_idx = _read_i32(bc, BC_BASE + raw_ip + 2)
+            const_name_idx = _read_i32(mem, BC_BASE + raw_ip + 1)
             # Leer constantes desde CONST_BASE
-            name_tag = _read_tag(bc, CONST_BASE + const_name_idx * 12)
-            name_data = _read_f64(bc, CONST_BASE + const_name_idx * 12)
-            class_name = _read_str(bc, name_data) if name_tag == TAG_STR else str(name_data)
+            name_tag = _read_tag(mem, CONST_BASE + const_name_idx * 12)
+            name_data = _read_f64(mem, CONST_BASE + const_name_idx * 12)
+            class_name = _read_str(mem, name_data) if name_tag == TAG_STR else str(name_data)
             classes[class_name] = True
             result_tag = TAG_NULL
             result_data = 0.0
@@ -634,33 +658,34 @@ def run(wasm_path, output_buffer=None):
     with open(wasm_path, 'rb') as f:
         wasm_bytes = f.read()
 
-    module = wasmtime.Module(wasmtime.Engine(), wasm_bytes)
-    linker = wasmtime.Linker(wasmtime.Engine())
-    store = wasmtime.Store()
+    engine = wasmtime.Engine()
+    module = wasmtime.Module(engine, wasm_bytes)
+    linker = wasmtime.Linker(engine)
+    store = wasmtime.Store(engine)
 
     # Crear memoria
     memory = wasmtime.Memory(store, wasmtime.MemoryType(wasmtime.Limits(2, None)))
     linker.define(store, 'alvz', 'memory', memory)
 
     # Host functions
-    def print_num(_, val):
+    def print_num(val):
         output_buffer.append(str(val))
-    def print_bool(_, val):
+    def print_bool(val):
         output_buffer.append("verdadero" if val else "falso")
-    def print_str(_, ptr, length):
-        mem = memory.data_ptr()
+    def print_str(ptr, length):
+        mem = _get_mem(memory, store)
         s = bytes(mem[ptr:ptr+length]).decode('utf-8', errors='replace')
         output_buffer.append(s)
-    def random_range(_, min_val, max_val):
+    def random_range(min_val, max_val):
         import random
         return random.uniform(min_val, max_val)
-    def input_num(_):
+    def input_num():
         try:
             return float(input("> "))
         except ValueError:
             return 0.0
 
-    host_call = make_host_call(memory, output_buffer)
+    host_call = make_host_call(memory, output_buffer, store)
 
     linker.define(store, 'alvz', 'print_num', wasmtime.Func(store, wasmtime.FuncType([wasmtime.ValType.f64()], []), print_num))
     linker.define(store, 'alvz', 'print_bool', wasmtime.Func(store, wasmtime.FuncType([wasmtime.ValType.i32()], []), print_bool))

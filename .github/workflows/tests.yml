@@ -22,7 +22,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest requests wasmtime
+          pip install pytest requests wasmtime ruff
+      - name: Lint with ruff
+        run: |
+          ruff check alvz/ tests/
       - name: Run tests
         run: |
           python -m pytest tests/ -v

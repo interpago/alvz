@@ -424,3 +424,69 @@ def test_wasm_sqlite_consultar():
     codigo = """variable conn = sqlite_abrir("test.db")\nvariable r = sqlite_consultar(conn, "SELECT * FROM t")"""
     wasm_bytes = _compile_and_wasm(codigo)
     assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_global_var():
+    codigo = """variable x = 5\nfuncion test() {\n  global x\n  x = 10\n}\ntest()\nimprimir(x)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_global_fn():
+    codigo = """funcion test() {\n  global x\n  x = 10\n}\nx = 5\ntest()\nimprimir(x)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_while():
+    codigo = """variable i = 0\nmientras i < 3 {\n  imprimir(i)\n  i = i + 1\n}"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_for():
+    codigo = """para i de 0 a 3 {\n  imprimir(i)\n}"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_break():
+    codigo = """para i de 0 a 10 {\n  si i == 2 { romper }\n  imprimir(i)\n}"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+def test_wasm_negation():
+    codigo = """imprimir(-5)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    assert wasm_bytes[:4] == b'\x00asm'
+
+
+@pytest.mark.skipif('wasmtime' not in sys.modules, reason="wasmtime no instalado")
+def test_wasm_execute_suma(tmp_path):
+    """Compila y ejecuta WASM, verifica salida numerica."""
+    codigo = """imprimir(2 + 3)"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    wasm_path = tmp_path / "test.wasm"
+    wasm_path.write_bytes(wasm_bytes)
+
+    from alvz.core.wasm_runtime import run
+    output = []
+    result = run(str(wasm_path), output_buffer=output)
+    assert result is True
+    assert any("5" in s for s in output)
+
+
+@pytest.mark.skipif('wasmtime' not in sys.modules, reason="wasmtime no instalado")
+def test_wasm_execute_list(tmp_path):
+    """Compila y ejecuta WASM con listas, verifica output."""
+    codigo = """variable x = [10, 20, 30]\nimprimir(longitud(x))"""
+    wasm_bytes = _compile_and_wasm(codigo)
+    wasm_path = tmp_path / "test_list.wasm"
+    wasm_path.write_bytes(wasm_bytes)
+
+    from alvz.core.wasm_runtime import run
+    output = []
+    result = run(str(wasm_path), output_buffer=output)
+    assert result is True
+    assert len(output) >= 1
