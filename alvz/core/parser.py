@@ -1369,19 +1369,19 @@ class Parser(_Parser):
                 method_start = len(self.bytecode)
 
                 self.consume(Token.PAREN_IZQ)
-                if is_static:
-                    params = []
-                else:
-                    params = ['self']
+                params = []
                 param_types = []
+                if not is_static:
+                    params = ['self']
                 if self.current_token()[0] != Token.PAREN_DER:
                     pname = self._consume_identifier()
                     ptype = None
                     if self.current_token()[0] == Token.DOS_PUNTOS:
                         self.pos += 1
                         ptype = self._consume_identifier()
-                    params.append(pname)
-                    param_types.append(ptype)
+                    if is_static or pname != 'self':
+                        params.append(pname)
+                        param_types.append(ptype)
                     while self.current_token()[0] == Token.COMA:
                         self.pos += 1
                         pname = self._consume_identifier()

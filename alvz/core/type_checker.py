@@ -30,11 +30,12 @@ def _extraer_funciones(bytecode, functions):
     """Extract function body boundaries from bytecode."""
     func_bodies = {}
     for name, (addr, nparams, params, is_async) in functions.items():
+        if addr == 0:
+            continue
         ip = addr
         while ip < len(bytecode):
             op = bytecode[ip]
             if op == OpCode.OP_RETURN:
-                # Found end of function (after return is OP_MAKE_FUNC addr nparams)
                 func_bodies[name] = (addr, ip + 1)
                 break
             ip += 1
@@ -70,9 +71,13 @@ class TypeChecker:
         self.ip = 0
         self.type_stack = []
         self._locals = {}
+        _visited = set()
 
         while self.ip < len(self.bytecode):
             current_ip = self.ip
+            if current_ip in _visited:
+                break
+            _visited.add(current_ip)
             op = self.bytecode[self.ip]
             self.ip += 1
 
@@ -136,10 +141,18 @@ class TypeChecker:
 
                 elif op == OpCode.OP_JUMP:
                     target = self.bytecode[self.ip]
-                    self.ip = target
-                    continue
+                    if target > current_ip:
+                        self.ip = target
+                        continue
+                    else:
+                        break
 
                 elif op == OpCode.OP_JUMP_IF_FALSE:
+                    target = self.bytecode[self.ip]
+                    self.ip += 1
+                    self._pop_type()
+
+                elif op == OpCode.OP_JUMP_IF_TRUE:
                     target = self.bytecode[self.ip]
                     self.ip += 1
                     self._pop_type()
@@ -169,7 +182,6 @@ class TypeChecker:
                     self.type_stack.append(val_type)
 
                 elif op == OpCode.OP_RETURN:
-                    # Global scope return (halt for program)
                     break
 
                 elif op == OpCode.OP_NULL:
@@ -247,11 +259,11 @@ class TypeChecker:
     def _check_function(self, func_name, start, end):
         self.ip = start
         self.type_stack = []
+        _visited = set()
 
         _, nparams, params, _ = self.functions[func_name]
         param_types, return_type = self.func_types.get(func_name, ([], None))
 
-        # Initialize locals with parameter types
         local_types = {}
         for i, pname in enumerate(params):
             if i < len(param_types) and param_types[i] is not None:
@@ -263,6 +275,9 @@ class TypeChecker:
 
         while self.ip < end:
             current_ip = self.ip
+            if current_ip in _visited:
+                break
+            _visited.add(current_ip)
             op = self.bytecode[self.ip]
             self.ip += 1
 
@@ -327,12 +342,17 @@ class TypeChecker:
 
                 elif op == OpCode.OP_JUMP:
                     target = self.bytecode[self.ip]
-                    if target < start or target >= end:
+                    if target < start or target >= end or target < current_ip:
                         break
                     self.ip = target
                     continue
 
                 elif op == OpCode.OP_JUMP_IF_FALSE:
+                    target = self.bytecode[self.ip]
+                    self.ip += 1
+                    self._pop_type()
+
+                elif op == OpCode.OP_JUMP_IF_TRUE:
                     target = self.bytecode[self.ip]
                     self.ip += 1
                     self._pop_type()
@@ -481,10 +501,11 @@ class TypeChecker:
 
     def _check_call_target(self, func_addr, num_args, ip):
         func_name = None
-        for name, (addr, nparams, params, is_async) in self.functions.items():
-            if addr == func_addr:
-                func_name = name
-                break
+        if func_addr != 0:
+            for name, (addr, nparams, params, is_async) in self.functions.items():
+                if addr == func_addr:
+                    func_name = name
+                    break
 
         arg_types = []
         for _ in range(num_args):

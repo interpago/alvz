@@ -89,10 +89,7 @@ class VM:
         self.exception_stack = []
         self.classes = {}
         self.last_error = ""
-
         self._print_lock = threading.Lock()
-        self.classes = {}
-        self.last_error = ""
 
     def _build_stack_trace(self, current_ip):
         lines = []
@@ -614,8 +611,14 @@ class VM:
                     self.stack.append(lst)
 
                 elif op == OpCode.OP_WAIT:
-                    segundos = self.stack.pop()
-                    time.sleep(float(segundos))
+                    val = self.stack.pop()
+                    if isinstance(val, Coroutine):
+                        if not hasattr(self, '_event_loop') or self._event_loop is None:
+                            self._event_loop = EventLoop()
+                        result = self._event_loop.await_coroutine(val)
+                        self.stack.append(result if result is not None else False)
+                    else:
+                        time.sleep(float(val))
 
                 elif op == OpCode.OP_WEB_SEND:
                     datos_val = self.stack.pop()

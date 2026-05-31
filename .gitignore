@@ -1,4 +1,13 @@
 __pycache__/
+.firebase/*.cache
+_temp/
+_trace*.py
+debug_dump*.py
+*_debug*.alvz
+demo_visual.alvz
+test_class_*.alvz
+test_simple.alvz
+ejemplo.alvz
 *.py[cod]
 *$py.class
 dist/
