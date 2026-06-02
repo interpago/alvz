@@ -109,6 +109,8 @@ class VM:
         self.safe_mode = safe_mode
         self.safe_config = safe_config or SafeConfig()
         self._start_time = None
+        self._dap = None
+        self._debug_hook = None
 
     def _build_stack_trace(self, current_ip):
         lines = []
@@ -199,8 +201,6 @@ class VM:
         self._check_numeric(b, op_name)
 
     def _import_file(self, filename):
-        from alvz.core.lexer import Lexer
-        from alvz.core.parser import Parser
 
         import os
 
@@ -348,7 +348,7 @@ class VM:
         while self.ip < len(self.bytecode):
             self._check_safe_execution_time()
             current_ip = self.ip
-            if hasattr(self, '_debug_hook') and self._debug_hook:
+            if self._debug_hook:
                 self._debug_hook(current_ip, self)
             try:
                 op = self.bytecode[self.ip]
@@ -1314,6 +1314,12 @@ class VM:
                         self.stack.append(list(val.keys()))
                     else:
                         self.stack.append(val)
+
+                elif op == OpCode.OP_DEBUG_BREAK:
+                    if self._dap:
+                        self._dap._on_breakpoint(current_ip, self)
+                    else:
+                        pass
 
                 elif op == OpCode.OP_NULL:
                     self.stack.append(None)

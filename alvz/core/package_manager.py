@@ -234,7 +234,6 @@ def publish_package(pkg_dir):
     """Empaqueta un directorio como paquete Alvz publicable."""
     import zipfile
     import json
-    import io
 
     meta_path = os.path.join(pkg_dir, 'alvz.json')
     if not os.path.isfile(meta_path):
@@ -268,13 +267,13 @@ def publish_package(pkg_dir):
                 zf.write(file_path, arcname)
 
     print(f"\n[OK] Paquete creado: {zip_path}")
-    print(f"\nPara publicarlo en el registro oficial:")
-    print(f"  1. Sube el archivo a GitHub Releases o un servidor HTTP")
-    print(f"  2. Agrega una entrada en el registro:")
-    print(f"     https://github.com/interpago/alvz-packages")
-    print(f"  3. El formato de entrada es:")
+    print("\nPara publicarlo en el registro oficial:")
+    print("  1. Sube el archivo a GitHub Releases o un servidor HTTP")
+    print("  2. Agrega una entrada en el registro:")
+    print("     https://github.com/interpago/alvz-packages")
+    print("  3. El formato de entrada es:")
     print(f'     {{ "name": "{name}", "version": "{version}",')
-    print(f'        "url": "<url_del_zip>",')
+    print('        "url": "<url_del_zip>",')
     print(f'        "entry": "{entry}",')
     print(f'        "dependencies": {json.dumps(meta.get("dependencies", []))} }}')
     return True

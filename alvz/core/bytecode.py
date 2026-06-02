@@ -135,3 +135,6 @@ class OpCode(enum.IntEnum):
     OP_SOLICITUD_HTTP = 81   # Cliente HTTP completo (GET, POST, PUT, DELETE)
     OP_DICT_KEYS = 82        # Convierte diccionario a lista de claves
 
+    # Depuracion (DAP)
+    OP_DEBUG_BREAK = 83      # Breakpoint insertado por el depurador
+

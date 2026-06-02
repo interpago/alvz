@@ -194,6 +194,7 @@ def _fmt_tokens(tokens, indent_size=1):
         if kind in _CLOSE_BRACES:
             if kind == 'LLAVE_DER':
                 indent_level = max(0, indent_level - 1)
+                newline()
             if kind == 'PAREN_DER':
                 paren_depth[-1] -= 1
             if not pending_newline and result:
@@ -207,7 +208,7 @@ def _fmt_tokens(tokens, indent_size=1):
 
         if kind in _OPEN_BRACES:
             if kind == 'LLAVE_IZQ':
-                out(' ')
+                space()
                 out(value)
                 indent_level += 1
                 newline()
@@ -228,7 +229,7 @@ def _fmt_tokens(tokens, indent_size=1):
             if kind not in _NO_SPACE_BEFORE:
                 if kind in _SPACE_BEFORE:
                     space()
-                elif result[-1] not in ('(', ' ', '\t') and kind not in ('PAREN_DER', 'CORCHETE_DER', 'LLAVE_DER', 'COMA', 'PUNTO'):
+                elif result[-1] not in ('(', '[', '{', '.', ' ', '\t') and kind not in ('PAREN_DER', 'CORCHETE_DER', 'LLAVE_DER', 'COMA', 'PUNTO'):
                     if result[-1] not in _OPEN_BRACES:
                         space()
 

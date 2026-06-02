@@ -1,5 +1,8 @@
 """
 Debug Adapter Protocol (DAP) for Alvz Language.
+
+Usa parcheo de bytecode para breakpoints (OP_DEBUG_BREAK = 83)
+y hook por instruccion solo durante step mode.
 """
 
 import json
@@ -10,6 +13,7 @@ import traceback
 from alvz.core.lexer import Lexer
 from alvz.core.parser import Parser
 from alvz.core.vm import VM
+from alvz.core.bytecode import OpCode
 
 
 def _write(msg):
@@ -39,6 +43,7 @@ def _read():
 class DAPServer:
     def __init__(self):
         self._breakpoints = {}
+        self._saved_opcodes = {}
         self._resume = threading.Event()
         self._stopped = False
         self._step_mode = 'continue'
@@ -50,12 +55,29 @@ class DAPServer:
         self._waiting = False
 
     def _debug_hook(self, ip, vm):
+        """Per-instruction hook, solo activo durante step mode."""
         self._vm = vm
         self._current_ip = ip
         line = vm.line_map.get(ip, -1)
+        if self._should_stop(line, vm):
+            self._debug_hook_disable()
+            self._on_stop(vm)
 
+    def _on_breakpoint(self, ip, vm):
+        """Called cuando se encuentra un OP_DEBUG_BREAK en el bytecode."""
+        self._vm = vm
+        self._current_ip = ip
+        line = vm.line_map.get(ip, -1)
         if self._should_stop(line, vm):
             self._on_stop(vm)
+
+    def _debug_hook_enable(self):
+        if self._vm:
+            self._vm._debug_hook = self._debug_hook
+
+    def _debug_hook_disable(self):
+        if self._vm:
+            self._vm._debug_hook = None
 
     def _should_stop(self, line, vm):
         if self._step_mode == 'step_in':
@@ -86,8 +108,6 @@ class DAPServer:
         self._waiting = True
         self._resume.wait()
         self._waiting = False
-        if self._step_mode != 'continue':
-            self._step_mode = 'continue'
 
     def _send_event(self, event, body=None):
         msg = {'type': 'event', 'event': event}
@@ -103,6 +123,33 @@ class DAPServer:
             'command': req.get('command', ''),
             'body': body or {},
         })
+
+    def _patch_breakpoints(self):
+        """Parchea el bytecode con OP_DEBUG_BREAK en las lineas de los breakpoints."""
+        vm = self._vm
+        if not vm:
+            return
+        self._restore_opcodes()
+        self._saved_opcodes.clear()
+        for uri, lines in self._breakpoints.items():
+            if not lines:
+                continue
+            for ip, line in vm.line_map.items():
+                if line in lines:
+                    if ip < len(vm.bytecode):
+                        orig = vm.bytecode[ip]
+                        vm.bytecode[ip] = OpCode.OP_DEBUG_BREAK
+                        self._saved_opcodes[ip] = orig
+
+    def _restore_opcodes(self):
+        """Restaura los opcodes originales en las posiciones parcheadas."""
+        vm = self._vm
+        if not vm:
+            return
+        for ip, orig in self._saved_opcodes.items():
+            if ip < len(vm.bytecode):
+                vm.bytecode[ip] = orig
+        self._saved_opcodes.clear()
 
     def _handle_initialize(self, req):
         self._reply(req, {
@@ -121,7 +168,7 @@ class DAPServer:
             parser = Parser(tokens)
             bc, consts, lm, funcs = parser.compile()
             self._vm = VM(bc, consts, lm, funcs)
-            self._vm._debug_hook = self._debug_hook
+            self._vm._dap = self
             self._reply(req)
             self._send_event('initialized')
         except Exception as e:
@@ -129,6 +176,7 @@ class DAPServer:
 
     def _handle_configuration_done(self, req):
         self._reply(req)
+        self._patch_breakpoints()
         threading.Thread(target=self._run_vm, daemon=True).start()
 
     def _handle_set_breakpoints(self, req):
@@ -138,43 +186,58 @@ class DAPServer:
         bps = args.get('breakpoints', [])
         lines = [b.get('line', 0) for b in bps]
         self._breakpoints[path] = lines
+        self._patch_breakpoints()
         self._reply(req, {
             'breakpoints': [{'verified': True, 'line': line_num, 'source': source} for line_num in lines]
         })
 
     def _handle_continue(self, req):
         self._step_mode = 'continue'
+        self._debug_hook_disable()
+        self._patch_breakpoints()
         self._resume.set()
         self._reply(req, {'allThreadsContinued': True})
 
     def _handle_next(self, req):
         self._step_mode = 'step_over'
         self._target_frames = len(self._vm.frames) if self._vm else 0
+        self._restore_opcodes()
+        self._debug_hook_enable()
         self._resume.set()
         self._reply(req)
 
     def _handle_step_in(self, req):
         self._step_mode = 'step_in'
+        self._restore_opcodes()
+        self._debug_hook_enable()
         self._resume.set()
         self._reply(req)
 
     def _handle_step_out(self, req):
         self._step_mode = 'step_out'
         self._target_frames = len(self._vm.frames) if self._vm else 0
+        self._restore_opcodes()
+        self._debug_hook_enable()
         self._resume.set()
         self._reply(req)
 
     def _handle_stack_trace(self, req):
         frames = []
-        for i, f in enumerate(self._frames_snap):
+        depth = len(self._frames_snap)
+        for i in range(depth - 1, -1, -1):
+            f = self._frames_snap[i]
             name = f.get('func_name', '<modulo>')
+            if i == depth - 1:
+                ip_for_frame = self._current_ip
+            else:
+                ip_for_frame = self._frames_snap[i + 1].get('return_ip', self._current_ip)
             line = 1
             if self._vm:
                 for ip_addr, ln in self._vm.line_map.items():
-                    if ip_addr <= self._current_ip:
+                    if ip_addr <= ip_for_frame:
                         line = ln
             frames.append({
-                'id': i,
+                'id': len(frames),
                 'name': name,
                 'line': max(1, line),
                 'column': 1,
@@ -225,6 +288,8 @@ class DAPServer:
             self._reply(req, {'result': str(e), 'type': 'error'})
 
     def _handle_disconnect(self, req):
+        self._restore_opcodes()
+        self._debug_hook_disable()
         self._resume.set()
         self._reply(req)
 
