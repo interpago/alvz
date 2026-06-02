@@ -1,0 +1,19 @@
+Windows Registry Editor Version 5.00
+
+; Asociar .alvz con Alvz.File
+[-HKEY_CURRENT_USER\Software\Classes\.alvz]
+[HKEY_CURRENT_USER\Software\Classes\.alvz]
+@="Alvz.File"
+
+; Crear ProgID Alvz.File
+[-HKEY_CURRENT_USER\Software\Classes\Alvz.File]
+[HKEY_CURRENT_USER\Software\Classes\Alvz.File]
+@="Archivo fuente Alvz"
+
+; Icono por defecto (usa el propio alvz.exe como fuente de iconos)
+[HKEY_CURRENT_USER\Software\Classes\Alvz.File\DefaultIcon]
+@="%APPDATA%\\Alvz\\alvz.ico,0"
+
+; Comando para abrir con alvz.exe
+[HKEY_CURRENT_USER\Software\Classes\Alvz.File\Shell\Open\Command]
+@="\"%APPDATA%\\Alvz\\alvz.exe\" \"%1\""
