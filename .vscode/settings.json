@@ -1,5 +1,36 @@
 {
     "files.associations": {
         "*.alvz": "alvz"
-    }
+    },
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/dist/**": true,
+        "**/public/**": true,
+        "**/__pycache__/**": true,
+        "**/.ruff_cache/**": true,
+        "**/.pytest_cache/**": true
+    },
+    "search.exclude": {
+        "**/build": true,
+        "**/dist": true,
+        "**/public": true,
+        "**/__pycache__": true,
+        "**/.ruff_cache": true,
+        "**/.pytest_cache": true
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.ruff_cache": true,
+        "**/.pytest_cache": true,
+        "**/*.egg-info": true
+    },
+    "python.analysis.exclude": [
+        "build",
+        "dist",
+        "public",
+        "**/__pycache__"
+    ],
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.autoImportCompletions": false,
+    "python.analysis.indexing": true
 }

@@ -124,19 +124,19 @@
                     }
                 },
                 {
-                    "match": "(\\b(funcion)\\b)\\s+([a-zA-Z_]\\w*)",
-                    "captures": {
-                        "1": { "name": "keyword.other.alvz" },
-                        "3": { "name": "entity.name.function.alvz" }
-                    }
-                },
-                {
                     "match": "(\\b(funcion)\\b)\\s+(estatico)\\s+([a-zA-Z_]\\w*)",
                     "captures": {
                         "1": { "name": "keyword.other.alvz" },
                         "2": { "name": "keyword.other.alvz" },
                         "3": { "name": "keyword.other.alvz" },
                         "4": { "name": "entity.name.function.alvz" }
+                    }
+                },
+                {
+                    "match": "(\\b(funcion)\\b)\\s+([a-zA-Z_]\\w*)",
+                    "captures": {
+                        "1": { "name": "keyword.other.alvz" },
+                        "3": { "name": "entity.name.function.alvz" }
                     }
                 },
                 {

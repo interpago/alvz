@@ -4,11 +4,8 @@
     "displayName": "Alvz Language Support",
     "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol",
     "version": "1.6.0",
-    "engines": { "vscode": "^1.75.0" },
+    "engines": { "vscode": "^1.79.0" },
     "categories": ["Programming Languages"],
-    "activationEvents": [
-        "onLanguage:alvz"
-    ],
     "main": "./extension.js",
     "contributes": {
         "languages": [{

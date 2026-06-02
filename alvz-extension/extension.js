@@ -50,101 +50,109 @@ let AlvzSemanticTokensProvider = (function () {
         );
     };
     AlvzSemanticTokensProvider.prototype.provideDocumentSemanticTokens = function (doc) {
-        const builder = new vscode.SemanticTokensBuilder(this.getLegend());
-        const text = doc.getText();
-        const lines = text.split('\n');
-        const tokenRegex = /('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|#[^\n]*|\b[a-zA-Z_]\w*\b|\d+(?:\.\d+)?)/g;
-        const funcDeclRegex = /^\s*funcion\s+(?:(?:async|estatico)\s+)?([a-zA-Z_]\w*)/;
-        const classDeclRegex = /^\s*clase\s+([a-zA-Z_]\w*)/;
-        const varDeclRegex = /^\s*variable\s+([a-zA-Z_]\w*)/;
-        const paramRegex = /funcion\s+(?:(?:async|estatico)\s+)?[a-zA-Z_]\w*\s*\(([^)]*)\)/;
-        const forParamRegex = /para\s+(?:cada\s+)?([a-zA-Z_]\w*)/;
-        const obtenerRegex = /^\s*propiedad\s+([a-zA-Z_]\w*)\s*\{/;
-        const globalRegex = /^\s*global\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/;
+        try {
+            const builder = new vscode.SemanticTokensBuilder(this.getLegend());
+            const text = doc.getText();
+            const lines = text.split('\n');
+            const tokenRegex = /('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|#[^\n]*|\b[a-zA-Z_]\w*\b|\d+(?:\.\d+)?)/g;
+            const funcDeclRegex = /^\s*funcion\s+(?:(?:async|estatico)\s+)?([a-zA-Z_]\w*)/;
+            const classDeclRegex = /^\s*clase\s+([a-zA-Z_]\w*)/;
+            const varDeclRegex = /^\s*variable\s+([a-zA-Z_]\w*)/;
+            const obtenerRegex = /^\s*propiedad\s+([a-zA-Z_]\w*)\s*\{/;
+            const globalRegex = /^\s*global\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/;
 
-        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-            const line = lines[lineIdx];
-            const trimmed = line.trim();
+            for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                const line = lines[lineIdx];
+                const trimmed = line.trim();
+                const leadingWs = line.length - line.trimStart().length;
 
-            if (/^\s*#/.test(line)) continue;
+                if (/^\s*#/.test(line)) continue;
 
-            let m;
-            if ((m = funcDeclRegex.exec(trimmed))) {
-                const col = line.indexOf(m[1]);
-                builder.push(lineIdx, col, m[1].length, 1, 1);
-                continue;
-            }
-            if ((m = classDeclRegex.exec(trimmed))) {
-                const col = line.indexOf(m[1]);
-                builder.push(lineIdx, col, m[1].length, 2, 1);
-                continue;
-            }
-            if ((m = varDeclRegex.exec(trimmed))) {
-                const col = line.indexOf(m[1]);
-                builder.push(lineIdx, col, m[1].length, 0, 1);
-                continue;
-            }
-            if ((m = obtenerRegex.exec(trimmed))) {
-                const col = line.indexOf(m[1]);
-                builder.push(lineIdx, col, m[1].length, 7, 0);
-                continue;
-            }
-            if ((m = globalRegex.exec(trimmed))) {
-                const names = m[1].split(',').map(s => s.trim());
-                for (const name of names) {
-                    const col = line.indexOf(name);
-                    if (col >= 0) builder.push(lineIdx, col, name.length, 0, 1);
+                let m;
+                if ((m = funcDeclRegex.exec(trimmed))) {
+                    const col = leadingWs + trimmed.indexOf(m[1]);
+                    builder.push(lineIdx, col, m[1].length, 1, [0]);
+                    continue;
                 }
-                continue;
-            }
-        }
-
-        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-            const line = lines[lineIdx];
-            let match;
-            while ((match = tokenRegex.exec(line)) !== null) {
-                const token = match[1];
-                const col = match.index;
-                const len = token.length;
-
-                if (token.startsWith('#') || token.startsWith('"') || token.startsWith("'")) {
-                    if (token.startsWith('#')) {
-                        builder.push(lineIdx, col, len, 8, 0);
-                    } else {
-                        builder.push(lineIdx, col, len, 4, 0);
+                if ((m = classDeclRegex.exec(trimmed))) {
+                    const col = leadingWs + trimmed.indexOf(m[1]);
+                    builder.push(lineIdx, col, m[1].length, 2, [0]);
+                    continue;
+                }
+                if ((m = varDeclRegex.exec(trimmed))) {
+                    const col = leadingWs + trimmed.indexOf(m[1]);
+                    builder.push(lineIdx, col, m[1].length, 0, [0]);
+                    continue;
+                }
+                if ((m = obtenerRegex.exec(trimmed))) {
+                    const col = leadingWs + trimmed.indexOf(m[1]);
+                    builder.push(lineIdx, col, m[1].length, 7, []);
+                    continue;
+                }
+                if ((m = globalRegex.exec(trimmed))) {
+                    const names = m[1].split(',').map(s => s.trim());
+                    let searchFrom = 0;
+                    for (const name of names) {
+                        const col = line.indexOf(name, searchFrom);
+                        if (col >= 0) {
+                            builder.push(lineIdx, col, name.length, 0, [0]);
+                            searchFrom = col + name.length;
+                        }
                     }
                     continue;
                 }
+            }
 
-                if (/^\d/.test(token)) {
-                    builder.push(lineIdx, col, len, 5, 0);
-                    continue;
-                }
+            for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                const line = lines[lineIdx];
+                let match;
+                while ((match = tokenRegex.exec(line)) !== null) {
+                    const token = match[1];
+                    const col = match.index;
+                    const len = token.length;
 
-                if (CONSTANTS.includes(token)) {
-                    builder.push(lineIdx, col, len, 3, 0);
-                    continue;
-                }
+                    if (token.startsWith('#') || token.startsWith('"') || token.startsWith("'")) {
+                        if (token.startsWith('#')) {
+                            builder.push(lineIdx, col, len, 8, []);
+                        } else {
+                            builder.push(lineIdx, col, len, 4, []);
+                        }
+                        continue;
+                    }
 
-                if (KEYWORDS.includes(token)) {
-                    builder.push(lineIdx, col, len, 3, 0);
-                    continue;
-                }
+                    if (/^\d/.test(token)) {
+                        builder.push(lineIdx, col, len, 5, []);
+                        continue;
+                    }
 
-                const isBuiltin = STDLIB_FUNCS.some(f => f.name === token);
-                if (isBuiltin) {
-                    builder.push(lineIdx, col, len, 6, 3);
-                    continue;
-                }
+                    if (CONSTANTS.includes(token)) {
+                        builder.push(lineIdx, col, len, 3, []);
+                        continue;
+                    }
 
-                const nextChar = line[col + len];
-                if (nextChar === '(') {
-                    builder.push(lineIdx, col, len, 1, 0);
+                    if (KEYWORDS.includes(token)) {
+                        builder.push(lineIdx, col, len, 3, []);
+                        continue;
+                    }
+
+                    const isBuiltin = STDLIB_FUNCS.some(f => f.name === token);
+                    if (isBuiltin) {
+                        builder.push(lineIdx, col, len, 6, [0, 1]);
+                        continue;
+                    }
+
+                    const nextChar = line[col + len];
+                    if (nextChar === '(') {
+                        builder.push(lineIdx, col, len, 1, []);
+                    }
                 }
             }
-        }
 
-        return builder.build();
+            return builder.build();
+        } catch (e) {
+            console.error('[Alvz] Error en provideDocumentSemanticTokens:', e);
+            return null;
+        }
     };
     return AlvzSemanticTokensProvider;
 })();
@@ -234,13 +242,6 @@ function activate(context) {
             '.', '"', ' '
         )
     );
-
-    // Activar iconos de Alvz si el usuario no tiene un theme personalizado
-    const config = vscode.workspace.getConfiguration('workbench');
-    const currentIconTheme = config.get('iconTheme');
-    if (!currentIconTheme || currentIconTheme === 'vs-seti') {
-        config.update('iconTheme', 'alvz-icons', vscode.ConfigurationTarget.Global);
-    }
 }
 
 function deactivate() {}
