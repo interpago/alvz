@@ -230,10 +230,61 @@ def info_package(name):
     print(f"Paquete '{name}' no encontrado en el registro.")
 
 
+def publish_package(pkg_dir):
+    """Empaqueta un directorio como paquete Alvz publicable."""
+    import zipfile
+    import json
+    import io
+
+    meta_path = os.path.join(pkg_dir, 'alvz.json')
+    if not os.path.isfile(meta_path):
+        print(f"Error: no se encuentra '{meta_path}'")
+        print("Debes crear un archivo alvz.json con la metadata del paquete:")
+        print('  { "name": "mi-paquete", "version": "1.0.0",')
+        print('    "description": "...", "author": "...",')
+        print('    "entry": "main.alvz", "dependencies": [] }')
+        return False
+
+    with open(meta_path, 'r', encoding='utf-8-sig') as f:
+        meta = json.load(f)
+
+    name = meta.get('name', os.path.basename(pkg_dir))
+    version = meta.get('version', '0.1.0')
+    entry = meta.get('entry', f'{name}.alvz')
+
+    entry_path = os.path.join(pkg_dir, entry)
+    if not os.path.isfile(entry_path):
+        print(f"Error: archivo de entrada '{entry}' no encontrado en {pkg_dir}")
+        return False
+
+    zip_name = f'{name}-{version}.zip'
+    zip_path = os.path.join(os.getcwd(), zip_name)
+
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, _, files in os.walk(pkg_dir):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, pkg_dir)
+                zf.write(file_path, arcname)
+
+    print(f"\n[OK] Paquete creado: {zip_path}")
+    print(f"\nPara publicarlo en el registro oficial:")
+    print(f"  1. Sube el archivo a GitHub Releases o un servidor HTTP")
+    print(f"  2. Agrega una entrada en el registro:")
+    print(f"     https://github.com/interpago/alvz-packages")
+    print(f"  3. El formato de entrada es:")
+    print(f'     {{ "name": "{name}", "version": "{version}",')
+    print(f'        "url": "<url_del_zip>",')
+    print(f'        "entry": "{entry}",')
+    print(f'        "dependencies": {json.dumps(meta.get("dependencies", []))} }}')
+    return True
+
+
 def cli():
     if len(sys.argv) < 3:
         print("Uso: alvz install <paquete>[@version]")
         print("      alvz uninstall <paquete>")
+        print("      alvz publish <directorio>")
         print("      alvz list-packages")
         print("      alvz search <consulta>")
         print("      alvz info <paquete>")
@@ -251,6 +302,8 @@ def cli():
     elif command == "uninstall":
         name = sys.argv[2]
         uninstall_package(name)
+    elif command == "publish":
+        publish_package(sys.argv[2])
     elif command == "search":
         query = sys.argv[2]
         search_packages(query)
@@ -260,5 +313,5 @@ def cli():
         info_package(sys.argv[2])
     else:
         print(f"Comando desconocido: {command}")
-        print("Comandos: install, uninstall, search, list-packages, info")
+        print("Comandos: install, uninstall, publish, search, list-packages, info")
         sys.exit(1)

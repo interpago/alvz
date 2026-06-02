@@ -206,15 +206,17 @@ def _cmd_test(args):
 
 
 def _cmd_fmt(args):
-    """Comando 'alvz fmt': formatea archivos .alvz."""
+    """Comando 'alvz fmt': formatea archivos .alvz usando el formateador AST."""
+    from .core.formatter import formatear
+
     if not args:
         print("Uso: alvz fmt <archivo.alvz> [--check]")
         sys.exit(1)
 
     check_only = '--check' in args
-    args = [a for a in args if a != '--check']
+    args_list = [a for a in args if a != '--check']
 
-    for filename in args:
+    for filename in args_list:
         if not os.path.isfile(filename):
             print(f"Error: archivo '{filename}' no encontrado")
             sys.exit(1)
@@ -223,53 +225,19 @@ def _cmd_fmt(args):
             codigo = f.read()
 
         try:
-            lexer = Lexer(codigo)
-            lexer.tokenize()
+            formateado = formatear(codigo)
         except Exception as e:
-            print(f"Error lexico en {filename}: {e}")
-            continue
-
-        lineas = codigo.split('\n')
-        indentado = 0
-        output = []
-
-        for linea in lineas:
-            stripped = linea.strip()
-            if not stripped:
-                output.append('')
-                continue
-
-            if stripped.startswith('#'):
-                output.append(stripped)
-                continue
-
-            dedent = 0
-            for ch in stripped:
-                if ch == '}':
-                    dedent += 1
-                else:
-                    break
-
-            nivel = indentado - dedent
-            if nivel < 0:
-                nivel = 0
-
-            indent_str = '\t' * nivel
-            output.append(indent_str + stripped)
-
-            indentado += stripped.count('{') - stripped.count('}')
-            if indentado < 0:
-                indentado = 0
-
-        formatted = '\n'.join(output)
+            print(f"Error al formatear {filename}: {e}")
+            sys.exit(1)
 
         if check_only:
-            if codigo != formatted:
+            if codigo != formateado:
                 print(f"{filename}: necesita formateo")
                 sys.exit(1)
+            print(f"{filename}: bien formateado")
         else:
             with open(filename, 'w', encoding='utf-8') as f:
-                f.write(formatted)
+                f.write(formateado)
             print(f"Formateado: {filename}")
 
 
@@ -372,7 +340,7 @@ def main():
             _cmd_nuevo(sys.argv[2:])
             return
 
-        if cmd in ("install", "uninstall", "search", "list-packages"):
+        if cmd in ("install", "uninstall", "search", "list-packages", "publish"):
             from .core.package_manager import cli as pkg_cli
             pkg_cli()
             return
