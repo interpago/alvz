@@ -72,10 +72,26 @@ class EventLoop:
         self._executor.shutdown(wait=False)
 
 
+class SafeConfig:
+    """Configuracion de seguridad para modo --safe.
+
+    Permite ejecutar codigo Alvz con restricciones para evitar
+    accesos no deseados al sistema de archivos, red o recursos.
+    """
+    def __init__(self):
+        self.enabled = False
+        self.sandbox_dir = None
+        self.allow_network = False
+        self.allow_system = False
+        self.max_execution_time = 30.0
+        self.max_recursion_depth = 200
+        self.max_stack_size = 10000
+
+
 class VM:
     """Motor de ejecucion basado en pila."""
 
-    def __init__(self, bytecode, constants, line_map=None, functions=None, source_lines=None):
+    def __init__(self, bytecode, constants, line_map=None, functions=None, source_lines=None, safe_mode=False, safe_config=None):
         self.bytecode = bytecode
         self.constants = constants
         self.line_map = line_map or {}
@@ -90,6 +106,9 @@ class VM:
         self.classes = {}
         self.last_error = ""
         self._print_lock = threading.Lock()
+        self.safe_mode = safe_mode
+        self.safe_config = safe_config or SafeConfig()
+        self._start_time = None
 
     def _build_stack_trace(self, current_ip):
         lines = []
@@ -185,6 +204,19 @@ class VM:
 
         import os
 
+        # En modo seguro, solo importar modulos de la stdlib
+        if self.safe_mode:
+            base = os.path.basename(filename.replace('.alvz', ''))
+            stdlib_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'stdlib')
+            stdlib_path = os.path.join(stdlib_dir, base + '.alvz')
+            if os.path.isfile(stdlib_path):
+                with open(stdlib_path, 'r', encoding='utf-8-sig') as f:
+                    imported_code = f.read()
+                return self._exec_import(imported_code)
+            raise RuntimeError(
+                "Importacion no permitida en modo seguro: solo modulos de la stdlib"
+            )
+
         paths_to_try = [filename]
         if not filename.endswith('.alvz'):
             paths_to_try.append(filename + '.alvz')
@@ -212,6 +244,13 @@ class VM:
 
         if imported_code is None:
             raise RuntimeError(f"Error al importar '{filename}': archivo no encontrado")
+
+        self._exec_import(imported_code)
+
+    def _exec_import(self, imported_code):
+        """Compila y ejecuta codigo importado en el contexto actual."""
+        from alvz.core.lexer import Lexer
+        from alvz.core.parser import Parser
 
         lexer = Lexer(imported_code)
         tokens = lexer.tokenize()
@@ -259,16 +298,55 @@ class VM:
             self.frames = old_frames
             self.stack = old_stack
 
+    def _safe_sandbox_path(self, path):
+        """Resuelve un path dentro del sandbox en modo seguro."""
+        if not self.safe_mode:
+            return path
+        sandbox = self.safe_config.sandbox_dir
+        if sandbox is None:
+            sandbox = os.path.join(os.getcwd(), 'alvz_sandbox')
+            self.safe_config.sandbox_dir = sandbox
+        os.makedirs(sandbox, exist_ok=True)
+        safe_path = os.path.abspath(os.path.join(sandbox, os.path.basename(path)))
+        abs_sandbox = os.path.abspath(sandbox)
+        try:
+            rel = os.path.relpath(safe_path, abs_sandbox)
+            if rel.startswith('..'):
+                raise RuntimeError(
+                    f"Acceso denegado en modo seguro: '{path}' fuera del directorio permitido"
+                )
+            return safe_path
+        except ValueError:
+            raise RuntimeError(
+                f"Acceso denegado en modo seguro: '{path}' no es accesible"
+            )
+
+    def _check_safe_execution_time(self):
+        if self.safe_mode and self._start_time is not None:
+            elapsed = time.time() - self._start_time
+            if elapsed > self.safe_config.max_execution_time:
+                raise RuntimeError(
+                    f"Tiempo de ejecucion excedido ({self.safe_config.max_execution_time:.1f}s)"
+                )
+
+    def _check_safe_stack(self):
+        if self.safe_mode and len(self.stack) > self.safe_config.max_stack_size:
+            raise RuntimeError(
+                f"Pila de ejecucion excedida (maximo {self.safe_config.max_stack_size} elementos)"
+            )
+
     def run(self, output_buffer=None):
         if output_buffer is not None:
             self.output_buffer = output_buffer
         else:
             self.output_buffer = []
+        self._start_time = time.time()
         self.exception_stack = []
         if not self.frames:
             self.frames.append({'return_ip': -1, 'locals': {}})
 
         while self.ip < len(self.bytecode):
+            self._check_safe_execution_time()
             current_ip = self.ip
             if hasattr(self, '_debug_hook') and self._debug_hook:
                 self._debug_hook(current_ip, self)
@@ -349,6 +427,11 @@ class VM:
                         if addr == target_addr:
                             func_name = fname
                             break
+
+                    if self.safe_mode and len(self.frames) > self.safe_config.max_recursion_depth:
+                        raise RuntimeError(
+                            f"Profundidad de recursion excedida (maximo {self.safe_config.max_recursion_depth})"
+                        )
 
                     self.frames.append({
                         'return_ip': self.ip,
@@ -536,6 +619,8 @@ class VM:
                     self.stack.append(random.randint(int(min_val), int(max_val)))
 
                 elif op == OpCode.OP_CLEAR:
+                    if self.safe_mode and not self.safe_config.allow_system:
+                        raise RuntimeError("Accion no permitida en modo seguro: limpiar consola")
                     os.system('cls' if os.name == 'nt' else 'clear')
 
                 elif op == OpCode.OP_NEGATE:
@@ -621,6 +706,8 @@ class VM:
                         time.sleep(float(val))
 
                 elif op == OpCode.OP_WEB_SEND:
+                    if self.safe_mode and not self.safe_config.allow_network:
+                        raise RuntimeError("Acceso a red no permitido en modo seguro")
                     datos_val = self.stack.pop()
                     url_val = self.stack.pop()
                     try:
@@ -637,7 +724,8 @@ class VM:
                 elif op == OpCode.OP_READ_FILE:
                     nombre = self.stack.pop()
                     try:
-                        with open(nombre, 'r', encoding='utf-8') as f:
+                        ruta = self._safe_sandbox_path(nombre)
+                        with open(ruta, 'r', encoding='utf-8') as f:
                             contenido = f.read()
                         self.stack.append(contenido)
                     except Exception:
@@ -647,7 +735,8 @@ class VM:
                     contenido = self.stack.pop()
                     nombre = self.stack.pop()
                     try:
-                        with open(nombre, 'w', encoding='utf-8') as f:
+                        ruta = self._safe_sandbox_path(nombre)
+                        with open(ruta, 'w', encoding='utf-8') as f:
                             f.write(str(contenido))
                         self.stack.append(True)
                     except Exception:
@@ -681,6 +770,8 @@ class VM:
                     self.stack.append(d)
 
                 elif op == OpCode.OP_SUPABASE_INSERT:
+                    if self.safe_mode and not self.safe_config.allow_network:
+                        raise RuntimeError("Acceso a red no permitido en modo seguro")
                     datos = self.stack.pop()
                     tabla = self.stack.pop()
                     key = self.stack.pop()
@@ -700,6 +791,8 @@ class VM:
                         self.stack.append(0)
 
                 elif op == OpCode.OP_SUPABASE_SELECT:
+                    if self.safe_mode and not self.safe_config.allow_network:
+                        raise RuntimeError("Acceso a red no permitido en modo seguro")
                     tabla = self.stack.pop()
                     key = self.stack.pop()
                     url = self.stack.pop()

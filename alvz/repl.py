@@ -400,12 +400,15 @@ def main():
 
     optimize_flag = False
     check_types_flag = True
+    safe_flag = False
     filenames = []
     for arg in sys.argv[1:]:
         if arg in ('--optimize', '-O'):
             optimize_flag = True
         elif arg in ('--no-check-types', '-NT'):
             check_types_flag = False
+        elif arg in ('--safe', '-S'):
+            safe_flag = True
         elif arg in ('--version', '-V'):
             print(f"Alvz v{VERSION}")
             sys.exit(0)
@@ -428,7 +431,8 @@ def main():
                     optimize=optimize_flag, check_types=check_types_flag
                 )
                 source_lines = codigo_fuente.split('\n')
-                vm = VM(bytecode, constants, line_map, funcs, source_lines)
+                vm = VM(bytecode, constants, line_map, funcs, source_lines,
+                        safe_mode=safe_flag)
                 vm.run()
 
             except Exception as e:
