@@ -234,6 +234,13 @@ function activate(context) {
             '.', '"', ' '
         )
     );
+
+    // Activar iconos de Alvz si el usuario no tiene un theme personalizado
+    const config = vscode.workspace.getConfiguration('workbench');
+    const currentIconTheme = config.get('iconTheme');
+    if (!currentIconTheme || currentIconTheme === 'vs-seti') {
+        config.update('iconTheme', 'alvz-icons', vscode.ConfigurationTarget.Global);
+    }
 }
 
 function deactivate() {}

@@ -38,6 +38,13 @@
             { "id": "comment", "description": "Comment", "superType": "comment" },
             { "id": "parameter", "description": "Function parameter", "superType": "variable" },
             { "id": "type", "description": "Type annotation", "superType": "type" }
+        ],
+        "iconThemes": [
+            {
+                "id": "alvz-icons",
+                "label": "Alvz File Icons",
+                "path": "./icon-theme.json"
+            }
         ]
     }
 }

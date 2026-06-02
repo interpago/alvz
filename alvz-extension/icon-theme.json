@@ -1,0 +1,16 @@
+{
+  "iconDefinitions": {
+    "_alvz_file": {
+      "iconPath": "./icons/alvz-icon.svg"
+    },
+    "_alvz_folder": {
+      "iconPath": "./icons/alvz-icon.svg"
+    }
+  },
+  "fileExtensions": {
+    "alvz": "_alvz_file"
+  },
+  "languageIds": {
+    "alvz": "_alvz_file"
+  }
+}
