@@ -1,0 +1,8 @@
+{
+    "name": "archivos",
+    "version": "1.0.0",
+    "description": "Utilidades de archivos: leer/escribir JSON, CSV, texto, copiar, mover",
+    "author": "Alvz Team",
+    "entry": "archivos.alvz",
+    "dependencies": []
+}

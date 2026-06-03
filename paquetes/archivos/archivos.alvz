@@ -1,0 +1,68 @@
+# archivos.alvz - Utilidades de archivos
+# Uso: importar "archivos"
+#       variable datos = leer_json("datos.json")
+#       escribir_json("salida.json", {"clave": "valor"})
+
+funcion leer_texto(ruta) {
+    retornar leer_archivo(ruta)
+}
+
+funcion escribir_texto(ruta, contenido) {
+    retornar escribir_archivo(ruta, contenido)
+}
+
+funcion leer_json(ruta) {
+    variable contenido = leer_texto(ruta)
+    si contenido == nulo { retornar nulo }
+    retornar json_decodificar(contenido)
+}
+
+funcion escribir_json(ruta, datos) {
+    retornar escribir_texto(ruta, json_codificar(datos))
+}
+
+funcion leer_csv(ruta) {
+    variable contenido = leer_texto(ruta)
+    si contenido == nulo { retornar nulo }
+    variable lineas = dividir(contenido, "\n")
+    variable resultado = []
+    variable i = 0
+    mientras i < longitud(lineas) {
+        variable linea = lineas[i]
+        si longitud(linea) > 0 {
+            resultado = resultado + [dividir(linea, ",")]
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion escribir_csv(ruta, datos) {
+    variable lineas = []
+    variable i = 0
+    mientras i < longitud(datos) {
+        variable fila = datos[i]
+        variable vals = []
+        variable j = 0
+        mientras j < longitud(fila) {
+            vals = vals + ["" + fila[j]]
+            j = j + 1
+        }
+        lineas = lineas + [unir(vals, ",")]
+        i = i + 1
+    }
+    retornar escribir_texto(ruta, unir(lineas, "\n"))
+}
+
+funcion archivo_existe(ruta) {
+    variable contenido = leer_archivo(ruta)
+    retornar contenido != nulo
+}
+
+funcion anexar_texto(ruta, contenido) {
+    variable existente = leer_texto(ruta)
+    si existente == nulo {
+        retornar escribir_texto(ruta, contenido)
+    }
+    retornar escribir_texto(ruta, existente + "\n" + contenido)
+}

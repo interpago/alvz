@@ -27,7 +27,7 @@
 - **CI/CD expandido**: tests en todas las ramas + job de benchmarks.
 - **VS Code extension**: engine `^1.79.0`, `SemanticTokensBuilder.push()` migrado a `number[]`, orden `funcion estatico` antes que `funcion`.
 - **LSP completo**: autocompletado, hover, ir a definición.
-- **Package manager**: 30 paquetes disponibles.
+- **Package manager**: 41 paquetes disponibles (5 nuevos: colores, graficos, log, archivos, cli).
 - **Optimizador de bytecode** (230 líneas), **Type checker estático** (457 líneas).
 - **PyPI package**: `alvz-lenguaje` publicado en https://pypi.org/project/alvz-lenguaje/0.18.0/
 - **README.md**: instalación vía `pip install alvz-lenguaje`
@@ -69,7 +69,7 @@
 - `alvz/core/fixer.py`: Auto-fix (171 líneas).
 - `alvz/core/benchmarks.py`: Benchmarks de rendimiento (116 líneas).
 - `alvz/core/compiler.py`: PyInstaller/Nuitka/WASM build (273 líneas).
-- `alvz/core/package_manager.py`: 30 paquetes (224 líneas).
+- `alvz/core/package_manager.py`: 41 paquetes (224 líneas).
 - `alvz/core/errors.py`: Sugerencias de errores (30 líneas).
 - `alvz/lsp/dap.py`: DAP con parcheo de bytecode.
 - `alvz/stdlib/`: 13 módulos `.alvz`.

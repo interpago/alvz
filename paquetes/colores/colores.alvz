@@ -1,0 +1,78 @@
+# colores.alvz - Colores ANSI para terminal
+# Uso: importar "colores"
+#       imprimir(rojo("texto en rojo"))
+
+funcion _escape(codigo) {
+    retornar "\u001b[" + codigo + "m"
+}
+
+# Colores de texto
+funcion negro(texto) {
+    retornar _escape("30") + texto + _escape("0")
+}
+
+funcion rojo(texto) {
+    retornar _escape("31") + texto + _escape("0")
+}
+
+funcion verde(texto) {
+    retornar _escape("32") + texto + _escape("0")
+}
+
+funcion amarillo(texto) {
+    retornar _escape("33") + texto + _escape("0")
+}
+
+funcion azul(texto) {
+    retornar _escape("34") + texto + _escape("0")
+}
+
+funcion magenta(texto) {
+    retornar _escape("35") + texto + _escape("0")
+}
+
+funcion cian(texto) {
+    retornar _escape("36") + texto + _escape("0")
+}
+
+funcion blanco(texto) {
+    retornar _escape("37") + texto + _escape("0")
+}
+
+# Colores de fondo
+funcion fondo_rojo(texto) {
+    retornar _escape("41") + texto + _escape("0")
+}
+
+funcion fondo_verde(texto) {
+    retornar _escape("42") + texto + _escape("0")
+}
+
+funcion fondo_amarillo(texto) {
+    retornar _escape("43") + texto + _escape("0")
+}
+
+funcion fondo_azul(texto) {
+    retornar _escape("44") + texto + _escape("0")
+}
+
+funcion fondo_magenta(texto) {
+    retornar _escape("45") + texto + _escape("0")
+}
+
+funcion fondo_cian(texto) {
+    retornar _escape("46") + texto + _escape("0")
+}
+
+# Estilos de texto
+funcion negrita(texto) {
+    retornar _escape("1") + texto + _escape("0")
+}
+
+funcion subrayado(texto) {
+    retornar _escape("4") + texto + _escape("0")
+}
+
+funcion parpadeo(texto) {
+    retornar _escape("5") + texto + _escape("0")
+}

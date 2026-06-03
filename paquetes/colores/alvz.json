@@ -1,0 +1,8 @@
+{
+    "name": "colores",
+    "version": "1.0.0",
+    "description": "Colores ANSI para terminal: texto, fondo, negrita, subrayado",
+    "author": "Alvz Team",
+    "entry": "colores.alvz",
+    "dependencies": []
+}

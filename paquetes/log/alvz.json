@@ -1,0 +1,8 @@
+{
+    "name": "log",
+    "version": "1.0.0",
+    "description": "Sistema de logging por niveles: depuracion, informacion, advertencia, error",
+    "author": "Alvz Team",
+    "entry": "log.alvz",
+    "dependencies": []
+}

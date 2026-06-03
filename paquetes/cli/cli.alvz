@@ -1,0 +1,77 @@
+# cli.alvz - Analizador de argumentos de linea de comandos
+# Uso: importar "cli"
+#       variable args = cli_analizar([
+#           cli_opcion("--nombre", "Tu nombre", verdadero),
+#           cli_opcion("--edad", "Tu edad", falso, 0)
+#       ])
+#       imprimir("Hola " + args["--nombre"])
+
+variable _argumentos = []
+
+funcion _obtener_args() {
+    # Nota: en Alvz los argumentos se pasan via variable global
+    si longitud(_argumentos) == 0 {
+        retornar []
+    }
+    retornar _argumentos
+}
+
+funcion cli_configurar_args(args) {
+    _argumentos = args
+}
+
+funcion cli_opcion(nombre, descripcion, requerido, por_defecto) {
+    retornar {
+        "nombre": nombre,
+        "descripcion": descripcion,
+        "requerido": requerido,
+        "por_defecto": por_defecto
+    }
+}
+
+funcion cli_analizar(opciones) {
+    variable args = _obtener_args()
+    variable resultado = {}
+
+    variable i = 0
+    mientras i < longitud(opciones) {
+        variable opt = opciones[i]
+        variable encontrado = falso
+        variable j = 0
+        mientras j < longitud(args) {
+            si args[j] == opt["nombre"] {
+                # Tiene valor?
+                si j + 1 < longitud(args) y args[j + 1][0] != "-" {
+                    resultado[opt["nombre"]] = args[j + 1]
+                } sino {
+                    resultado[opt["nombre"]] = verdadero
+                }
+                encontrado = verdadero
+                romper
+            }
+            j = j + 1
+        }
+        si encontrado == falso {
+            si opt["requerido"] {
+                imprimir("Error: Opcion requerida '" + opt["nombre"] + "' no proporcionada")
+                imprimir("  " + opt["descripcion"])
+                retornar nulo
+            }
+            resultado[opt["nombre"]] = opt["por_defecto"]
+        }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion cli_ayuda(opciones) {
+    imprimir("Opciones disponibles:")
+    variable i = 0
+    mientras i < longitud(opciones) {
+        variable opt = opciones[i]
+        variable req = ""
+        si opt["requerido"] { req = " (requerido)" }
+        imprimir("  " + opt["nombre"] + " - " + opt["descripcion"] + req)
+        i = i + 1
+    }
+}

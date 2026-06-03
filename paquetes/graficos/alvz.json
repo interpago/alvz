@@ -1,0 +1,8 @@
+{
+    "name": "graficos",
+    "version": "1.0.0",
+    "description": "Graficos ASCII para terminal: barras de progreso, tablas, grafico de barras",
+    "author": "Alvz Team",
+    "entry": "graficos.alvz",
+    "dependencies": []
+}

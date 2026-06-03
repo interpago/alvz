@@ -1,0 +1,159 @@
+# graficos.alvz - Graficos ASCII para terminal
+# Uso: importar "graficos"
+#       imprimir(barra_progreso(50, 100, 20))
+#       imprimir(tabla(datos, ["Nombre", "Edad"]))
+
+funcion barra_progreso(actual, total, ancho) {
+    variable proporcion = actual / total
+    variable completado = redondear(proporcion * ancho)
+    si completado > ancho { completado = ancho }
+    variable resultado = "["
+    variable i = 0
+    mientras i < ancho {
+        si i < completado {
+            resultado = resultado + "#"
+        } sino {
+            resultado = resultado + " "
+        }
+        i = i + 1
+    }
+    resultado = resultado + "] " + redondear(proporcion * 100) + "%"
+    retornar resultado
+}
+
+funcion barra_color(actual, total, ancho) {
+    variable proporcion = actual / total
+    variable pct = redondear(proporcion * 100)
+    variable barra = barra_progreso(actual, total, ancho - 4)
+    si pct < 50 {
+        retornar "\u001b[31m" + barra + "\u001b[0m"
+    } sino si pct < 80 {
+        retornar "\u001b[33m" + barra + "\u001b[0m"
+    } sino {
+        retornar "\u001b[32m" + barra + "\u001b[0m"
+    }
+}
+
+funcion tabla(datos, columnas) {
+    variable num_cols = longitud(columnas)
+    si num_cols == 0 { retornar "" }
+
+    variable ancho = []
+    variable i = 0
+    mientras i < num_cols {
+        variable max_ancho = longitud(columnas[i])
+        variable j = 0
+        mientras j < longitud(datos) {
+            variable fila = datos[j]
+            variable valor = ""
+            si tipo(fila) == "diccionario" {
+                valor = "" + fila[columnas[i]]
+            } sino {
+                si i < longitud(fila) {
+                    valor = "" + fila[i]
+                }
+            }
+            si longitud(valor) > max_ancho {
+                max_ancho = longitud(valor)
+            }
+            j = j + 1
+        }
+        ancho = ancho + [max_ancho + 1]
+        i = i + 1
+    }
+
+    variable resultado = ""
+    i = 0
+    mientras i < num_cols * 6 + 1 {
+        si i == 0 { resultado = resultado + "+" }
+        sino { resultado = resultado + "-" }
+        i = i + 1
+    }
+    resultado = resultado + "\n"
+
+    i = 0
+    mientras i < num_cols {
+        resultado = resultado + "| " + columnas[i]
+        variable e = 0
+        mientras e < ancho[i] - longitud(columnas[i]) {
+            resultado = resultado + " "
+            e = e + 1
+        }
+        i = i + 1
+    }
+    resultado = resultado + "|\n"
+
+    i = 0
+    mientras i < num_cols * 6 + 1 {
+        si i == 0 { resultado = resultado + "+" }
+        sino { resultado = resultado + "-" }
+        i = i + 1
+    }
+    resultado = resultado + "\n"
+
+    i = 0
+    mientras i < longitud(datos) {
+        variable fila = datos[i]
+        variable k = 0
+        mientras k < num_cols {
+            variable val = ""
+            si tipo(fila) == "diccionario" {
+                val = "" + fila[columnas[k]]
+            } sino {
+                si k < longitud(fila) {
+                    val = "" + fila[k]
+                }
+            }
+            resultado = resultado + "| " + val
+            variable e = 0
+            mientras e < ancho[k] - longitud(val) {
+                resultado = resultado + " "
+                e = e + 1
+            }
+            k = k + 1
+        }
+        resultado = resultado + "|\n"
+        i = i + 1
+    }
+
+    i = 0
+    mientras i < num_cols * 6 + 1 {
+        si i == 0 { resultado = resultado + "+" }
+        sino { resultado = resultado + "-" }
+        i = i + 1
+    }
+    retornar resultado
+}
+
+funcion grafico_barras(valores, etiquetas) {
+    si longitud(valores) == 0 { retornar "" }
+
+    variable max_val = valores[0]
+    variable i = 1
+    mientras i < longitud(valores) {
+        si valores[i] > max_val { max_val = valores[i] }
+        i = i + 1
+    }
+
+    variable ancho_max = 20
+    variable resultado = ""
+    variable i = 0
+    mientras i < longitud(valores) {
+        variable bar_ancho = redondear((valores[i] / max_val) * ancho_max)
+        variable label = ""
+        si i < longitud(etiquetas) {
+            label = etiquetas[i]
+        } sino {
+            label = "Item " + (i + 1)
+        }
+        resultado = resultado + label + " "
+        variable j = 0
+        mientras j < bar_ancho {
+            resultado = resultado + "#"
+            j = j + 1
+        }
+        resultado = resultado + " " + valores[i] + "\n"
+        i = i + 1
+    }
+    retornar resultado
+}

@@ -1,0 +1,57 @@
+# log.alvz - Sistema de logging por niveles
+# Uso: importar "log"
+#       log_info("Iniciando programa")
+#       log_error("Algo salio mal")
+
+variable _nivel_actual = 0
+
+variable NIVEL_DEPURACION = 0
+variable NIVEL_INFO = 1
+variable NIVEL_ADVERTENCIA = 2
+variable NIVEL_ERROR = 3
+variable NIVEL_SIN_INFO = 4
+
+variable _nombres = ["DEPURACION", "INFO", "ADVERTENCIA", "ERROR"]
+
+funcion _timestamp() {
+    retornar fecha_actual("YYYY-MM-DD HH:mm:ss")
+}
+
+funcion log_configurar(nivel) {
+    _nivel_actual = nivel
+}
+
+funcion log_nivel_actual() {
+    retornar _nivel_actual
+}
+
+funcion log_depuracion(mensaje) {
+    si _nivel_actual <= NIVEL_DEPURACION {
+        imprimir("\u001b[36m[" + _timestamp() + "] [DEPURACION] " + mensaje + "\u001b[0m")
+    }
+}
+
+funcion log_info(mensaje) {
+    si _nivel_actual <= NIVEL_INFO {
+        imprimir("\u001b[32m[" + _timestamp() + "] [INFO] " + mensaje + "\u001b[0m")
+    }
+}
+
+funcion log_advertencia(mensaje) {
+    si _nivel_actual <= NIVEL_ADVERTENCIA {
+        imprimir("\u001b[33m[" + _timestamp() + "] [ADVERTENCIA] " + mensaje + "\u001b[0m")
+    }
+}
+
+funcion log_error(mensaje) {
+    si _nivel_actual <= NIVEL_ERROR {
+        imprimir("\u001b[31m[" + _timestamp() + "] [ERROR] " + mensaje + "\u001b[0m")
+    }
+}
+
+funcion log_evento(nivel, mensaje) {
+    si nivel == "depuracion" { log_depuracion(mensaje) }
+    sino si nivel == "info" { log_info(mensaje) }
+    sino si nivel == "advertencia" { log_advertencia(mensaje) }
+    sino si nivel == "error" { log_error(mensaje) } 
+}
