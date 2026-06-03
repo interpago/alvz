@@ -775,19 +775,20 @@
             <li>No requiere Python instalado (el .exe es standalone)</li>
         </ul>
 
-        <h3>Linux / macOS — vía pip</h3>
-        <p>Alvz también se instala como paquete Python estándar en Linux y macOS:</p>
+        <h3>Linux / macOS / Windows — vía PyPI</h3>
+        <p>Alvz está disponible en <strong>PyPI</strong> (Python Package Index), el repositorio oficial de paquetes Python. Instálalo con un solo comando:</p>
         <div class="code-container">
-            <pre><span class="comment"># Instalar desde el código fuente</span>
-git clone https://github.com/interpago/alvz-packages
-cd alvz-packages
-pip install -e .
+            <pre>pip install alvz-lenguaje
 
-<span class="comment"># Ejecutar</span>
-alvz archivo.alvz</pre>
+<span class="comment"># Con soporte WebAssembly (wasmtime)</span>
+pip install alvz-lenguaje[wasm]
+
+<span class="comment"># Con servidor web (FastAPI)</span>
+pip install alvz-lenguaje[web]</pre>
         </div>
         <ul>
             <li>Requiere Python 3.10+</li>
+            <li>Disponible en <a href="https://pypi.org/project/alvz-lenguaje/" target="_blank">pypi.org/project/alvz-lenguaje</a></li>
             <li>Con <code>alvz build</code> puedes generar ejecutables standalone con PyInstaller</li>
         </ul>
 

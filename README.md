@@ -20,14 +20,25 @@ Lenguaje de programación interpretado con sintaxis completamente en español. O
 
 ## Instalación
 
+Alvz está disponible en **PyPI** (Python Package Index), el repositorio oficial de paquetes Python. Esto permite instalarlo con un solo comando:
+
 ```bash
 pip install alvz-lenguaje
 ```
 
 Requiere Python 3.10+.
 
+Instalación con extras:
+```bash
+pip install alvz-lenguaje[wasm]   # con soporte WebAssembly (wasmtime)
+pip install alvz-lenguaje[web]    # con servidor web (FastAPI)
+pip install alvz-lenguaje[all]    # todo incluido
+```
+
 Para desarrollo local:
 ```bash
+git clone https://github.com/interpago/alvz.git
+cd alvz
 pip install -e .
 ```
 
