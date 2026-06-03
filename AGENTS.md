@@ -41,10 +41,13 @@
 - **WASM**: global vars en 0x9000, locals en 0x8000.
 - **DAP**: parcheo de bytecode en vez de hook por instrucción (0 overhead sin depuración).
 - **Modo seguro**: flag `--safe` explícito en vez de sandbox automático.
+- **--wasm flag**: `alvz --wasm archivo.alvz` ejecuta vía wasmtime en vez del VM Python.
 
 ## Next Steps
 - Compilar cada función Alvz a función WASM separada (no inline en dispatch loop).
 - Sistema de pruebas integrado para código `.alvz`.
+- Soportar clases/dicts como constantes en WASM (para que demo.alvz funcione con --wasm).
+- Convertir --wasm en el modo por defecto (requiere resolver limitaciones de constantes).
 
 ## Critical Context
 - **626 tests, 0 fallos, 0 errores** en ~13s.

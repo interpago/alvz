@@ -4,9 +4,15 @@ Modulo interactivo REPL y punto de entrada principal para Alvz Language.
 
 import sys
 import os
+import tempfile
 from .core.lexer import Lexer
 from .core.parser import Parser
 from .core.vm import VM
+
+try:
+    import wasmtime
+except ImportError:
+    wasmtime = None
 
 VERSION = "0.18.0"
 
@@ -369,6 +375,7 @@ def main():
     optimize_flag = False
     check_types_flag = True
     safe_flag = False
+    wasm_flag = False
     filenames = []
     for arg in sys.argv[1:]:
         if arg in ('--optimize', '-O'):
@@ -377,11 +384,37 @@ def main():
             check_types_flag = False
         elif arg in ('--safe', '-S'):
             safe_flag = True
+        elif arg in ('--wasm', '-W'):
+            wasm_flag = True
         elif arg in ('--version', '-V'):
             print(f"Alvz v{VERSION}")
             sys.exit(0)
+        elif arg in ('--help', '-h'):
+            print("Alvz Language v" + VERSION)
+            print("")
+            print("Uso: alvz [opciones] <archivo.alvz>")
+            print("")
+            print("Opciones:")
+            print("  --wasm, -W              Ejecutar via WebAssembly (requiere wasmtime)")
+            print("  --safe, -S              Modo seguro (sin red, FS restringido)")
+            print("  --optimize, -O          Optimizar bytecode antes de ejecutar")
+            print("  --no-check-types, -NT   Deshabilitar verificacion de tipos")
+            print("  --version, -V           Mostrar version")
+            print("  --help, -h              Mostrar esta ayuda")
+            print("")
+            print("Comandos:")
+            print("  test <archivos|directorio>  Ejecutar tests .alvz")
+            print("  fmt <archivo>               Formatear archivo")
+            print("  nuevo <tipo> <nombre>       Crear nuevo proyecto")
+            print("  build <archivo> [--wasm]    Compilar a ejecutable o WASM")
+            print("  debug                       Iniciar debugger (DAP)")
+            print("  bench                       Ejecutar benchmarks")
+            print("  fix <archivo>               Analizar y corregir")
+            print("  install/uninstall/search/list-packages/publish")
+            sys.exit(0)
         elif arg.startswith('-'):
             print(f"Error: Opcion desconocida '{arg}'")
+            print("Usa --help para ver las opciones disponibles.")
             sys.exit(1)
         else:
             filenames.append(arg)
@@ -398,10 +431,33 @@ def main():
                 bytecode, constants, line_map, funcs = parser.compile(
                     optimize=optimize_flag, check_types=check_types_flag
                 )
-                source_lines = codigo_fuente.split('\n')
-                vm = VM(bytecode, constants, line_map, funcs, source_lines,
-                        safe_mode=safe_flag)
-                vm.run()
+
+                if wasm_flag:
+                    if wasmtime is None:
+                        print("Error: --wasm requiere el modulo 'wasmtime'. Instala con: pip install wasmtime")
+                        sys.exit(1)
+                    if safe_flag:
+                        print("Error: --wasm y --safe no son compatibles actualmente")
+                        sys.exit(1)
+                    from .core.wasm_compiler import WasmCompiler
+                    from .core.wasm_runtime import run as run_wasm
+                    wasm_comp = WasmCompiler(bytecode, constants, funcs, line_map)
+                    wasm_bytes = wasm_comp.compile()
+                    tmp = tempfile.NamedTemporaryFile(suffix='.wasm', delete=False)
+                    tmp.write(wasm_bytes)
+                    tmp.close()
+                    try:
+                        output = []
+                        run_wasm(tmp.name, output_buffer=output)
+                        for line in output:
+                            print(line)
+                    finally:
+                        os.unlink(tmp.name)
+                else:
+                    source_lines = codigo_fuente.split('\n')
+                    vm = VM(bytecode, constants, line_map, funcs, source_lines,
+                            safe_mode=safe_flag)
+                    vm.run()
 
             except Exception as e:
                 print(f"Error: {e}")

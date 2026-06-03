@@ -1,0 +1,4 @@
+variable x = 42
+variable y = 10
+imprimir(x + y)
+imprimir("Hola desde WASM!")
