@@ -1,0 +1,171 @@
+# ============================================================
+# Alvz Demo Showcase v0.18.0
+# Ejecuta:  alvz demo.alvz
+# ============================================================
+
+# ============================================================
+# 1. OOP: Clases, herencia, polimorfismo
+# ============================================================
+
+clase Animal {
+    funcion inicializar(nombre) {
+        self.nombre = nombre
+    }
+
+    funcion hablar() {
+        retornar "..."
+    }
+}
+
+clase Perro de Animal {
+    funcion hablar() {
+        retornar self.nombre + " dice: Guau!"
+    }
+}
+
+clase Gato de Animal {
+    funcion hablar() {
+        retornar self.nombre + " dice: Miau!"
+    }
+}
+
+variable animales = [nuevo Perro("Rex"), nuevo Gato("Luna")]
+imprimir("=== 1. OOP: Clases y polimorfismo ===")
+para cada animal en animales {
+    imprimir(animal.hablar())
+}
+
+# ============================================================
+# 2. Funciones de orden superior (closures/lambdas)
+# ============================================================
+
+funcion aplicar(operacion, a, b) {
+    retornar operacion(a, b)
+}
+
+variable suma = funcion(x, y) { retornar x + y }
+variable resta = funcion(x, y) { retornar x - y }
+
+imprimir("")
+imprimir("=== 2. Funciones de orden superior ===")
+imprimir("10 + 5 = " + aplicar(suma, 10, 5))
+imprimir("10 - 5 = " + aplicar(resta, 10, 5))
+
+# ============================================================
+# 3. Recursion
+# ============================================================
+
+funcion fibonacci(n) {
+    si (n <= 1) {
+        retornar n
+    }
+    retornar fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+imprimir("")
+imprimir("=== 3. Recursion ===")
+imprimir("fibonacci(10) = " + fibonacci(10))
+
+# ============================================================
+# 4. Manejo de errores con intentar/capturar
+# ============================================================
+
+imprimir("")
+imprimir("=== 4. Manejo de errores ===")
+intentar {
+    variable x = 10 / 0
+} capturar {
+    imprimir("Error capturado: " + error_msj())
+}
+
+# ============================================================
+# 5. Colecciones: listas, diccionarios
+# ============================================================
+
+imprimir("")
+imprimir("=== 5. Colecciones ===")
+variable numeros = [3, 1, 4, 1, 5, 9]
+imprimir("Lista: " + json_codificar(numeros))
+imprimir("Longitud: " + longitud(numeros))
+
+variable persona = {
+    "nombre": "Alvz",
+    "version": "0.18.0"
+}
+imprimir("Diccionario: " + json_codificar(persona))
+
+# ============================================================
+# 6. JSON
+# ============================================================
+
+imprimir("")
+imprimir("=== 6. JSON ===")
+variable datos = json_codificar({
+    "lenguaje": "Alvz",
+    "anio": 2026,
+    "activo": verdadero
+})
+imprimir("Codificar: " + datos)
+
+variable obj = json_decodificar('{"mensaje": "Hola Alvz"}')
+imprimir("Decodificar: " + obj["mensaje"])
+
+# ============================================================
+# 7. Bucles: para, mientras
+# ============================================================
+
+imprimir("")
+imprimir("=== 7. Bucles ===")
+variable suma_total = 0
+para i de 1 a 5 {
+    suma_total = suma_total + i
+}
+imprimir("Suma 1..5 = " + suma_total)
+
+variable contador = 5
+mientras contador > 0 {
+    contador = contador - 1
+}
+imprimir("Contador = " + contador)
+
+# ============================================================
+# 8. Metodos estaticos
+# ============================================================
+
+clase Util {
+    funcion estatico cuadrado(x) {
+        retornar x * x
+    }
+
+    funcion estatico saludar() {
+        retornar "Hola desde metodo estatico!"
+    }
+}
+
+imprimir("")
+imprimir("=== 8. Metodos estaticos ===")
+imprimir("Util.cuadrado(7) = " + Util.cuadrado(7))
+imprimir(Util.saludar())
+
+# ============================================================
+# 9. Tipo dinamico
+# ============================================================
+
+imprimir("")
+imprimir("=== 9. Tipo dinamico ===")
+variable x = 42
+imprimir("tipo(42) = " + tipo(x))
+variable y = "hola"
+imprimir("tipo('hola') = " + tipo(y))
+
+# ============================================================
+# Resumen final
+# ============================================================
+
+imprimir("")
+imprimir("============================================")
+imprimir("Alvz v0.18.0 - Lenguaje en Espanol")
+imprimir("https://github.com/interpago/alvz")
+imprimir("https://alvzes.web.app")
+imprimir("VS Code: Alvz en Espanol")
+imprimir("============================================")

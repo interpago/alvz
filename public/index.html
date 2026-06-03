@@ -529,7 +529,7 @@
             <div class="admonition-title">¿Por qué Alvz?</div>
             Alvz elimina la barrera del idioma y simplifica tareas complejas como la conexión a bases de datos o el manejo de archivos en un solo comando.
             <br><br>
-            <strong>v0.18.0</strong> — Compilador WASM con 40+ opcodes nativos + 42 host calls. Compatible con wasmtime 45. Memoria compartida entre módulo y host functions. StdLib (13 módulos: matematicas, cadenas, http, sqlite, json, csv, etc.), Package Manager (30 paquetes), LSP + DAP reales, 82 opcodes en VM. <strong>549 tests, 0 fallos.</strong>
+            <strong>v0.18.0</strong> — Compilador WASM con 40+ opcodes nativos + 42 host calls. Compatible con wasmtime 45. Memoria compartida entre módulo y host functions. StdLib (13 módulos: matematicas, cadenas, http, sqlite, json, csv, etc.), Package Manager (30 paquetes), LSP + DAP reales, 83 opcodes en VM. <strong>626 tests, 0 fallos.</strong>
         </div>
     </section>
 
@@ -2076,7 +2076,7 @@ imprimir(media(nums))        <span class="comment"># 4.8</span></pre>
 
     <section id="native">
         <h2>Compilación Nativa &amp; Multiplataforma</h2>
-        <p>Alvz genera ejecutables independientes mediante <code>alvz build</code> que funcionan en <strong>Windows, Linux y macOS</strong>. Todos los 82 opcodes del VM están soportados: clases, SQLite, HTTP, lambdas, async/await, etc. Los binarios se empaquetan con PyInstaller y no requieren dependencias externas.</p>
+        <p>Alvz genera ejecutables independientes mediante <code>alvz build</code> que funcionan en <strong>Windows, Linux y macOS</strong>. Todos los 83 opcodes del VM están soportados: clases, SQLite, HTTP, lambdas, async/await, etc. Los binarios se empaquetan con PyInstaller y no requieren dependencias externas.</p>
 
         <div class="code-container">
             <div class="code-header"><span>Terminal</span></div>
@@ -2116,7 +2116,7 @@ $ ./programa</pre>
 $ wasmtime programa.wasm</pre>
         </div>
 
-        <h3>Opcodes Soportados (40+/82)</h3>
+        <h3>Opcodes Soportados (40+/83)</h3>
         <table>
             <thead><tr><th>Categoría</th><th>Opcodes</th></tr></thead>
             <tbody>
@@ -2168,7 +2168,7 @@ $ wasmtime programa.wasm
 <span class="comment"># 2. Parser</span>   Tokens → Árbol + Bytecode (ParserBase + Parser)
 <span class="comment"># 3. Opt.</span>     Bytecode → Bytecode optimizado (Optimizer)
 <span class="comment"># 4. Type</span>     Bytecode → Verificación de tipos (TypeChecker)
-<span class="comment"># 5. VM</span>       Bytecode → Ejecución (VM con 82 opcodes)
+<span class="comment"># 5. VM</span>       Bytecode → Ejecución (VM con 83 opcodes)
 <span class="comment"># 6. Backends</span> Bytecode → WASM / Nativo (wasm_compiler / compiler)</pre>
         </div>
 
@@ -2186,8 +2186,8 @@ $ wasmtime programa.wasm
             <li><strong>global keyword:</strong> Declaración de variables globales dentro de funciones.</li>
         </ul>
 
-        <h3>3. Bytecode (82 opcodes)</h3>
-        <p>El bytecode Alvz (<code>alvz/core/bytecode.py</code>) es una representación intermedia basada en pila con <strong>82 opcodes</strong>. Cada instrucción es un byte (0-81) seguido de 0-2 bytes de operandos. Categorías:</p>
+        <h3>3. Bytecode (83 opcodes)</h3>
+        <p>El bytecode Alvz (<code>alvz/core/bytecode.py</code>) es una representación intermedia basada en pila con <strong>83 opcodes</strong>. Cada instrucción es un byte (0-81) seguido de 0-2 bytes de operandos. Categorías:</p>
         <table>
             <thead><tr><th>Categoría</th><th>Opcodes</th><th>Rango</th></tr></thead>
             <tbody>
@@ -2312,8 +2312,8 @@ $ wasmtime programa.wasm
         <table>
             <thead><tr><th>Métrica</th><th>Valor</th></tr></thead>
             <tbody>
-                <tr><td>Tests</td><td><strong>549</strong> (0 fallos, 0 errores)</td></tr>
-                <tr><td>Opcodes VM</td><td>82</td></tr>
+                <tr><td>Tests</td><td><strong>626</strong> (0 fallos, 0 errores)</td></tr>
+                <tr><td>Opcodes VM</td><td>83</td></tr>
                 <tr><td>Opcodes WASM nativos</td><td>40+</td></tr>
                 <tr><td>Host calls WASM</td><td>42</td></tr>
                 <tr><td>Módulos StdLib</td><td>13</td></tr>

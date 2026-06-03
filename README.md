@@ -1,6 +1,6 @@
 # Alvz Language v0.18.0
 
-Lenguaje de programación interpretado con sintaxis completamente en español. Orientado a objetos, asíncrono, con tipado estático opcional. Basado en una VM de pila con 82 opcodes y compilación a WebAssembly.
+Lenguaje de programación interpretado con sintaxis completamente en español. Orientado a objetos, asíncrono, con tipado estático opcional. Basado en una VM de pila con 83 opcodes y compilación a WebAssembly.
 
 ## Características
 
@@ -8,7 +8,7 @@ Lenguaje de programación interpretado con sintaxis completamente en español. O
 - **Orientado a objetos** — clases, herencia, métodos estáticos, getters/setters, `super`
 - **Async/await** — ejecución concurrente con `ThreadPoolExecutor`
 - **Tipado opcional** — anotaciones de tipo con verificación estática (`--no-check-types` para deshabilitar)
-- **82 opcodes** — VM de pila con bytecode completo (aritmética, control de flujo, closures, excepciones)
+- **83 opcodes** — VM de pila con bytecode completo (aritmética, control de flujo, closures, excepciones, debug)
 - **13 módulos stdlib** — `matematicas`, `cadenas`, `colecciones`, `testing`, `json`, `csv`, `sistema`, `fecha`, `http`, `sqlite`, `aleatorio`, `expresiones_regulares`, `consola`
 - **Compilación WASM** — genera binarios `.wasm` compatibles con wasmtime 45+
 - **LSP + DAP** — language server con diagnósticos, completado, ir a definición, hover; debugger con breakpoints, paso a paso, inspección de variables
@@ -16,7 +16,7 @@ Lenguaje de programación interpretado con sintaxis completamente en español. O
 - **Modo seguro** — `--safe` restringe FS, red, imports y recursos
 - **CLI completa** — `alvz archivo.alvz`, `alvz test`, `alvz fmt`, `alvz nuevo`, `alvz build`, `alvz fix`, `alvz bench`, `alvz debug`, `alvz install`
 - **Standalone** — `alvz build` genera ejecutables con PyInstaller o Nuitka
-- **549 tests** — cobertura de VM, parser, lexer, WASM, LSP, DAP, tipos
+- **626 tests** — cobertura de VM, parser, lexer, WASM, LSP, DAP, tipos, formatter, fixer, benchmarks
 
 ## Instalación
 

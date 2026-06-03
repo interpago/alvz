@@ -7,7 +7,7 @@
 - `alvz publish <dir>`: empaqueta proyectos con `alvz.json`
 - `alvz fmt`: formateador token-aware de código fuente
 - `--safe` mode: sandbox de FS, red bloqueada, límites de tiempo/recursión/pila
-- `ESPECIFICACION.md`: especificación formal con EBNF, sistema de tipos, 82 opcodes
+- `ESPECIFICACION.md`: especificación formal con EBNF, sistema de tipos, 83 opcodes
 - Compilación WASM compatible con wasmtime 45 (memoria importada, host calls sin `caller`)
 - `OP_SLICE` para strings vía `HOST_SLICE = 44`
 
@@ -32,7 +32,7 @@
 - Package manager con 30 paquetes
 
 ### Changed
-- VM: 82 opcodes con async/event loop, OOP, HTTP, SQLite
+- VM: 83 opcodes con async/event loop, OOP, HTTP, SQLite, debug
 - REPL/CLI con subcomandos: `test | install | uninstall | bench | fix`
 
 ## [0.16.0] — 2026-04-20

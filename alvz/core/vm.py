@@ -15,10 +15,12 @@ from .bytecode import OpCode
 
 try:
     from fastapi import FastAPI, Request
+    from fastapi.responses import Response
     import uvicorn
 except ImportError:
     FastAPI = None
     Request = None
+    Response = None
     uvicorn = None
 
 
@@ -1202,6 +1204,15 @@ class VM:
                                     self.run()
                                     result = self.stack.pop() if self.stack else None
                                     self.stack = old_stack
+                                    if isinstance(result, str):
+                                        try:
+                                            json.loads(result)
+                                            return Response(content=result, media_type="application/json")
+                                        except (ValueError, TypeError):
+                                            pass
+                                        if result.lstrip().startswith("<"):
+                                            return Response(content=result, media_type="text/html")
+                                        return Response(content=result, media_type="text/plain")
                                     return result
                                 finally:
                                     self.ip = old_ip

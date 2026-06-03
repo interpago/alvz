@@ -19,7 +19,7 @@
 - **OP_SLICE para strings**: via HOST_SLICE = 44.
 - **DAP v1 con parcheo de bytecode**: VM corre a velocidad normal entre breakpoints (OP_DEBUG_BREAK = 83). Step mode usa hook temporal.
 - **Modo seguro** (`--safe`): sandbox de FS, red bloqueada, límites de tiempo (30s), recursión (200 niveles), pila (10k).
-- **Especificación formal** (`ESPECIFICACION.md`): EBNF, sistema de tipos, 82 opcodes documentados.
+- **Especificación formal** (`ESPECIFICACION.md`): EBNF, sistema de tipos, 83 opcodes documentados.
 - **Formateador token-aware** (`alvz/core/formatter.py`): corrige bugs de indentación (`}` en nueva línea, doble espacio antes de `{`, espacio tras `.`).
 - **Auto-fixer** (`alvz/core/fixer.py`): detección de imports faltantes, variables no usadas, globales duplicados.
 - **alvz publish**: empaqueta proyectos con `alvz.json`, soporta BOM utf-8-sig.

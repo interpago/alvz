@@ -23,3 +23,5 @@ venv/
 *.zip
 .DS_Store
 Thumbs.db
+proyectos/
+*.db

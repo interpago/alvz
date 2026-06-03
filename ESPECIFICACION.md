@@ -272,7 +272,7 @@ funcion suma(a: numero, b: numero): numero {
 
 ---
 
-## 4. Especificación de Bytecode (82 Opcodes)
+## 4. Especificación de Bytecode (83 Opcodes)
 
 ### 4.1 Convenciones
 

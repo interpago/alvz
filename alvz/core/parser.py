@@ -484,6 +484,8 @@ class Parser(_Parser):
                 num_pairs += 1
                 while self.pos < len(self.tokens) and self.current_token()[0] == Token.COMA:
                     self.pos += 1
+                    if self.pos < len(self.tokens) and self.current_token()[0] == Token.LLAVE_DER:
+                        break
                     self.expression()
                     self.consume(Token.DOS_PUNTOS)
                     self.expression()
