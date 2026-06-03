@@ -21,10 +21,15 @@ Lenguaje de programación interpretado con sintaxis completamente en español. O
 ## Instalación
 
 ```bash
-pip install -e .
+pip install alvz-lenguaje
 ```
 
 Requiere Python 3.10+.
+
+Para desarrollo local:
+```bash
+pip install -e .
+```
 
 ## Uso rápido
 

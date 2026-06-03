@@ -29,6 +29,8 @@
 - **LSP completo**: autocompletado, hover, ir a definición.
 - **Package manager**: 30 paquetes disponibles.
 - **Optimizador de bytecode** (230 líneas), **Type checker estático** (457 líneas).
+- **PyPI package**: `alvz-lenguaje` publicado en https://pypi.org/project/alvz-lenguaje/0.18.0/
+- **README.md**: instalación vía `pip install alvz-lenguaje`
 
 ### In Progress
 - N/A
