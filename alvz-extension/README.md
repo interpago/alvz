@@ -1,39 +1,50 @@
-# Alvz Language Support
+# Alvz en Español
 
-Soporte oficial para **Alvz**, el lenguaje de programación en español con sistema de tipos, OOP, async/await, SQLite, HTTP, WASM y más.
+**Alvz** es un lenguaje de programación completo en **español** con tipado dinámico, OOP, async/await, SQLite, HTTP, compilación WASM y más.
 
 ## Características
 
-- **Resaltado semántico** — variables, funciones, clases, keywords, strings, números con colores diferenciados
-- **Autocompletado** — palabras clave, funciones de stdlib, snippets
-- **Snippets** — estructuras comunes (`funcion`, `si`, `mientras`, `clase`, `intentar`, etc.)
-- **Iconos de archivo** — tema de iconos para archivos `.alvz`
-- **Soporte LSP** — hover, ir a definición, diagnóstico de errores (requiere `alvz` CLI instalado)
+| # | Característica | Descripción |
+|---|---|---|
+| 1 | **Resaltado semántico** | Variables, funciones, clases, builtins con colores diferenciados |
+| 2 | **Autocompletado** | Keywords, stdlib, snippets de estructuras comunes |
+| 3 | **Snippets** | `funcion`, `si`, `mientras`, `clase`, `intentar`, `cada`, `para` |
+| 4 | **Iconos de archivo** | Tema de iconos para archivos `.alvz` |
+| 5 | **LSP** | Hover, ir a definición, diagnóstico (requiere `alvz` CLI) |
 
 ## Instalación
 
-1. Instala Alvz: `pip install alvz-lenguaje`
-2. Instala esta extensión desde VS Code marketplace
-3. Abre o crea un archivo `.alvz`
+```bash
+# Instalar el lenguaje
+pip install alvz-lenguaje
 
-## Ejemplo rápido
-
-```alvz
-funcion saludar(nombre) {
-    imprimir("Hola, " + nombre)
-}
-
-variable nombre = leer()
-saludar(nombre)
+# Verificar
+alvz --version
 ```
 
-## Requisitos
+## Ejemplo
 
-- VS Code `^1.79.0`
-- Python 3.10+ con `alvz-lenguaje` (para LSP)
+```alvz
+funcion fibonacci(n) {
+    si (n <= 1) { retornar n }
+    retornar fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+variable resultado = fibonacci(10)
+imprimir("Fibonacci(10) = " + resultado)
+```
 
 ## Documentación
 
 - [Sitio web oficial](https://alvzes.web.app)
-- [Especificación del lenguaje](https://github.com/interpago/alvz/blob/main/ESPECIFICACION.md)
-- [Repositorio](https://github.com/interpago/alvz)
+- [Especificación formal del lenguaje](https://github.com/interpago/alvz/blob/main/ESPECIFICACION.md)
+- [Repositorio GitHub](https://github.com/interpago/alvz)
+
+## Requisitos
+
+- VS Code `^1.79.0`
+- Python 3.10+ (para LSP)
+
+## Créditos
+
+Desarrollado por la comunidad Alvz. ¡Contribuciones bienvenidas!

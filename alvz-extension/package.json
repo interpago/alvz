@@ -3,7 +3,7 @@
     "publisher": "alvz-project",
     "displayName": "Alvz en Español",
     "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol con resaltado semantico, autocompletado, snippets y mas",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "engines": { "vscode": "^1.79.0" },
     "categories": ["Programming Languages"],
     "main": "./extension.js",
@@ -19,6 +19,10 @@
         "url": "https://github.com/interpago/alvz/issues"
     },
     "homepage": "https://alvzes.web.app",
+    "galleryBanner": {
+        "color": "#05998b",
+        "theme": "dark"
+    },
     "contributes": {
         "languages": [{
             "id": "alvz",
