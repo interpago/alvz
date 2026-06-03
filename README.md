@@ -12,7 +12,7 @@ Lenguaje de programación interpretado con sintaxis completamente en español. O
 - **13 módulos stdlib** — `matematicas`, `cadenas`, `colecciones`, `testing`, `json`, `csv`, `sistema`, `fecha`, `http`, `sqlite`, `aleatorio`, `expresiones_regulares`, `consola`
 - **Compilación WASM** — genera binarios `.wasm` compatibles con wasmtime 45+
 - **LSP + DAP** — language server con diagnósticos, completado, ir a definición, hover; debugger con breakpoints, paso a paso, inspección de variables
-- **Extension VS Code** — resaltado semántico, 48 snippets, autocompletado, iconos
+- **Extension VS Code** — disponible en el Marketplace como "Alvz en Español": resaltado semántico, 48 snippets, autocompletado, iconos
 - **Modo seguro** — `--safe` restringe FS, red, imports y recursos
 - **CLI completa** — `alvz archivo.alvz`, `alvz test`, `alvz fmt`, `alvz nuevo`, `alvz build`, `alvz fix`, `alvz bench`, `alvz debug`, `alvz install`
 - **Standalone** — `alvz build` genera ejecutables con PyInstaller o Nuitka
@@ -111,4 +111,5 @@ clase Persona {
 
 - GitHub: https://github.com/interpago/alvz
 - Web: https://alvzes.web.app
+- VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=alvz-project.alvz-language
 - Licencia: GPL-3.0
