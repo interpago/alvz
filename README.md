@@ -32,6 +32,9 @@ Requiere Python 3.10+.
 # Ejecutar archivo
 alvz programa.alvz
 
+# Ejecutar via WebAssembly (37+ opcodes nativos)
+alvz --wasm programa.alvz
+
 # REPL interactivo
 alvz
 
@@ -47,7 +50,8 @@ alvz --no-check-types programa.alvz   # deshabilita type checker
 # Modo seguro (sin red, FS restringido)
 alvz --safe programa.alvz
 
-# Compilar a WASM
+# Compilar a ejecutable o WASM
+alvz build programa.alvz
 alvz build programa.alvz --wasm
 
 # Nuevo proyecto

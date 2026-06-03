@@ -1970,6 +1970,19 @@ csv_escribir(<span class="string">"usuarios.csv"</span>, usuarios)
             <pre>$ alvz --optimize script.alvz</pre>
         </div>
 
+        <h3>Ejecución WebAssembly</h3>
+        <p>Alvz puede ejecutar archivos directamente via WebAssembly con <code>--wasm</code>, usando wasmtime en vez de la VM Python. 37 opcodes se ejecutan como WASM nativo y el resto via host calls.</p>
+
+        <div class="code-container">
+            <div class="code-header"><span>Terminal</span></div>
+            <pre>$ alvz --wasm programa.alvz    <span class="comment"># Ejecuta via WASM (requiere wasmtime)</span></pre>
+        </div>
+
+        <div class="admonition">
+            <div class="admonition-title">Rendimiento WASM</div>
+            <p>Para scripts sin clases ni imports complejos, WASM ofrece velocidad nativa con 37+ opcodes compilados directamente a instrucciones WASM. Los opcodes restantes se manejan como host calls desde Python.</p>
+        </div>
+
         <h3>Optimizaciones</h3>
         <ul>
             <li><strong>Plegado de constantes (Constant Folding):</strong> Evalúa expresiones aritméticas y lógicas con operandos constantes en tiempo de compilación. Ejemplo: <code>2 + 3</code> se convierte en <code>5</code> antes de ejecutar.</li>
@@ -2256,7 +2269,8 @@ $ wasmtime programa.wasm
             <li><strong>Memoria compartida:</strong> El módulo importa memoria del host (<code>add_import_memory</code>) en vez de crearla propia, compartiendo el espacio de direcciones con host functions.</li>
             <li><strong>40+ opcodes nativos</strong> implementados en WASM + <strong>42 host calls</strong> para operaciones complejas (print, string ops, list/dict, SQLite, HTTP, random, etc.).</li>
             <li><strong>Compatibilidad:</strong> wasmtime 45 con <code>access_caller=False</code>, sin <code>memory64</code>.</li>
-            <li><strong>Uso:</strong> <code>alvz build --wasm programa.alvz</code> → <code>wasmtime programa.wasm</code>.</li>
+            <li><strong>Uso directo:</strong> <code>alvz --wasm programa.alvz</code> compila y ejecuta al instante.</li>
+            <li><strong>Build:</strong> <code>alvz build --wasm programa.alvz</code> → <code>wasmtime programa.wasm</code>.</li>
             <li><strong>Datos:</strong> Bytecode y constantes como data segments en memoria WASM.</li>
         </ul>
 
