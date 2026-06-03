@@ -1,12 +1,24 @@
 {
     "name": "alvz-language",
     "publisher": "alvz-project",
-    "displayName": "Alvz Language Support",
-    "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol",
+    "displayName": "Alvz en Español",
+    "description": "Soporte oficial para el lenguaje Alvz: Programacion en Espanol con resaltado semantico, autocompletado, snippets y mas",
     "version": "1.6.0",
     "engines": { "vscode": "^1.79.0" },
     "categories": ["Programming Languages"],
     "main": "./extension.js",
+    "icon": "icon.png",
+    "activationEvents": [
+        "onLanguage:alvz"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/interpago/alvz.git"
+    },
+    "bugs": {
+        "url": "https://github.com/interpago/alvz/issues"
+    },
+    "homepage": "https://alvzes.web.app",
     "contributes": {
         "languages": [{
             "id": "alvz",
