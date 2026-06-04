@@ -26,3 +26,6 @@ Thumbs.db
 proyectos/
 *.db
 .pypirc
+coverage.lcov
+.coverage
+.coverage.*

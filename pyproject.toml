@@ -62,3 +62,16 @@ ignore = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["alvz"]
+omit = ["alvz/lsp/dap.py", "alvz/lsp/server.py"]
+
+[tool.coverage.report]
+fail_under = 60
+skip_covered = true
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]

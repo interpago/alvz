@@ -192,10 +192,10 @@ def push_instr(tag_expr, data_expr):
     """Genera WASM para pushear (tag, data) a la pila de valores. sp += 1"""
     return (
         _STACK_ADDR +
-        _TEE_LOCAL(2) +     # $addr
+        _TEE_LOCAL(8) +     # $tmp = addr
         tag_expr +
         _STORE_I32(0) +     # tag at offset 0
-        _GET_LOCAL(2) +
+        _GET_LOCAL(8) +
         data_expr +
         _STORE_F64(4) +     # data at offset 4
         _GET_GLOBAL(0) +
@@ -213,10 +213,10 @@ def pop_instr():
         bytes([OP_I32_SUB]) +
         _SET_GLOBAL(0) +    # sp--
         _STACK_ADDR +
-        _TEE_LOCAL(2) +     # $addr
+        _TEE_LOCAL(8) +     # $tmp = addr
         _LOAD_I32(0) +
         _SET_LOCAL(3) +     # $t = tag
-        _GET_LOCAL(2) +
+        _GET_LOCAL(8) +
         _LOAD_F64(4) +
         _SET_LOCAL(4)       # $d = data
     )
@@ -255,6 +255,14 @@ class WasmCompiler:
                 data.extend(struct.pack('<d', float(offset)))
                 str_data.extend(struct.pack('<i', len(sbytes)))
                 str_data.extend(sbytes)
+            elif isinstance(val, dict):
+                import json
+                json_bytes = json.dumps(val, ensure_ascii=False).encode('utf-8')
+                offset = len(str_data)
+                data.extend(struct.pack('<i', TAG_DICT))
+                data.extend(struct.pack('<d', float(offset)))
+                str_data.extend(struct.pack('<i', len(json_bytes)))
+                str_data.extend(json_bytes)
         pad = 0x1000 - (len(data) % 0x1000)
         if pad < 0x1000:
             data.extend(b'\x00' * pad)

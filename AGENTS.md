@@ -31,6 +31,9 @@
 - **Optimizador de bytecode** (230 líneas), **Type checker estático** (457 líneas).
 - **PyPI package**: `alvz-lenguaje` publicado en https://pypi.org/project/alvz-lenguaje/0.18.0/
 - **README.md**: instalación vía `pip install alvz-lenguaje`
+- **Bugfix WASM crash (memory fault 0xfffffff0)**: `push_instr`/`pop_instr` sobrescribían `local 2` (`$op`) con la dirección de pila causando dispatch incorrecto. Cambiado a `local 8` (`$tmp_i32`).
+- **Bugfix HOST_CLASS `_read_f64` offset**: leía datos constantes desde la tag (offset 0) en vez de +4 (data f64), causando que el nombre de clase fuese basura. Ahora lee desde `+4`.
+- **696 tests**, 0 fallos (vs 626 original).
 
 ### In Progress
 - N/A
@@ -48,11 +51,11 @@
 ## Next Steps
 - Compilar cada función Alvz a función WASM separada (no inline en dispatch loop).
 - Sistema de pruebas integrado para código `.alvz`.
-- Soportar clases/dicts como constantes en WASM (para que demo.alvz funcione con --wasm).
+- HOST_NEW debe copiar valores por defecto de propiedades desde la definición de clase a la instancia.
 - Convertir --wasm en el modo por defecto (requiere resolver limitaciones de constantes).
 
 ## Critical Context
-- **626 tests, 0 fallos, 0 errores** en ~13s.
+- **696 tests, 0 fallos, 0 errores** en ~6s.
 - `ruff check alvz/ tests/` → 0 errores.
 - `firebase deploy --only hosting` → https://alvzes.web.app
 - Firebase project: `alvz-56156`, site: `alvzes`.

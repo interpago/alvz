@@ -108,6 +108,14 @@ def _read_str(mem, offset):
     length = _read_i32(mem, addr)
     return mem[addr+4:addr+4+length].decode('utf-8', errors='replace')
 
+def _read_dict(mem, offset):
+    """Lee dict desde STR_BASE: [i32 len][bytes JSON...]"""
+    import json
+    addr = STR_BASE + int(offset)
+    length = _read_i32(mem, addr)
+    json_str = mem[addr+4:addr+4+length].decode('utf-8', errors='replace')
+    return json.loads(json_str)
+
 def _write_str(mem, s):
     """Escribe string a STR_BASE, retorna offset donde se escribio."""
     b = s.encode('utf-8')
@@ -524,13 +532,18 @@ def make_host_call(memory, output_buffer, store=None):
             advance_ip = 1
 
         elif op_id == HOST_CLASS:
-            # Leer constantes del bytecode
-            const_name_idx = _read_i32(mem, BC_BASE + raw_ip + 1)
-            # Leer constantes desde CONST_BASE
+            const_name_idx = mem[BC_BASE + raw_ip + 1]
+            const_data_idx = mem[BC_BASE + raw_ip + 2]
             name_tag = _read_tag(mem, CONST_BASE + const_name_idx * 12)
-            name_data = _read_f64(mem, CONST_BASE + const_name_idx * 12)
+            name_data = _read_f64(mem, CONST_BASE + const_name_idx * 12 + 4)
             class_name = _read_str(mem, name_data) if name_tag == TAG_STR else str(name_data)
-            classes[class_name] = True
+            data_tag = _read_tag(mem, CONST_BASE + const_data_idx * 12)
+            data_offset = _read_f64(mem, CONST_BASE + const_data_idx * 12 + 4)
+            if data_tag == TAG_DICT:
+                class_data = _read_dict(mem, data_offset)
+            else:
+                class_data = True
+            classes[class_name] = class_data
             result_tag = TAG_NULL
             result_data = 0.0
             advance_ip = 3
@@ -546,8 +559,8 @@ def make_host_call(memory, output_buffer, store=None):
             advance_ip = 2
 
         elif op_id == HOST_GET_ATTR:
-            prop_tag, prop_data = args[0]
-            obj_tag, obj_data = args[1]
+            obj_tag, obj_data = args[0]
+            prop_tag, prop_data = args[1]
             prop_name = _read_str(mem, prop_data) if prop_tag == TAG_STR else str(prop_data)
             inst = instances.get(str(int(obj_data)))
             if inst and isinstance(inst, dict) and prop_name in inst:
@@ -570,9 +583,9 @@ def make_host_call(memory, output_buffer, store=None):
             advance_ip = 1
 
         elif op_id == HOST_SET_ATTR:
-            prop_tag, prop_data = args[0]
+            obj_tag, obj_data = args[0]
             val_tag, val_data = args[1]
-            obj_tag, obj_data = args[2]
+            prop_tag, prop_data = args[2]
             prop_name = _read_str(mem, prop_data) if prop_tag == TAG_STR else str(prop_data)
             inst = instances.get(str(int(obj_data)))
             if inst and isinstance(inst, dict):
