@@ -1,0 +1,8 @@
+{
+    "name": "excel",
+    "version": "1.0.0",
+    "description": "Generacion de archivos compatibles con Excel: XML Spreadsheet, HTML table, CSV",
+    "author": "Alvz Team",
+    "entry": "excel.alvz",
+    "dependencies": []
+}

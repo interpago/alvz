@@ -1,0 +1,233 @@
+# excel.alvz - Generacion de archivos compatibles con Excel
+# Uso: importar "excel"
+#       variable libro = excel_nuevo()
+#       excel_escribir(libro, 'Hoja1', 0, 0, 'Nombre')
+#       excel_escribir(libro, 'Hoja1', 0, 1, 'Edad')
+#       excel_escribir(libro, 'Hoja1', 1, 0, 'Ana')
+#       excel_escribir(libro, 'Hoja1', 1, 1, 25)
+#       excel_guardar_xml(libro, 'datos.xls')
+#       excel_guardar_csv(libro, 'datos.csv')
+#       excel_guardar_html(libro, 'datos.html')
+
+# _nl se obtiene via funcion _nl()
+
+funcion _nl() {
+    retornar json_decodificar('"\u000a"')
+}
+
+funcion _columna_letra(n) {
+    variable letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    variable resultado = ''
+    n = n + 1
+    mientras n > 0 {
+        variable idx = (n - 1) % 26
+        resultado = letras[idx] + resultado
+        n = (n - 1) / 26
+    }
+    retornar resultado
+}
+
+funcion excel_nuevo() {
+    retornar {
+        'hojas': {},
+        'orden': []
+    }
+}
+
+funcion excel_hoja(libro, nombre) {
+    variable hojas = libro['hojas']
+    si hojas[nombre] == nulo {
+        hojas[nombre] = []
+        libro['orden'] = libro['orden'] + [nombre]
+        libro['hojas'] = hojas
+    }
+    retornar hojas[nombre]
+}
+
+funcion excel_escribir(libro, hoja_nombre, fila, columna, valor) {
+    variable datos = excel_hoja(libro, hoja_nombre)
+    mientras longitud(datos) <= fila {
+        datos = datos + [[]]
+    }
+    variable fila_datos = datos[fila]
+    mientras longitud(fila_datos) <= columna {
+        fila_datos = fila_datos + [nulo]
+    }
+    fila_datos[columna] = valor
+    datos[fila] = fila_datos
+    variable hojas = libro['hojas']
+    hojas[hoja_nombre] = datos
+    libro['hojas'] = hojas
+}
+
+funcion excel_leer(libro, hoja_nombre, fila, columna) {
+    variable datos = libro['hojas'][hoja_nombre]
+    si datos == nulo { retornar nulo }
+    si fila >= longitud(datos) { retornar nulo }
+    variable fila_datos = datos[fila]
+    si columna >= longitud(fila_datos) { retornar nulo }
+    retornar fila_datos[columna]
+}
+
+funcion excel_filas(libro, hoja_nombre) {
+    variable datos = libro['hojas'][hoja_nombre]
+    si datos == nulo { retornar 0 }
+    retornar longitud(datos)
+}
+
+funcion excel_columnas(libro, hoja_nombre) {
+    variable datos = libro['hojas'][hoja_nombre]
+    si datos == nulo { retornar 0 }
+    variable max_c = 0
+    variable i = 0
+    mientras i < longitud(datos) {
+        si longitud(datos[i]) > max_c {
+            max_c = longitud(datos[i])
+        }
+        i = i + 1
+    }
+    retornar max_c
+}
+
+funcion excel_guardar_xml(libro, ruta) {
+    variable xml = '<?xml version="1.0" encoding="UTF-8"?>' + json_decodificar('"\u000a"')
+    xml = xml + '<?mso-application progid="Excel.Sheet"?>' + json_decodificar('"\u000a"')
+    xml = xml + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"' + json_decodificar('"\u000a"')
+    xml = xml + '  xmlns:o="urn:schemas-microsoft-com:office:office"' + json_decodificar('"\u000a"')
+    xml = xml + '  xmlns:x="urn:schemas-microsoft-com:office:excel"' + json_decodificar('"\u000a"')
+    xml = xml + '  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' + json_decodificar('"\u000a"')
+
+    variable hojas = libro['hojas']
+    variable orden = libro['orden']
+    variable i = 0
+    mientras i < longitud(orden) {
+        variable nombre = orden[i]
+        variable datos = hojas[nombre]
+        variable num_filas = excel_filas(libro, nombre)
+        variable num_cols = excel_columnas(libro, nombre)
+
+        xml = xml + '  <Worksheet ss:Name="' + nombre + '">' + json_decodificar('"\u000a"')
+        xml = xml + '    <Table>' + json_decodificar('"\u000a"')
+
+        variable f = 0
+        mientras f < num_filas {
+            xml = xml + '      <Row>' + json_decodificar('"\u000a"')
+            variable c = 0
+            mientras c < num_cols {
+                variable valor = excel_leer(libro, nombre, f, c)
+                si valor == nulo {
+                    xml = xml + '        <Cell><Data ss:Type="String"></Data></Cell>' + json_decodificar('"\u000a"')
+                } sino si tipo(valor) == 'numero' {
+                    xml = xml + '        <Cell><Data ss:Type="Number">' + valor + '</Data></Cell>' + json_decodificar('"\u000a"')
+                } sino {
+                    variable txt = valor
+                    txt = reemplazar(txt, '&', '&amp;')
+                    txt = reemplazar(txt, '<', '&lt;')
+                    txt = reemplazar(txt, '>', '&gt;')
+                    txt = reemplazar(txt, '"', '&quot;')
+                    xml = xml + '        <Cell><Data ss:Type="String">' + txt + '</Data></Cell>' + json_decodificar('"\u000a"')
+                }
+                c = c + 1
+            }
+            xml = xml + '      </Row>' + json_decodificar('"\u000a"')
+            f = f + 1
+        }
+
+        xml = xml + '    </Table>' + json_decodificar('"\u000a"')
+        xml = xml + '  </Worksheet>' + json_decodificar('"\u000a"')
+        i = i + 1
+    }
+
+    xml = xml + '</Workbook>' + json_decodificar('"\u000a"')
+    retornar escribir_archivo(ruta, xml)
+}
+
+funcion excel_guardar_csv(libro, ruta) {
+    variable hojas = libro['hojas']
+    variable orden = libro['orden']
+    si longitud(orden) == 0 { retornar falso }
+
+    variable nombre = orden[0]
+    variable datos = hojas[nombre]
+    variable resultado = ''
+
+    variable f = 0
+    mientras f < longitud(datos) {
+        variable fila = datos[f]
+        variable vals = []
+        variable c = 0
+        mientras c < longitud(fila) {
+            variable val = fila[c]
+            si val == nulo {
+                vals = vals + ['']
+            } sino {
+                variable txt = '' + val
+                si longitud(regex_buscar(txt, ',')) > 0 o longitud(regex_buscar(txt, '"')) > 0 o longitud(regex_buscar(txt, json_decodificar('"\u000a"'))) > 0 {
+                    txt = reemplazar(txt, '"', '""')
+                    txt = '"' + txt + '"'
+                }
+                vals = vals + [txt]
+            }
+            c = c + 1
+        }
+        si f > 0 {
+            resultado = resultado + json_decodificar('"\u000a"')
+        }
+        resultado = resultado + unir(vals, ',')
+        f = f + 1
+    }
+
+    retornar escribir_archivo(ruta, resultado)
+}
+
+funcion excel_guardar_html(libro, ruta) {
+    variable hojas = libro['hojas']
+    variable orden = libro['orden']
+
+    variable html = '<html>' + json_decodificar('"\u000a"')
+    html = html + '<head>' + json_decodificar('"\u000a"')
+    html = html + '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">' + json_decodificar('"\u000a"')
+    html = html + '</head>' + json_decodificar('"\u000a"')
+    html = html + '<body>' + json_decodificar('"\u000a"')
+
+    variable i = 0
+    mientras i < longitud(orden) {
+        variable nombre = orden[i]
+        variable datos = hojas[nombre]
+
+        html = html + '<h2>' + nombre + '</h2>' + json_decodificar('"\u000a"')
+        html = html + '<table border="1">' + json_decodificar('"\u000a"')
+
+        variable f = 0
+        mientras f < longitud(datos) {
+            html = html + '<tr>' + json_decodificar('"\u000a"')
+            variable fila = datos[f]
+            variable c = 0
+            mientras c < longitud(fila) {
+                variable val = fila[c]
+                si val == nulo {
+                    html = html + '<td></td>' + json_decodificar('"\u000a"')
+                } sino {
+                    variable txt = '' + val
+                    txt = reemplazar(txt, '&', '&amp;')
+                    txt = reemplazar(txt, '<', '&lt;')
+                    txt = reemplazar(txt, '>', '&gt;')
+                    txt = reemplazar(txt, '"', '&quot;')
+                    html = html + '<td>' + txt + '</td>' + json_decodificar('"\u000a"')
+                }
+                c = c + 1
+            }
+            html = html + '</tr>' + json_decodificar('"\u000a"')
+            f = f + 1
+        }
+
+        html = html + '</table>' + json_decodificar('"\u000a"')
+        html = html + '<br/>' + json_decodificar('"\u000a"')
+        i = i + 1
+    }
+
+    html = html + '</body>' + json_decodificar('"\u000a"')
+    html = html + '</html>' + json_decodificar('"\u000a"')
+    retornar escribir_archivo(ruta, html)
+}
+
